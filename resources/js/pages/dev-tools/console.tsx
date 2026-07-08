@@ -1,11 +1,10 @@
 import CyberShell from '@/components/cyber-shell';
+import { formatJson, inspectJson, type FormatMode } from '@/lib/json-formatter';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Database, Eraser, FileJson2, Minimize2, Terminal, Wand2, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const sampleJson = `{"node":"foray-core","status":"sync","tools":["json_formatter","runtime_probe"],"payload":{"latency":0.4,"verified":true}}`;
-
-type FormatMode = 'pretty' | 'minify';
 
 export default function Console() {
     const [input, setInput] = useState(sampleJson);
@@ -18,18 +17,12 @@ export default function Console() {
     const stats = useMemo(() => inspectJson(output || input), [input, output]);
     const isValid = output !== '' && error === '';
 
-    function formatJson(nextMode = mode) {
-        try {
-            const parsed = JSON.parse(input);
-            setOutput(nextMode === 'pretty' ? JSON.stringify(parsed, null, indent) : JSON.stringify(parsed));
-            setError('');
-            setMode(nextMode);
-            setCopied(false);
-        } catch (exception) {
-            setOutput('');
-            setError(exception instanceof Error ? exception.message : 'Invalid JSON payload');
-            setCopied(false);
-        }
+    function formatJsonBuffer(nextMode = mode) {
+        const result = formatJson(input, nextMode, indent);
+        setOutput(result.output);
+        setError(result.error);
+        setMode(nextMode);
+        setCopied(false);
     }
 
     async function copyOutput() {
@@ -67,10 +60,10 @@ export default function Console() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 sm:flex">
-                        <button type="button" onClick={() => formatJson('pretty')} className="cyber-tool-button">
+                        <button type="button" onClick={() => formatJsonBuffer('pretty')} className="cyber-tool-button">
                             <Wand2 size={15} /> Pretty
                         </button>
-                        <button type="button" onClick={() => formatJson('minify')} className="cyber-tool-button">
+                        <button type="button" onClick={() => formatJsonBuffer('minify')} className="cyber-tool-button">
                             <Minimize2 size={15} /> Minify
                         </button>
                         <button type="button" onClick={copyOutput} className="cyber-tool-button">
@@ -159,30 +152,4 @@ function StatusTile({ label, value, tone = 'idle' }: { label: string; value: str
             <div className={`mt-2 font-display text-lg font-bold uppercase ${color}`}>{value}</div>
         </div>
     );
-}
-
-function inspectJson(payload: string) {
-    try {
-        const parsed: unknown = JSON.parse(payload);
-        const result = { keys: 0, nodes: 0 };
-        walkJson(parsed, result);
-        return result;
-    } catch {
-        return { keys: 0, nodes: 0 };
-    }
-}
-
-function walkJson(value: unknown, result: { keys: number; nodes: number }) {
-    result.nodes += 1;
-
-    if (Array.isArray(value)) {
-        value.forEach((item) => walkJson(item, result));
-        return;
-    }
-
-    if (value && typeof value === 'object') {
-        const entries = Object.entries(value);
-        result.keys += entries.length;
-        entries.forEach(([, item]) => walkJson(item, result));
-    }
 }

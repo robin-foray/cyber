@@ -1,9 +1,8 @@
 import CyberShell from '@/components/cyber-shell';
+import { executeCodec, type CodecMode } from '@/lib/runtime-codec';
 import { Head } from '@inertiajs/react';
 import { Binary, Clipboard, Cpu, Eraser, FileKey2, Link2, ShieldAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
-
-type CodecMode = 'base64-encode' | 'base64-decode' | 'url-encode' | 'url-decode' | 'jwt-inspect';
 
 const modes: Array<{ id: CodecMode; label: string; icon: typeof Binary }> = [
     { id: 'base64-encode', label: 'Base64 Encode', icon: Binary },
@@ -35,32 +34,9 @@ export default function Runtime() {
         setMode(nextMode);
         setCopied(false);
 
-        try {
-            if (nextMode === 'base64-encode') {
-                setOutput(btoa(unescape(encodeURIComponent(input))));
-            }
-
-            if (nextMode === 'base64-decode') {
-                setOutput(decodeURIComponent(escape(atob(input.trim()))));
-            }
-
-            if (nextMode === 'url-encode') {
-                setOutput(encodeURIComponent(input));
-            }
-
-            if (nextMode === 'url-decode') {
-                setOutput(decodeURIComponent(input));
-            }
-
-            if (nextMode === 'jwt-inspect') {
-                setOutput(inspectJwt(input));
-            }
-
-            setError('');
-        } catch (exception) {
-            setOutput('');
-            setError(exception instanceof Error ? exception.message : 'Codec operation failed');
-        }
+        const result = executeCodec(nextMode, input);
+        setOutput(result.output);
+        setError(result.error);
     }
 
     async function copyOutput() {
@@ -188,32 +164,4 @@ function StatusTile({ label, value }: { label: string; value: string }) {
             <div className="mt-2 font-display text-lg font-bold text-primary uppercase">{value}</div>
         </div>
     );
-}
-
-function inspectJwt(token: string) {
-    const parts = token.trim().split('.');
-
-    if (parts.length < 2) {
-        throw new Error('JWT must contain at least header and payload segments.');
-    }
-
-    const header = decodeBase64Url(parts[0]);
-    const payload = decodeBase64Url(parts[1]);
-
-    return JSON.stringify(
-        {
-            header: JSON.parse(header),
-            payload: JSON.parse(payload),
-            signature_present: Boolean(parts[2]),
-        },
-        null,
-        2,
-    );
-}
-
-function decodeBase64Url(segment: string) {
-    const normalized = segment.replace(/-/g, '+').replace(/_/g, '/');
-    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
-
-    return decodeURIComponent(escape(atob(padded)));
 }

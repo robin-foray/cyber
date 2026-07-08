@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -241,15 +242,6 @@ function statusClass(error: string, verifyResult: boolean | null) {
     const color = error ? 'text-red-300' : verifyResult === false ? 'text-red-300' : 'text-primary';
 
     return `flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${color}`;
-}
-
-async function sha256(value: string) {
-    const bytes = new TextEncoder().encode(value);
-    const digest = await crypto.subtle.digest('SHA-256', bytes);
-
-    return Array.from(new Uint8Array(digest))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
 }
 
 async function postJson(url: string, payload: Record<string, unknown>) {

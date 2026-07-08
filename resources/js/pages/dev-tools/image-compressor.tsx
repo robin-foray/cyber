@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
@@ -335,27 +336,4 @@ function canvasToBlob(canvas: HTMLCanvasElement, format: OutputFormat, quality: 
             format === 'image/png' ? undefined : quality,
         );
     });
-}
-
-function getTargetSize(width: number, height: number, maxWidth: number, maxHeight: number) {
-    const safeMaxWidth = Math.max(64, maxWidth || width);
-    const safeMaxHeight = Math.max(64, maxHeight || height);
-    const ratio = Math.min(1, safeMaxWidth / width, safeMaxHeight / height);
-
-    return {
-        width: Math.max(1, Math.round(width * ratio)),
-        height: Math.max(1, Math.round(height * ratio)),
-    };
-}
-
-function formatBytes(bytes: number) {
-    if (!bytes) {
-        return 'waiting';
-    }
-
-    const units = ['B', 'KB', 'MB', 'GB'];
-    const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-    const value = bytes / 1024 ** exponent;
-
-    return `${value.toFixed(value >= 10 || exponent === 0 ? 0 : 1)} ${units[exponent]}`;
 }
