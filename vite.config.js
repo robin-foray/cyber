@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import {
@@ -6,6 +7,10 @@ import {
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+    test: {
+        environment: 'node',
+        include: ['resources/js/**/*.test.ts'],
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
