@@ -30,6 +30,7 @@ const devLinks = [
     { label: 'CONSOLE', href: '/dev-tools/console' },
     { label: 'RUNTIME', href: '/dev-tools/runtime' },
     { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator' },
+    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator' },
     { label: 'CRON_GURU', href: '/dev-tools/cron-guru' },
     { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor' },
     { label: 'DEPLOYMENTS', href: '/dev-tools/deployments' },

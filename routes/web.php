@@ -32,6 +32,9 @@ Route::get('dev-tools/deployments', function () {
 Route::get('dev-tools/hash-generator', [HashGeneratorController::class, 'show'])->name('dev-tools.hash-generator');
 Route::post('dev-tools/hash-generator/bcrypt', [HashGeneratorController::class, 'bcrypt'])->name('dev-tools.hash-generator.bcrypt');
 Route::post('dev-tools/hash-generator/verify', [HashGeneratorController::class, 'verify'])->name('dev-tools.hash-generator.verify');
+Route::get('dev-tools/qr-generator', function () {
+    return Inertia::render('dev-tools/qr-generator');
+})->name('dev-tools.qr-generator');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
