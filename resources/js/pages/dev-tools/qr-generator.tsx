@@ -1,16 +1,14 @@
 import CyberShell from '@/components/cyber-shell';
+import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Download, Eraser, LoaderCircle, QrCode, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import QRCode from 'qrcode';
-
-type ErrorCorrection = 'L' | 'M' | 'Q' | 'H';
 
 export default function QrGenerator() {
     const [value, setValue] = useState('https://foray.local/dev-tools');
     const [size, setSize] = useState(320);
     const [margin, setMargin] = useState(2);
-    const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<ErrorCorrection>('M');
+    const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<QrErrorCorrectionLevel>('M');
     const [dataUrl, setDataUrl] = useState('');
     const [error, setError] = useState('');
     const [processing, setProcessing] = useState(false);
@@ -31,14 +29,10 @@ export default function QrGenerator() {
         setCopied(false);
 
         try {
-            const nextDataUrl = await QRCode.toDataURL(value, {
+            const nextDataUrl = await generateQrCodeDataUrl(value, {
                 width: size,
                 margin,
                 errorCorrectionLevel,
-                color: {
-                    dark: '#ccff00',
-                    light: '#000000',
-                },
             });
 
             setDataUrl(nextDataUrl);
@@ -158,7 +152,7 @@ export default function QrGenerator() {
                                 error_correction_level
                                 <select
                                     value={errorCorrectionLevel}
-                                    onChange={(event) => setErrorCorrectionLevel(event.target.value as ErrorCorrection)}
+                                    onChange={(event) => setErrorCorrectionLevel(event.target.value as QrErrorCorrectionLevel)}
                                     className="mt-2 h-10 w-full rounded-lg border border-primary/15 bg-black px-3 text-primary outline-none"
                                 >
                                     <option value="L">L (7%)</option>
