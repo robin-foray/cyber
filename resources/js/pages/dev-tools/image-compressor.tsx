@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
@@ -21,6 +22,7 @@ const formats: Array<{ label: string; value: OutputFormat; extension: string }> 
 ];
 
 export default function ImageCompressor() {
+    const page = useDevToolPage('image-compressor');
     const [sourceFile, setSourceFile] = useState<File | null>(null);
     const [sourceUrl, setSourceUrl] = useState('');
     const [sourceSize, setSourceSize] = useState({ width: 0, height: 0 });
@@ -144,19 +146,11 @@ export default function ImageCompressor() {
 
     return (
         <CyberShell>
-            <Head title="Image Compressor" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <ImageDown size={18} />
-                            DEV_TOOL_05 // IMAGE_COMPRESSOR
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Image <span className="glow-text text-primary">Compressor</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="image-compressor"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={compressImage} className="cyber-tool-button" disabled={processing}>
                             {processing ? <LoaderCircle size={15} className="animate-spin" /> : <Gauge size={15} />}
@@ -169,7 +163,8 @@ export default function ImageCompressor() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Original" value={telemetry.original} />

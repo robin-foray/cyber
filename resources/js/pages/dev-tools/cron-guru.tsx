@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { analyzeCron, formatRun } from '@/lib/cron-guru';
 import { Head } from '@inertiajs/react';
 import { CalendarClock, CheckCircle2, Clipboard, Clock3, Eraser, Sparkles, Wand2, XCircle } from 'lucide-react';
@@ -17,7 +18,8 @@ const presets = [
 const fieldOrder = ['second', 'minute', 'hour', 'day', 'month', 'weekday'] as const;
 
 export default function CronGuru() {
-    const [expression, setExpression] = useState('*/15 9-17 * * 1-5');
+    const page = useDevToolPage('cron-guru');
+    const [expression, setExpression] = useState(page.sampleInput ?? '');
     const [copied, setCopied] = useState(false);
 
     const analysis = useMemo(() => analyzeCron(expression), [expression]);
@@ -30,19 +32,11 @@ export default function CronGuru() {
 
     return (
         <CyberShell>
-            <Head title="Cron Guru" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <CalendarClock size={18} />
-                            DEV_TOOL_04 // CRON_GURU
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Cron <span className="glow-text text-primary">Guru</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="cron-guru"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={copyExpression} className="cyber-tool-button">
                             <Clipboard size={15} /> {copied ? 'Copied' : 'Copy'}
@@ -51,7 +45,8 @@ export default function CronGuru() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
                     <div className="space-y-6">

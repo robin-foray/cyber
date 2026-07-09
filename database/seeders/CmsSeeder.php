@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\DeploymentStep;
+use App\Models\DevToolPage;
 use App\Models\HeroContent;
 use App\Models\HomeConsoleContent;
 use App\Models\NavigationItem;
+use App\Models\PageSection;
 use App\Models\SiteSetting;
 use App\Models\SkillMetric;
 use App\Models\SocialLink;
@@ -99,7 +101,50 @@ class CmsSeeder extends Seeder
             ['key' => 'welcome_page_title', 'value' => 'Neural Dev Dashboard', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'integrity_section_title', 'value' => 'Integrity_Check', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'stacks_section_title', 'value' => 'STACKS_PROTOCOL', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'stacks_heading_prefix', 'value' => 'Tech', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'stacks_heading_accent', 'value' => 'Stack', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'stacks_panel_hint', 'value' => 'live module registry // click a cell to open stack telemetry', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'topbar_terminal', 'value' => 'TERMINAL', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'topbar_dev_tools', 'value' => 'DEV_TOOLS', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'topbar_access_gate', 'value' => 'ACCESS_GATE', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'topbar_node_registration', 'value' => 'NODE_REGISTRATION', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'topbar_profile', 'value' => 'PROFILE', 'created_at' => now(), 'updated_at' => now()],
         ]);
+
+        $devToolPages = [
+            ['slug' => 'console', 'header_label' => 'DEV_TOOL_01 // JSON_FORMATTER', 'page_title' => 'JSON Formatter', 'heading_prefix' => 'JSON', 'heading_accent' => 'Formatter', 'sample_input' => '{"node":"foray-core","status":"sync","tools":["json_formatter","runtime_probe"],"payload":{"latency":0.4,"verified":true}}', 'icon' => 'FileJson2', 'sort_order' => 1],
+            ['slug' => 'runtime', 'header_label' => 'DEV_TOOL_02 // PAYLOAD_CODEC', 'page_title' => 'Runtime Codec', 'heading_prefix' => 'Runtime', 'heading_accent' => 'Codec', 'sample_input' => 'eyJub2RlIjoiZm9yYXktcnVudGltZSIsInN0YXR1cyI6Im9ubGluZSJ9', 'icon' => 'Binary', 'sort_order' => 2],
+            ['slug' => 'hash-generator', 'header_label' => 'DEV_TOOL_03 // HASH_GENERATOR', 'page_title' => 'Hash Generator', 'heading_prefix' => 'Hash', 'heading_accent' => 'Generator', 'sample_input' => 'foray-admin-node', 'icon' => 'Fingerprint', 'sort_order' => 3],
+            ['slug' => 'qr-generator', 'header_label' => 'DEV_TOOL_04 // QR_GENERATOR', 'page_title' => 'QR Generator', 'heading_prefix' => 'QR', 'heading_accent' => 'Generator', 'sample_input' => 'https://foray.local/dev-tools', 'icon' => 'QrCode', 'sort_order' => 4],
+            ['slug' => 'cron-guru', 'header_label' => 'DEV_TOOL_05 // CRON_GURU', 'page_title' => 'Cron Guru', 'heading_prefix' => 'Cron', 'heading_accent' => 'Guru', 'sample_input' => '*/15 9-17 * * 1-5', 'icon' => 'CalendarClock', 'sort_order' => 5],
+            ['slug' => 'image-compressor', 'header_label' => 'DEV_TOOL_06 // IMAGE_COMPRESSOR', 'page_title' => 'Image Compressor', 'heading_prefix' => 'Image', 'heading_accent' => 'Compressor', 'sample_input' => null, 'icon' => 'ImageDown', 'sort_order' => 6],
+            ['slug' => 'deployments', 'header_label' => 'DEPLOYMENT_PROTOCOL', 'page_title' => 'Deployments', 'heading_prefix' => null, 'heading_accent' => null, 'sample_input' => null, 'icon' => 'Rocket', 'sort_order' => 7],
+        ];
+
+        foreach ($devToolPages as $page) {
+            DevToolPage::query()->create($page + ['is_active' => true]);
+        }
+
+        foreach ([
+            [
+                'slug' => 'projects',
+                'section_label' => 'PROJECTS_PROTOCOL',
+                'title' => 'Active',
+                'title_accent' => 'Deployments',
+                'body' => 'Pipeline snapshots and release nodes will surface here as the project archive grows.',
+                'sort_order' => 1,
+            ],
+            [
+                'slug' => 'logs',
+                'section_label' => 'SYSTEM_LOGS',
+                'title' => 'Neural',
+                'title_accent' => 'Telemetry',
+                'body' => 'Runtime traces, build events, and operator notes will stream into this channel.',
+                'sort_order' => 2,
+            ],
+        ] as $section) {
+            PageSection::query()->create($section + ['is_active' => true]);
+        }
 
         $devTools = NavigationItem::query()->create([
             'label' => 'DEV_TOOLS',

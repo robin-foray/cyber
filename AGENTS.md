@@ -89,7 +89,9 @@ Content is database-driven and shared via Inertia `cms` prop (see `ContentServic
 | Tech stack | Welcome stacks grid |
 | Ticker üzenetek | Topbar + footer tickers |
 | Deployment lépések | Deployments dev-tool page |
-| Oldal beállítások | Page titles, copyright |
+| Dev-tool oldalak | Dev-tool fejlécek, címek, minta input |
+| Oldal szekciók | PROJECTS / SYSTEM_LOGS anchor szekciók |
+| Oldal beállítások | Page titles, copyright, topbar labels, stacks copy |
 
 Seed default content: `php artisan db:seed --class=CmsSeeder`
 Default admin: `admin@foray.local` / `password`
@@ -116,6 +118,7 @@ Default admin: `admin@foray.local` / `password`
 | Path | Purpose |
 |------|---------|
 | `.cursor/rules/` | Auto-applied coding rules per stack area |
+| `.cursor/rules/filament-cms.mdc` | Filament + CMS requirements for new features |
 | `.cursor/skills/` | Step-by-step workflows for common tasks |
 | `.cursor/mcp.json.example` | Recommended MCP servers (copy & configure locally) |
 
@@ -123,4 +126,4 @@ Default admin: `admin@foray.local` / `password`
 
 - `profile.update` route name exists in both `web.php` and `settings.php` — settings wins (loaded last)
 - `tests/Pest.php` exists but Pest is not a dependency — use PHPUnit
-- Deployments dev-tool is static UI only (no lib/backend)
+- Deployments dev-tool content is CMS-managed via `DeploymentStepResource`

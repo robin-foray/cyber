@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\DeploymentStep;
+use App\Models\DevToolPage;
 use App\Models\HeroContent;
 use App\Models\HomeConsoleContent;
 use App\Models\NavigationItem;
+use App\Models\PageSection;
 use App\Models\SiteSetting;
 use App\Models\SkillMetric;
 use App\Models\SocialLink;
@@ -40,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
             TickerMessage::class,
             SocialLink::class,
             DeploymentStep::class,
+            DevToolPage::class,
+            PageSection::class,
             SiteSetting::class,
         ] as $model) {
             $model::saved($flush);

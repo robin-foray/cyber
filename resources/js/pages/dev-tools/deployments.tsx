@@ -1,19 +1,17 @@
 import CyberShell from '@/components/cyber-shell';
-import { Head, usePage } from '@inertiajs/react';
-import { Rocket } from 'lucide-react';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { type SharedData } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 
 export default function Deployments() {
     const { cms } = usePage<SharedData>().props;
+    const page = useDevToolPage('deployments');
 
     return (
         <CyberShell>
-            <Head title="Deployments" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
-                <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                    <Rocket size={18} />
-                    DEPLOYMENT_PROTOCOL
-                </div>
+                <DevToolPageHeader slug="deployments" />
                 <div className="grid gap-3">
                     {cms.deploymentSteps.map((item, index) => (
                         <div key={item} className="flex items-center gap-4 rounded-2xl border border-white/5 bg-black/45 p-4">

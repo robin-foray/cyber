@@ -23,6 +23,10 @@ class CmsContentTest extends TestCase
         $this->assertCount(10, $payload['stacks']);
         $this->assertNotEmpty($payload['tickers']['topbar']);
         $this->assertNotEmpty($payload['deploymentSteps']);
+        $this->assertArrayHasKey('console', $payload['devToolPages']);
+        $this->assertSame('DEV_TOOL_01 // JSON_FORMATTER', $payload['devToolPages']['console']['headerLabel']);
+        $this->assertCount(2, $payload['pageSections']);
+        $this->assertSame('TERMINAL', $payload['topbarLabels']['terminal']);
     }
 
     public function test_authenticated_admin_can_open_filament_dashboard(): void

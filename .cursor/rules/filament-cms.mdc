@@ -64,4 +64,6 @@ For dev-tools: create child under the `DEV_TOOLS` parent (`parent_id`).
 - `NavigationItemResource` — menu tree
 - `StackTechnologyResource` — repeatable cards with JSON bullets
 - `DeploymentStepResource` — simple ordered list
-- `SiteSettingResource` — key-value page copy
+- `DevToolPageResource` — per dev-tool page copy (header, title, sample input)
+- `PageSectionResource` — welcome anchor sections (`#projects`, `#logs`)
+- `SiteSettingResource` — key-value page copy (topbar labels, stacks hint)

@@ -1,6 +1,6 @@
 import CyberShell from '@/components/cyber-shell';
 import { resolveCmsIcon } from '@/lib/cms-icons';
-import { type CmsStack, type SharedData } from '@/types';
+import { type CmsPageSection, type CmsStack, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Database, ExternalLink, Layers, Play, X } from 'lucide-react';
 import { Fragment, type ReactNode, useState } from 'react';
@@ -10,6 +10,9 @@ export default function Welcome() {
     const pageTitle = cms.settings.welcome_page_title ?? 'Neural Dev Dashboard';
     const integrityTitle = cms.settings.integrity_section_title ?? 'Integrity_Check';
     const stacksTitle = cms.settings.stacks_section_title ?? 'STACKS_PROTOCOL';
+    const stacksHeadingPrefix = cms.settings.stacks_heading_prefix ?? 'Tech';
+    const stacksHeadingAccent = cms.settings.stacks_heading_accent ?? 'Stack';
+    const stacksPanelHint = cms.settings.stacks_panel_hint ?? 'live module registry // click a cell to open stack telemetry';
 
     return (
         <>
@@ -85,13 +88,33 @@ export default function Welcome() {
                     </section>
                 </div>
 
-                <StacksSection stacks={cms.stacks} sectionTitle={stacksTitle} />
+                <StacksSection
+                    stacks={cms.stacks}
+                    sectionTitle={stacksTitle}
+                    headingPrefix={stacksHeadingPrefix}
+                    headingAccent={stacksHeadingAccent}
+                    panelHint={stacksPanelHint}
+                />
+
+                <PageSections sections={cms.pageSections} />
             </CyberShell>
         </>
     );
 }
 
-function StacksSection({ stacks, sectionTitle }: { stacks: CmsStack[]; sectionTitle: string }) {
+function StacksSection({
+    stacks,
+    sectionTitle,
+    headingPrefix,
+    headingAccent,
+    panelHint,
+}: {
+    stacks: CmsStack[];
+    sectionTitle: string;
+    headingPrefix: string;
+    headingAccent: string;
+    panelHint: string;
+}) {
     const [activeStack, setActiveStack] = useState<CmsStack | null>(null);
 
     return (
@@ -106,11 +129,11 @@ function StacksSection({ stacks, sectionTitle }: { stacks: CmsStack[]; sectionTi
                         {sectionTitle}
                     </div>
                     <h2 className="font-display text-3xl font-bold tracking-normal text-white uppercase md:text-5xl">
-                        Tech <span className="glow-text text-primary">Stack</span>
+                        {headingPrefix} <span className="glow-text text-primary">{headingAccent}</span>
                     </h2>
                 </div>
                 <div className="max-w-md border-l border-primary/20 pl-4 text-[10px] leading-5 font-bold tracking-widest text-on-surface-variant uppercase">
-                    live module registry // click a cell to open stack telemetry
+                    {panelHint}
                 </div>
             </div>
 
@@ -227,6 +250,34 @@ function StackDetails({ activeStack, onClose, className = '' }: { activeStack: C
             >
                 open_docs <ExternalLink size={12} />
             </a>
+        </div>
+    );
+}
+
+function PageSections({ sections }: { sections: CmsPageSection[] }) {
+    if (sections.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {sections.map((section) => (
+                <section
+                    key={section.slug}
+                    id={section.slug}
+                    className="cyber-grid scroll-mt-28 rounded-3xl border border-white/5 bg-surface p-8"
+                >
+                    <div className="mb-6 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
+                        <div className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_10px_#ccff00]" />
+                        {section.sectionLabel}
+                    </div>
+                    <h2 className="font-display text-3xl font-bold text-white uppercase">
+                        {section.title}{' '}
+                        {section.titleAccent && <span className="glow-text text-primary">{section.titleAccent}</span>}
+                    </h2>
+                    {section.body && <p className="mt-4 text-sm leading-7 text-on-surface-variant">{section.body}</p>}
+                </section>
+            ))}
         </div>
     );
 }

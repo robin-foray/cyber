@@ -11,7 +11,7 @@ type CyberTopbarProps = {
 
 export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSidebar }: CyberTopbarProps) {
     const { cms } = usePage<SharedData>().props;
-    const sectionLabel = getSectionLabel(currentUrl);
+    const sectionLabel = getSectionLabel(currentUrl, cms.topbarLabels);
     const tickerItems = [...cms.tickers.topbar, ...cms.tickers.topbar];
 
     return (
@@ -54,24 +54,24 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
     );
 }
 
-function getSectionLabel(currentUrl: string) {
+function getSectionLabel(currentUrl: string, labels: SharedData['cms']['topbarLabels']) {
     const path = currentUrl.split('?')[0].split('#')[0];
 
     if (path.startsWith('/dev-tools')) {
-        return 'DEV_TOOLS';
+        return labels.devTools;
     }
 
     if (path.startsWith('/login')) {
-        return 'ACCESS_GATE';
+        return labels.accessGate;
     }
 
     if (path.startsWith('/register')) {
-        return 'NODE_REGISTRATION';
+        return labels.nodeRegistration;
     }
 
     if (path.startsWith('/profile')) {
-        return 'PROFILE';
+        return labels.profile;
     }
 
-    return 'TERMINAL';
+    return labels.terminal;
 }

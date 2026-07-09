@@ -1,11 +1,13 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Download, Eraser, LoaderCircle, QrCode, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function QrGenerator() {
-    const [value, setValue] = useState('https://foray.local/dev-tools');
+    const page = useDevToolPage('qr-generator');
+    const [value, setValue] = useState(page.sampleInput ?? '');
     const [size, setSize] = useState(320);
     const [margin, setMargin] = useState(2);
     const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<QrErrorCorrectionLevel>('M');
@@ -70,19 +72,11 @@ export default function QrGenerator() {
 
     return (
         <CyberShell>
-            <Head title="QR Generator" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <QrCode size={18} />
-                            DEV_TOOL_04 // QR_GENERATOR
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            QR <span className="glow-text text-primary">Generator</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="qr-generator"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
                             {processing ? <LoaderCircle size={15} className="animate-spin" /> : <QrCode size={15} />}
@@ -98,7 +92,8 @@ export default function QrGenerator() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Chars" value={String(telemetry.chars)} />

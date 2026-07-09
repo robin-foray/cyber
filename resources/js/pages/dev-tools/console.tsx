@@ -1,13 +1,13 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { formatJson, inspectJson, type FormatMode } from '@/lib/json-formatter';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Database, Eraser, FileJson2, Minimize2, Terminal, Wand2, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Database, Eraser, Minimize2, Terminal, Wand2, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-const sampleJson = `{"node":"foray-core","status":"sync","tools":["json_formatter","runtime_probe"],"payload":{"latency":0.4,"verified":true}}`;
-
 export default function Console() {
-    const [input, setInput] = useState(sampleJson);
+    const page = useDevToolPage('console');
+    const [input, setInput] = useState(page.sampleInput ?? '');
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
     const [mode, setMode] = useState<FormatMode>('pretty');
@@ -46,19 +46,11 @@ export default function Console() {
 
     return (
         <CyberShell>
-            <Head title="JSON Formatter" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <FileJson2 size={18} />
-                            DEV_TOOL_01 // JSON_FORMATTER
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            JSON <span className="glow-text text-primary">Formatter</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="console"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={() => formatJsonBuffer('pretty')} className="cyber-tool-button">
                             <Wand2 size={15} /> Pretty
@@ -73,7 +65,8 @@ export default function Console() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 lg:grid-cols-4">
                     <StatusTile label="Parse_State" value={error ? 'INVALID' : isValid ? 'VALID' : 'IDLE'} tone={error ? 'bad' : isValid ? 'good' : 'idle'} />

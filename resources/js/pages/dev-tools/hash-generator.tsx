@@ -1,14 +1,16 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Eraser, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 type HashMode = 'sha256' | 'bcrypt';
 
 export default function HashGenerator() {
+    const page = useDevToolPage('hash-generator');
     const [mode, setMode] = useState<HashMode>('sha256');
-    const [input, setInput] = useState('foray-admin-node');
+    const [input, setInput] = useState(page.sampleInput ?? '');
     const [rounds, setRounds] = useState(12);
     const [hash, setHash] = useState('');
     const [verifyHash, setVerifyHash] = useState('');
@@ -94,19 +96,11 @@ export default function HashGenerator() {
 
     return (
         <CyberShell>
-            <Head title="Hash Generator" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <Fingerprint size={18} />
-                            DEV_TOOL_03 // HASH_GENERATOR
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Hash <span className="glow-text text-primary">Generator</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="hash-generator"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
                             {processing ? <LoaderCircle size={15} className="animate-spin" /> : <Hash size={15} />}
@@ -122,7 +116,8 @@ export default function HashGenerator() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Mode" value={telemetry.mode} />

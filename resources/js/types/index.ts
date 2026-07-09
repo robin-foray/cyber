@@ -111,5 +111,33 @@ export interface CmsContent {
     };
     socialLinks: CmsSocialLink[];
     deploymentSteps: string[];
+    devToolPages: Record<string, CmsDevToolPage>;
+    pageSections: CmsPageSection[];
+    topbarLabels: CmsTopbarLabels;
     settings: Record<string, string>;
+}
+
+export interface CmsDevToolPage {
+    headerLabel: string;
+    pageTitle: string;
+    headingPrefix: string | null;
+    headingAccent: string | null;
+    sampleInput: string | null;
+    icon: string | null;
+}
+
+export interface CmsPageSection {
+    slug: string;
+    sectionLabel: string;
+    title: string;
+    titleAccent: string | null;
+    body: string | null;
+}
+
+export interface CmsTopbarLabels {
+    terminal: string;
+    devTools: string;
+    accessGate: string;
+    nodeRegistration: string;
+    profile: string;
 }

@@ -3,15 +3,16 @@
 namespace App\Services;
 
 use App\Models\DeploymentStep;
+use App\Models\DevToolPage;
 use App\Models\HeroContent;
 use App\Models\HomeConsoleContent;
 use App\Models\NavigationItem;
+use App\Models\PageSection;
 use App\Models\SiteSetting;
 use App\Models\SkillMetric;
 use App\Models\SocialLink;
 use App\Models\StackTechnology;
 use App\Models\TickerMessage;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
@@ -32,6 +33,9 @@ class ContentService
                 ],
                 'socialLinks' => $this->socialLinks(),
                 'deploymentSteps' => $this->deploymentSteps(),
+                'devToolPages' => $this->devToolPages(),
+                'pageSections' => $this->pageSections(),
+                'topbarLabels' => $this->topbarLabels(),
                 'settings' => $this->settings(),
             ];
         });
@@ -193,6 +197,62 @@ class ContentService
         return SiteSetting::query()
             ->pluck('value', 'key')
             ->all();
+    }
+
+    public function devToolPages(): array
+    {
+        if (! Schema::hasTable('dev_tool_pages')) {
+            return [];
+        }
+
+        return DevToolPage::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->mapWithKeys(fn (DevToolPage $page) => [
+                $page->slug => [
+                    'headerLabel' => $page->header_label,
+                    'pageTitle' => $page->page_title,
+                    'headingPrefix' => $page->heading_prefix,
+                    'headingAccent' => $page->heading_accent,
+                    'sampleInput' => $page->sample_input,
+                    'icon' => $page->icon,
+                ],
+            ])
+            ->all();
+    }
+
+    public function pageSections(): array
+    {
+        if (! Schema::hasTable('page_sections')) {
+            return [];
+        }
+
+        return PageSection::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (PageSection $section) => [
+                'slug' => $section->slug,
+                'sectionLabel' => $section->section_label,
+                'title' => $section->title,
+                'titleAccent' => $section->title_accent,
+                'body' => $section->body,
+            ])
+            ->all();
+    }
+
+    public function topbarLabels(): array
+    {
+        $settings = $this->settings();
+
+        return [
+            'terminal' => $settings['topbar_terminal'] ?? 'TERMINAL',
+            'devTools' => $settings['topbar_dev_tools'] ?? 'DEV_TOOLS',
+            'accessGate' => $settings['topbar_access_gate'] ?? 'ACCESS_GATE',
+            'nodeRegistration' => $settings['topbar_node_registration'] ?? 'NODE_REGISTRATION',
+            'profile' => $settings['topbar_profile'] ?? 'PROFILE',
+        ];
     }
 
     private function formatNavigationItem(NavigationItem $item): array

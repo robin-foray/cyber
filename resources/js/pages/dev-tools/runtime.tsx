@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { executeCodec, type CodecMode } from '@/lib/runtime-codec';
 import { Head } from '@inertiajs/react';
 import { Binary, Clipboard, Cpu, Eraser, FileKey2, Link2, ShieldAlert } from 'lucide-react';
@@ -12,11 +13,10 @@ const modes: Array<{ id: CodecMode; label: string; icon: typeof Binary }> = [
     { id: 'jwt-inspect', label: 'JWT Inspect', icon: FileKey2 },
 ];
 
-const samplePayload = 'eyJub2RlIjoiZm9yYXktcnVudGltZSIsInN0YXR1cyI6Im9ubGluZSJ9';
-
 export default function Runtime() {
+    const page = useDevToolPage('runtime');
     const [mode, setMode] = useState<CodecMode>('base64-decode');
-    const [input, setInput] = useState(samplePayload);
+    const [input, setInput] = useState(page.sampleInput ?? '');
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
@@ -58,19 +58,11 @@ export default function Runtime() {
 
     return (
         <CyberShell>
-            <Head title="Runtime Codec" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <Cpu size={18} />
-                            DEV_TOOL_02 // PAYLOAD_CODEC
-                        </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Runtime <span className="glow-text text-primary">Codec</span>
-                        </h1>
-                    </div>
-
+                <DevToolPageHeader
+                    slug="runtime"
+                    actions={
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={() => execute()} className="cyber-tool-button">
                             <Cpu size={15} /> Execute
@@ -82,7 +74,8 @@ export default function Runtime() {
                             <Eraser size={15} /> Clear
                         </button>
                     </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Chars" value={String(telemetry.chars)} />
