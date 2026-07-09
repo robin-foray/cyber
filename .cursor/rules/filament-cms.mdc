@@ -37,7 +37,17 @@ Do not hardcode editable content in React/Blade when it belongs in the CMS.
 4. Register in `AdminPanelProvider` via `discoverResources` (auto)
 5. Wire to frontend via `ContentService` + Inertia `cms` prop
 6. Add model to cache flush list in `AppServiceProvider::boot()`
-7. Seed default row(s) in `CmsSeeder` when applicable
+7. Seed default row(s) in `CmsSeeder` when applicable (use `updateOrCreate` — seeders must be idempotent)
+8. Register new seeders in `DatabaseSeeder` if not covered by `CmsSeeder`
+
+## Production install
+
+```bash
+php artisan foray:install --force
+```
+
+Runs `migrate --force`, `db:seed --force` (`AdminUserSeeder` + `CmsSeeder`), and `cache:clear`.
+Admin credentials: `FORAY_ADMIN_EMAIL`, `FORAY_ADMIN_PASSWORD`, etc. in `.env`.
 
 ## ContentService integration
 

@@ -13,36 +13,61 @@ use App\Models\SkillMetric;
 use App\Models\SocialLink;
 use App\Models\StackTechnology;
 use App\Models\TickerMessage;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class CmsSeeder extends Seeder
 {
     public function run(): void
     {
-        HeroContent::query()->create([
+        $this->seedHero();
+        $this->seedHomeConsole();
+        $this->seedSkillMetrics();
+        $this->seedStackTechnologies();
+        $this->seedTickerMessages();
+        $this->seedSocialLinks();
+        $this->seedDeploymentSteps();
+        $this->seedSiteSettings();
+        $this->seedDevToolPages();
+        $this->seedPageSections();
+        $this->seedNavigation();
+    }
+
+    private function seedHero(): void
+    {
+        $this->upsertSingleton(HeroContent::class, [
             'badge' => 'Deployment Protocol // Archive_01',
             'title_line' => 'Architecting the',
             'title_accent' => 'Digital Future',
             'cta_label' => 'LAUNCH_CORE',
             'background_image' => '/assets/hero-cyber-archer.png',
         ]);
+    }
 
-        HomeConsoleContent::query()->create([
+    private function seedHomeConsole(): void
+    {
+        $this->upsertSingleton(HomeConsoleContent::class, [
             'section_label' => 'DEV_TOOLS_CONSOLE',
             'input_sample' => '{ "node": "0x4a2b", "status": "sync" }',
             'output_sample' => '{ "verified": true, "latency": "0.4ms" }',
         ]);
+    }
 
+    private function seedSkillMetrics(): void
+    {
         foreach ([
             ['label' => 'REACT_ECOSYSTEM', 'progress' => 92, 'sort_order' => 1],
             ['label' => 'LARAVEL_RUNTIME', 'progress' => 88, 'sort_order' => 2],
             ['label' => 'NODE_PIPELINE', 'progress' => 75, 'sort_order' => 3],
         ] as $skill) {
-            SkillMetric::query()->create($skill + ['is_active' => true]);
+            SkillMetric::query()->updateOrCreate(
+                ['label' => $skill['label']],
+                $skill + ['is_active' => true],
+            );
         }
+    }
 
+    private function seedStackTechnologies(): void
+    {
         $stacks = [
             ['name' => 'Laravel', 'signal' => 'runtime_core', 'summary' => 'Backend orchestration, routing, auth and API layer for the neural dashboard shell.', 'bullets' => ['Inertia gateway', 'secure routing', 'server-rendered payloads'], 'docs_url' => 'https://laravel.com/docs', 'icon' => 'Server', 'sort_order' => 1],
             ['name' => 'React', 'signal' => 'interface_layer', 'summary' => 'Interactive UI surface with stateful panels, responsive sidebar logic and smooth component updates.', 'bullets' => ['component grid', 'stateful details', 'client-side interactions'], 'docs_url' => 'https://react.dev', 'icon' => 'Code2', 'sort_order' => 2],
@@ -57,9 +82,15 @@ class CmsSeeder extends Seeder
         ];
 
         foreach ($stacks as $stack) {
-            StackTechnology::query()->create($stack + ['is_active' => true]);
+            StackTechnology::query()->updateOrCreate(
+                ['name' => $stack['name']],
+                $stack + ['is_active' => true],
+            );
         }
+    }
 
+    private function seedTickerMessages(): void
+    {
         foreach ([
             ['location' => 'topbar', 'text' => '// build: stable', 'is_highlighted' => false, 'sort_order' => 1],
             ['location' => 'topbar', 'text' => 'npm_run_dev --watch', 'is_highlighted' => true, 'sort_order' => 2],
@@ -71,47 +102,71 @@ class CmsSeeder extends Seeder
             ['location' => 'footer', 'text' => 'admin_gate armed', 'is_highlighted' => false, 'sort_order' => 3],
             ['location' => 'footer', 'text' => 'register_core ready', 'is_highlighted' => true, 'sort_order' => 4],
         ] as $ticker) {
-            TickerMessage::query()->create($ticker + ['is_active' => true]);
+            TickerMessage::query()->updateOrCreate(
+                ['location' => $ticker['location'], 'sort_order' => $ticker['sort_order']],
+                $ticker + ['is_active' => true],
+            );
         }
+    }
 
+    private function seedSocialLinks(): void
+    {
         foreach ([
             ['platform' => 'Github', 'url' => null, 'sort_order' => 1],
             ['platform' => 'Twitter', 'url' => null, 'sort_order' => 2],
             ['platform' => 'Instagram', 'url' => null, 'sort_order' => 3],
             ['platform' => 'Facebook', 'url' => null, 'sort_order' => 4],
         ] as $social) {
-            SocialLink::query()->create($social + ['is_active' => true]);
+            SocialLink::query()->updateOrCreate(
+                ['platform' => $social['platform']],
+                $social + ['is_active' => true],
+            );
         }
+    }
 
+    private function seedDeploymentSteps(): void
+    {
         foreach ([
             'archive_01 prepared',
             'manifest synced',
             'assets compiled',
             'queue clear',
         ] as $index => $label) {
-            DeploymentStep::query()->create([
-                'label' => $label,
-                'sort_order' => $index + 1,
-                'is_active' => true,
-            ]);
+            DeploymentStep::query()->updateOrCreate(
+                ['label' => $label],
+                ['sort_order' => $index + 1, 'is_active' => true],
+            );
         }
+    }
 
-        SiteSetting::query()->insert([
-            ['key' => 'footer_copyright', 'value' => '(c)2026 DEV_HUB_CORE.', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'welcome_page_title', 'value' => 'Neural Dev Dashboard', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'integrity_section_title', 'value' => 'Integrity_Check', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'stacks_section_title', 'value' => 'STACKS_PROTOCOL', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'stacks_heading_prefix', 'value' => 'Tech', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'stacks_heading_accent', 'value' => 'Stack', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'stacks_panel_hint', 'value' => 'live module registry // click a cell to open stack telemetry', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'topbar_terminal', 'value' => 'TERMINAL', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'topbar_dev_tools', 'value' => 'DEV_TOOLS', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'topbar_access_gate', 'value' => 'ACCESS_GATE', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'topbar_node_registration', 'value' => 'NODE_REGISTRATION', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'topbar_profile', 'value' => 'PROFILE', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+    private function seedSiteSettings(): void
+    {
+        $settings = [
+            'footer_copyright' => '(c)2026 DEV_HUB_CORE.',
+            'welcome_page_title' => 'Neural Dev Dashboard',
+            'integrity_section_title' => 'Integrity_Check',
+            'stacks_section_title' => 'STACKS_PROTOCOL',
+            'stacks_heading_prefix' => 'Tech',
+            'stacks_heading_accent' => 'Stack',
+            'stacks_panel_hint' => 'live module registry // click a cell to open stack telemetry',
+            'topbar_terminal' => 'TERMINAL',
+            'topbar_dev_tools' => 'DEV_TOOLS',
+            'topbar_access_gate' => 'ACCESS_GATE',
+            'topbar_node_registration' => 'NODE_REGISTRATION',
+            'topbar_profile' => 'PROFILE',
+        ];
 
-        $devToolPages = [
+        foreach ($settings as $key => $value) {
+            SiteSetting::query()->updateOrCreate(
+                ['key' => $key],
+                ['value' => $value],
+            );
+        }
+    }
+
+    private function seedDevToolPages(): void
+    {
+        $pages = [
             ['slug' => 'console', 'header_label' => 'DEV_TOOL_01 // JSON_FORMATTER', 'page_title' => 'JSON Formatter', 'heading_prefix' => 'JSON', 'heading_accent' => 'Formatter', 'sample_input' => '{"node":"foray-core","status":"sync","tools":["json_formatter","runtime_probe"],"payload":{"latency":0.4,"verified":true}}', 'icon' => 'FileJson2', 'sort_order' => 1],
             ['slug' => 'runtime', 'header_label' => 'DEV_TOOL_02 // PAYLOAD_CODEC', 'page_title' => 'Runtime Codec', 'heading_prefix' => 'Runtime', 'heading_accent' => 'Codec', 'sample_input' => 'eyJub2RlIjoiZm9yYXktcnVudGltZSIsInN0YXR1cyI6Im9ubGluZSJ9', 'icon' => 'Binary', 'sort_order' => 2],
             ['slug' => 'hash-generator', 'header_label' => 'DEV_TOOL_03 // HASH_GENERATOR', 'page_title' => 'Hash Generator', 'heading_prefix' => 'Hash', 'heading_accent' => 'Generator', 'sample_input' => 'foray-admin-node', 'icon' => 'Fingerprint', 'sort_order' => 3],
@@ -121,10 +176,16 @@ class CmsSeeder extends Seeder
             ['slug' => 'deployments', 'header_label' => 'DEPLOYMENT_PROTOCOL', 'page_title' => 'Deployments', 'heading_prefix' => null, 'heading_accent' => null, 'sample_input' => null, 'icon' => 'Rocket', 'sort_order' => 7],
         ];
 
-        foreach ($devToolPages as $page) {
-            DevToolPage::query()->create($page + ['is_active' => true]);
+        foreach ($pages as $page) {
+            DevToolPage::query()->updateOrCreate(
+                ['slug' => $page['slug']],
+                $page + ['is_active' => true],
+            );
         }
+    }
 
+    private function seedPageSections(): void
+    {
         foreach ([
             [
                 'slug' => 'projects',
@@ -143,19 +204,42 @@ class CmsSeeder extends Seeder
                 'sort_order' => 2,
             ],
         ] as $section) {
-            PageSection::query()->create($section + ['is_active' => true]);
+            PageSection::query()->updateOrCreate(
+                ['slug' => $section['slug']],
+                $section + ['is_active' => true],
+            );
+        }
+    }
+
+    private function seedNavigation(): void
+    {
+        $topLevel = [
+            ['label' => 'TERMINAL', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'PROJECTS', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 3, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'SYSTEM_LOGS', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 4, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'PROFILE', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 5, 'requires_auth' => true, 'is_group' => false],
+        ];
+
+        foreach ($topLevel as $item) {
+            NavigationItem::query()->updateOrCreate(
+                ['label' => $item['label'], 'parent_id' => null],
+                $item + ['is_active' => true],
+            );
         }
 
-        $devTools = NavigationItem::query()->create([
-            'label' => 'DEV_TOOLS',
-            'href' => null,
-            'icon' => 'Construction',
-            'sort_order' => 2,
-            'is_active' => true,
-            'is_group' => true,
-        ]);
+        $devTools = NavigationItem::query()->updateOrCreate(
+            ['label' => 'DEV_TOOLS', 'parent_id' => null],
+            [
+                'href' => null,
+                'icon' => 'Construction',
+                'sort_order' => 2,
+                'is_active' => true,
+                'is_group' => true,
+                'requires_auth' => false,
+            ],
+        );
 
-        $devToolLinks = [
+        foreach ([
             ['label' => 'CONSOLE', 'href' => '/dev-tools/console', 'sort_order' => 1],
             ['label' => 'RUNTIME', 'href' => '/dev-tools/runtime', 'sort_order' => 2],
             ['label' => 'HASH_GENERATOR', 'href' => '/dev-tools/hash-generator', 'sort_order' => 3],
@@ -163,34 +247,35 @@ class CmsSeeder extends Seeder
             ['label' => 'CRON_GURU', 'href' => '/dev-tools/cron-guru', 'sort_order' => 5],
             ['label' => 'IMAGE_COMPRESSOR', 'href' => '/dev-tools/image-compressor', 'sort_order' => 6],
             ['label' => 'DEPLOYMENTS', 'href' => '/dev-tools/deployments', 'sort_order' => 7],
-        ];
+        ] as $link) {
+            NavigationItem::query()->updateOrCreate(
+                ['href' => $link['href']],
+                [
+                    'parent_id' => $devTools->id,
+                    'label' => $link['label'],
+                    'sort_order' => $link['sort_order'],
+                    'is_active' => true,
+                    'requires_auth' => false,
+                    'is_group' => false,
+                ],
+            );
+        }
+    }
 
-        foreach ($devToolLinks as $link) {
-            NavigationItem::query()->create([
-                'parent_id' => $devTools->id,
-                'label' => $link['label'],
-                'href' => $link['href'],
-                'sort_order' => $link['sort_order'],
-                'is_active' => true,
-            ]);
+    /**
+     * @param  class-string  $model
+     * @param  array<string, mixed>  $attributes
+     */
+    private function upsertSingleton(string $model, array $attributes): void
+    {
+        $record = $model::query()->first();
+
+        if ($record) {
+            $record->update($attributes);
+
+            return;
         }
 
-        NavigationItem::query()->insert([
-            ['label' => 'TERMINAL', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'is_active' => true, 'requires_auth' => false, 'is_group' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['label' => 'PROJECTS', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 3, 'is_active' => true, 'requires_auth' => false, 'is_group' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['label' => 'SYSTEM_LOGS', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 4, 'is_active' => true, 'requires_auth' => false, 'is_group' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['label' => 'PROFILE', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 5, 'is_active' => true, 'requires_auth' => true, 'is_group' => false, 'created_at' => now(), 'updated_at' => now()],
-        ]);
-
-        User::query()->updateOrCreate(
-            ['email' => 'admin@foray.local'],
-            [
-                'name' => 'Root Operator',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'title' => 'Root Operator',
-                'avatar_seed' => 'root-operator',
-            ],
-        );
+        $model::query()->create($attributes);
     }
 }

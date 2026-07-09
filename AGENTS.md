@@ -10,7 +10,7 @@ composer install
 npm ci
 php artisan key:generate
 touch database/database.sqlite
-php artisan migrate
+php artisan foray:install
 composer run dev   # php artisan serve + queue + pail + vite
 ```
 
@@ -62,7 +62,8 @@ Every new public function **must** include:
 1. **Filament admin** — model, migration, Resource (or extend existing CMS). See `.cursor/rules/filament-cms.mdc`
 2. **Tests** — PHPUnit (routes, CMS/ContentService, API); Vitest for client lib logic
 3. **ContentService** — if data appears on the frontend, expose via `cms` Inertia prop
-4. **CmsSeeder** — seed default content for new CMS models
+4. **CmsSeeder** — seed default content for new CMS models (idempotent `updateOrCreate`)
+5. **AdminUserSeeder** — default admin from `config/foray.php` / `FORAY_ADMIN_*` env vars
 
 A feature is **not complete** without Filament + tests.
 
@@ -93,8 +94,10 @@ Content is database-driven and shared via Inertia `cms` prop (see `ContentServic
 | Oldal szekciók | PROJECTS / SYSTEM_LOGS anchor szekciók |
 | Oldal beállítások | Page titles, copyright, topbar labels, stacks copy |
 
-Seed default content: `php artisan db:seed --class=CmsSeeder`
-Default admin: `admin@foray.local` / `password`
+Seed default content: `php artisan foray:install` (or `php artisan db:seed`)
+Default admin: `admin@foray.local` / `password` (override with `FORAY_ADMIN_*` in `.env`)
+
+Production: `php artisan foray:install --force` after `composer install --no-dev` and `npm run build`.
 
 ## Testing conventions
 

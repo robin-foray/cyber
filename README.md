@@ -16,11 +16,23 @@ composer install
 npm ci
 php artisan key:generate
 touch database/database.sqlite
-php artisan migrate
+php artisan foray:install
 composer run dev
 ```
 
 Visit `http://localhost:8000`.
+
+## Production deploy
+
+```bash
+cp .env.example .env
+# Set APP_KEY, FORAY_ADMIN_PASSWORD, DB_*, APP_URL, etc.
+composer install --no-dev
+npm ci && npm run build
+php artisan foray:install --force
+```
+
+`foray:install` runs migrations, seeds all CMS content + admin user, and clears cache. Safe to re-run — seeders are idempotent.
 
 ## Dev tools
 
@@ -62,11 +74,10 @@ Copy `.cursor/mcp.json.example` to `.cursor/mcp.json` and add your tokens in Cur
 Content is editable at `/admin` (admin users only).
 
 ```bash
-php artisan migrate
-php artisan db:seed --class=CmsSeeder
+php artisan foray:install
 ```
 
-Default admin: `admin@foray.local` / `password`
+Default admin (override via `FORAY_ADMIN_*` in `.env`): `admin@foray.local` / `password`
 
 Manage navigation, hero, stacks, tickers, social links, and deployment steps from the admin panel.
 
