@@ -1,0 +1,59 @@
+---
+description: React, Inertia, and TypeScript frontend conventions
+globs: "resources/js/**/*.{tsx,ts}"
+alwaysApply: false
+---
+
+# React / Inertia Frontend Rules
+
+## Pages
+
+- One default-exported component per file in `resources/js/pages/`
+- Path mirrors Inertia name: `dev-tools/console` → `pages/dev-tools/console.tsx`
+- Always set `<Head title="..." />` from `@inertiajs/react`
+
+## Cyber dev-tool page template
+
+```tsx
+import CyberShell from '@/components/cyber-shell';
+import { Head } from '@inertiajs/react';
+
+export default function ExampleTool() {
+    return (
+        <CyberShell>
+            <Head title="Example Tool" />
+            <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 ...">
+                {/* DEV_TOOL_XX // LABEL header, dual-pane input/output, cyber-tool-button actions */}
+            </section>
+        </CyberShell>
+    );
+}
+```
+
+## State & forms
+
+- Local UI state: `useState`, derived values: `useMemo`
+- Server mutations: `useForm` from `@inertiajs/react`
+- Shared props: `usePage<SharedData>()`
+- Routes: global `route()` from Ziggy
+
+## Logic separation
+
+Put pure functions in `resources/js/lib/<name>.ts`. Pages should be thin UI wrappers.
+
+## Styling
+
+- Cyber pages: Tailwind + cyber classes (`.cyber-tool-button`, `.cyber-input`, `.glow-text`)
+- Admin/settings: shadcn `ui/*` + `cn()` from `@/lib/utils`
+- Icons: `lucide-react`
+- Dark mode: `use-appearance` hook — do not bypass
+
+## Types
+
+- Shared types in `resources/js/types/index.ts`
+- Page-local types defined in the page file
+- Export types from lib modules when reused
+
+## Server fetch from dev-tools
+
+Use CSRF token from `<meta name="csrf-token">` for POST requests to Laravel JSON endpoints (see `hash-generator.tsx`).

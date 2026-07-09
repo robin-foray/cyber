@@ -1,0 +1,65 @@
+---
+description: Rules for adding or modifying dev-tools in the Foray cyber toolkit
+globs: "{resources/js/pages/dev-tools/**,resources/js/lib/**,app/Http/Controllers/DevTools/**}"
+alwaysApply: false
+---
+
+# Dev-Tools Rules
+
+## Decision: client vs server
+
+| Need | Approach |
+|------|----------|
+| Pure transform/parse (JSON, base64, cron, QR) | Client lib only |
+| Web Crypto API (SHA-256) | Client lib only |
+| Canvas/file processing | Client lib + browser APIs |
+| Laravel `Hash::`, DB, secrets | Server controller + JSON API |
+
+Default to **client-only** unless PHP is strictly required.
+
+## Checklist for a new dev-tool
+
+1. `resources/js/lib/<tool>.ts` — pure functions, exported types
+2. `resources/js/lib/<tool>.test.ts` — Vitest unit tests
+3. `resources/js/pages/dev-tools/<tool>.tsx` — CyberShell UI
+4. `routes/web.php` — GET route with `->name('dev-tools.<tool>')`
+5. `resources/js/components/cyber/sidebar.tsx` — add to `devLinks`
+6. `tests/Feature/DevTools/DevToolsRoutesTest.php` — add to `devToolRoutesProvider`
+7. (Optional) Controller + POST routes if server needed
+
+## UI conventions
+
+- Header: `DEV_TOOL_XX // SCREAMING_SNAKE_LABEL`
+- Status tiles for metrics (parse state, counts, mode)
+- Dual-pane: input buffer (textarea) + output buffer
+- Actions: `.cyber-tool-button` with Lucide icon + label
+- Sample data pre-filled in `useState` initial value
+
+## Existing tools (reference)
+
+| # | Tool | Lib | Server |
+|---|------|-----|--------|
+| 01 | JSON Formatter | `json-formatter.ts` | — |
+| 02 | Runtime Codec | `runtime-codec.ts` | — |
+| 03 | Hash Generator | `hash.ts` | `HashGeneratorController` (bcrypt) |
+| 04 | QR Generator | `qr-code.ts` | — |
+| 05 | Cron Guru | `cron-guru.ts` | — |
+| 06 | Image Compressor | `image-compressor.ts` | — |
+| 07 | Deployments | — (static UI) | — |
+
+## Lib module pattern
+
+```ts
+export type ToolResult = { output: string; error: string };
+
+export function processInput(input: string): ToolResult {
+    try {
+        // ...
+        return { output: result, error: '' };
+    } catch (exception) {
+        return { output: '', error: exception instanceof Error ? exception.message : 'Unknown error' };
+    }
+}
+```
+
+Return `{ output, error }` instead of throwing — pages handle display.

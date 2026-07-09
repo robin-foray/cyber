@@ -1,0 +1,57 @@
+---
+description: Laravel backend conventions for controllers, routes, models, and requests
+globs: "{app/**/*.php,routes/**/*.php,database/**/*.php,tests/**/*.php}"
+alwaysApply: false
+---
+
+# Laravel Backend Rules
+
+## Structure
+
+- Controllers: `app/Http/Controllers/` with subdirs (`Auth/`, `Settings/`, `DevTools/`)
+- Form requests: `app/Http/Requests/` for validation-heavy forms
+- Models: `app/Models/` — keep accessors/mutators on the model
+
+## Controllers
+
+- Return `Inertia::render('path/to/page')` for pages
+- Return `response()->json([...])` for dev-tool API endpoints
+- Validate inline or via `$request->validate([...])` for simple JSON APIs
+- Use `ValidationException::withMessages()` for domain validation errors
+
+## Routes (`routes/web.php`)
+
+```php
+Route::get('dev-tools/example', function () {
+    return Inertia::render('dev-tools/example');
+})->name('dev-tools.example');
+```
+
+For server-backed tools, use a dedicated controller:
+
+```php
+Route::get('dev-tools/hash-generator', [HashGeneratorController::class, 'show'])
+    ->name('dev-tools.hash-generator');
+Route::post('dev-tools/hash-generator/bcrypt', [HashGeneratorController::class, 'bcrypt'])
+    ->name('dev-tools.hash-generator.bcrypt');
+```
+
+## User model
+
+Extended fields: `role`, `title`, `avatar_seed`, `bio`. Accessors: `avatar_url`, `is_admin`.
+
+## Shared Inertia data
+
+`HandleInertiaRequests` shares `auth.user` (with appended `avatar_url`, `is_admin`), `name`, `quote`. Do not break this contract.
+
+## PHPUnit tests
+
+- Location: `tests/Feature/`, `tests/Unit/`
+- Use `RefreshDatabase` when touching DB
+- Page tests: `assertInertia(fn (Assert $page) => $page->component('dev-tools/foo'))`
+- API tests: `postJson(route('...'))->assertOk()->assertJson([...])`
+- Data providers: `#[DataProvider('methodName')]` (see `DevToolsRoutesTest`)
+
+## Formatting
+
+Run `vendor/bin/pint` before committing PHP changes.
