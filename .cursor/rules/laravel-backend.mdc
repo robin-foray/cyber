@@ -42,7 +42,19 @@ Extended fields: `role`, `title`, `avatar_seed`, `bio`. Accessors: `avatar_url`,
 
 ## Shared Inertia data
 
-`HandleInertiaRequests` shares `auth.user` (with appended `avatar_url`, `is_admin`), `name`, `quote`. Do not break this contract.
+`HandleInertiaRequests` shares `auth.user` (with appended `avatar_url`, `is_admin`), `name`, `quote`, and `cms` (from `ContentService`). Do not break this contract.
+
+## Filament (required for new public features)
+
+New site functions with editable content **must** include:
+
+- Eloquent model + migration
+- Filament Resource in `app/Filament/Resources/`
+- `ContentService` method if data appears on the frontend
+- Cache flush registration in `AppServiceProvider`
+- Default seed data in `CmsSeeder` when applicable
+
+See `.cursor/rules/filament-cms.mdc` for full checklist.
 
 ## PHPUnit tests
 

@@ -52,13 +52,11 @@ Route::get('dev-tools/<tool-name>', function () {
 
 If server API needed, create controller in `app/Http/Controllers/DevTools/` and add POST routes.
 
-### 5. Update sidebar
+### 5. Filament admin (mandatory)
 
-In `resources/js/components/cyber/sidebar.tsx`, add to `devLinks`:
+**Navigation:** add a `NavigationItem` child under the DEV_TOOLS parent — via Filament **Menüpontok** or `CmsSeeder`. Do not hardcode links in `sidebar.tsx`.
 
-```ts
-{ label: 'TOOL_NAME', href: '/dev-tools/<tool-name>' },
-```
+**Editable content:** if the tool exposes CMS-managed copy or lists, add model + migration + Filament Resource + `ContentService` method. See `.cursor/rules/filament-cms.mdc`.
 
 ### 6. Add PHPUnit test
 
@@ -69,6 +67,8 @@ In `tests/Feature/DevTools/DevToolsRoutesTest.php`, add entry to `devToolRoutesP
 ```
 
 If server endpoints exist, add tests to `HashGeneratorTest` or a new test class in the same file.
+
+If CMS content was added, add a `ContentService` test in `tests/Feature/Cms/`.
 
 ### 7. Verify
 

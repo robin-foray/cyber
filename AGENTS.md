@@ -53,7 +53,18 @@ tests/Feature/          → PHPUnit feature tests
 1. **Client-only** (preferred): logic in `resources/js/lib/<name>.ts`, page in `resources/js/pages/dev-tools/<name>.tsx`, route closure in `web.php`, Vitest in `lib/<name>.test.ts`.
 2. **Server-backed** (when PHP is needed): add controller under `App\Http\Controllers\DevTools\`, JSON endpoints for API, Inertia page for UI. Example: `HashGeneratorController` (bcrypt).
 
-When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` → `devLinks` array.
+When adding a dev-tool, add a `NavigationItem` child under DEV_TOOLS in Filament (not hardcoded sidebar).
+
+## Adding new site features (mandatory checklist)
+
+Every new public function **must** include:
+
+1. **Filament admin** — model, migration, Resource (or extend existing CMS). See `.cursor/rules/filament-cms.mdc`
+2. **Tests** — PHPUnit (routes, CMS/ContentService, API); Vitest for client lib logic
+3. **ContentService** — if data appears on the frontend, expose via `cms` Inertia prop
+4. **CmsSeeder** — seed default content for new CMS models
+
+A feature is **not complete** without Filament + tests.
 
 ## Auth & users
 

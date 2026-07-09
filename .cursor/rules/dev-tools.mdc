@@ -23,9 +23,10 @@ Default to **client-only** unless PHP is strictly required.
 2. `resources/js/lib/<tool>.test.ts` — Vitest unit tests
 3. `resources/js/pages/dev-tools/<tool>.tsx` — CyberShell UI
 4. `routes/web.php` — GET route with `->name('dev-tools.<tool>')`
-5. `resources/js/components/cyber/sidebar.tsx` — add to `devLinks`
+5. **Filament** — add `NavigationItem` child under DEV_TOOLS (via admin or `CmsSeeder`); add dedicated Resource if the tool has editable CMS content (e.g. `DeploymentStepResource`)
 6. `tests/Feature/DevTools/DevToolsRoutesTest.php` — add to `devToolRoutesProvider`
-7. (Optional) Controller + POST routes if server needed
+7. (Optional) Controller + POST routes if server needed; add PHPUnit API tests
+8. If CMS-backed content: model + `ContentService` + types + Filament Resource
 
 ## UI conventions
 

@@ -1,0 +1,67 @@
+---
+description: Filament CMS requirements when adding new site features or editable content
+globs: "{app/Filament/**,app/Models/**,app/Services/ContentService.php,database/migrations/**,database/seeders/**}"
+alwaysApply: false
+---
+
+# Filament CMS Rules
+
+## Mandatory for new site features
+
+Every new user-facing function on the site **must** ship with:
+
+1. **Filament admin resource** (or extend an existing one) so content/settings are editable at `/admin`
+2. **Tests** — PHPUnit at minimum; Vitest if client lib logic is added
+
+Do not hardcode editable content in React/Blade when it belongs in the CMS.
+
+## When to create what
+
+| Feature type | Filament | Data layer |
+|--------------|----------|------------|
+| New dev-tool page | `NavigationItem` child under DEV_TOOLS group | Add via admin or `CmsSeeder` |
+| New editable page section | New model + `*Resource` OR extend `SiteSetting` | Migration + model |
+| New list/collection on a page | Dedicated model + Resource (e.g. `StackTechnology`) | Migration + `ContentService` method |
+| New menu entry | `NavigationItemResource` | `navigation_items` table |
+| Auth/settings only (no public content) | Filament optional | — |
+
+## Filament resource checklist
+
+1. Model in `app/Models/` with `$fillable` and casts
+2. Migration in `database/migrations/`
+3. Resource in `app/Filament/Resources/` with correct `navigationGroup`:
+   - `Kezdőlap` — home page sections
+   - `Navigáció` — menu, social links
+   - `Dev Tools` — tool-specific CMS data
+   - `Rendszer` — tickers, site settings
+4. Register in `AdminPanelProvider` via `discoverResources` (auto)
+5. Wire to frontend via `ContentService` + Inertia `cms` prop
+6. Add model to cache flush list in `AppServiceProvider::boot()`
+7. Seed default row(s) in `CmsSeeder` when applicable
+
+## ContentService integration
+
+```php
+// app/Services/ContentService.php — add method + include in sharedPayload()
+public function myFeature(): array
+{
+    if (! Schema::hasTable('my_features')) {
+        return [];
+    }
+    // ...
+}
+```
+
+Update `resources/js/types/index.ts` → `CmsContent` interface.
+
+## Navigation for new pages
+
+Add menu entry via **Filament → Menüpontok**, not hardcoded in `sidebar.tsx`.
+For dev-tools: create child under the `DEV_TOOLS` parent (`parent_id`).
+
+## Reference resources
+
+- `NavigationItemResource` — menu tree
+- `StackTechnologyResource` — repeatable cards with JSON bullets
+- `DeploymentStepResource` — simple ordered list
+- `SiteSettingResource` — key-value page copy
