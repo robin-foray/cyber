@@ -1,0 +1,51 @@
+---
+description: Core Foray project conventions — always apply when editing this repo
+alwaysApply: true
+---
+
+# Foray Project Rules
+
+## Scope
+
+Minimize diffs. Match existing patterns. Do not refactor unrelated code.
+
+## Stack
+
+Laravel 12 + Inertia 2 + React 19 + TypeScript + Tailwind v4. SQLite by default.
+
+## File naming
+
+- PHP: PascalCase classes, kebab-case URLs (`dev-tools/hash-generator`)
+- React pages/components: kebab-case files, PascalCase default exports
+- Lib modules: kebab-case (`json-formatter.ts`)
+- Tests: `*.test.ts` (Vitest), `*Test.php` (PHPUnit)
+
+## Layout choice
+
+- Public, dev-tools, cyber profile, login/register → `CyberShell`
+- Dashboard, settings → `AppLayout` + shadcn `ui/*`
+- Auth recovery flows → `AuthLayout`
+
+## Imports
+
+Use `@/` alias for `resources/js/*`. Named type imports: `import { type Foo } from '@/types'`.
+
+## Routes
+
+- Named routes with dot notation: `dev-tools.console`
+- Inertia render path mirrors page file: `'dev-tools/console'` → `pages/dev-tools/console.tsx`
+- Dev-tools are **public** (no auth middleware) unless explicitly required
+
+## When adding features
+
+1. Read a similar existing feature first
+2. Add tests (PHPUnit for routes/controllers, Vitest for lib logic)
+3. Update sidebar `devLinks` if adding a dev-tool
+4. Run `./vendor/bin/phpunit` and `npm test` before finishing
+
+## Do not
+
+- Add Pest (project uses PHPUnit)
+- Create `tailwind.config.js` (theme lives in `resources/css/app.css`)
+- Use shadcn components inside cyber dev-tool pages (use cyber CSS classes)
+- Duplicate `profile.update` route names
