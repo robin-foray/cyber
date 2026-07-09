@@ -1,17 +1,13 @@
-import { type SharedData } from '@/types';
-import { Link } from '@inertiajs/react';
+import { resolveCmsIcon } from '@/lib/cms-icons';
+import { type CmsNavigationItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import {
     ChevronDown,
     ChevronLeft,
     Check,
-    Command,
-    Construction,
     Facebook,
-    FileText,
     Github,
     Instagram,
-    Share2,
-    Terminal,
     Twitter,
     Zap,
 } from 'lucide-react';
@@ -26,19 +22,17 @@ type CyberSidebarProps = {
     onOpen: () => void;
 };
 
-const devLinks = [
-    { label: 'CONSOLE', href: '/dev-tools/console' },
-    { label: 'RUNTIME', href: '/dev-tools/runtime' },
-    { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator' },
-    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator' },
-    { label: 'CRON_GURU', href: '/dev-tools/cron-guru' },
-    { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor' },
-    { label: 'DEPLOYMENTS', href: '/dev-tools/deployments' },
-];
-
 const devToolsStorageKey = 'foray.dev-tools.open';
 
+const socialIconMap = {
+    Github,
+    Twitter,
+    Instagram,
+    Facebook,
+} as const;
+
 export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen }: CyberSidebarProps) {
+    const { cms } = usePage<SharedData>().props;
     const [isDevToolsOpen, setIsDevToolsOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return false;
@@ -58,6 +52,8 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
 
         setIsDevToolsOpen(open);
     }
+
+    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user);
 
     return (
         <aside
@@ -83,23 +79,34 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
             </div>
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
-                <NavItem icon={<Terminal size={18} />} label="TERMINAL" href="/" active={isActiveHref(currentUrl, '/')} full={isOpen} />
-                <DevToolsMenu
-                    currentUrl={currentUrl}
-                    isOpen={isDevToolsOpen}
-                    onCollapsedOpen={() => {
-                        setDevToolsOpen(true);
-                        onOpen();
-                    }}
-                    onToggle={() => setDevToolsOpen(!isDevToolsOpen)}
-                    full={isOpen}
-                />
-                <NavItem icon={<Share2 size={18} />} label="PROJECTS" href="/#projects" full={isOpen} />
-                <NavItem icon={<FileText size={18} />} label="SYSTEM_LOGS" href="/#logs" full={isOpen} />
-                {user && <NavItem icon={<Command size={18} />} label="PROFILE" href="/profile" active={isActiveHref(currentUrl, '/profile')} full={isOpen} />}
+                {navigation.map((item) =>
+                    item.isGroup ? (
+                        <DevToolsMenu
+                            key={item.id}
+                            item={item}
+                            currentUrl={currentUrl}
+                            isOpen={isDevToolsOpen}
+                            onCollapsedOpen={() => {
+                                setDevToolsOpen(true);
+                                onOpen();
+                            }}
+                            onToggle={() => setDevToolsOpen(!isDevToolsOpen)}
+                            full={isOpen}
+                        />
+                    ) : (
+                        <NavItem
+                            key={item.id}
+                            icon={resolveCmsIcon(item.icon)}
+                            label={item.label}
+                            href={item.href ?? '/'}
+                            active={isActiveHref(currentUrl, item.href ?? '/')}
+                            full={isOpen}
+                        />
+                    ),
+                )}
             </nav>
 
-            <SocialLinks full={isOpen} />
+            <SocialLinks full={isOpen} links={cms.socialLinks} />
         </aside>
     );
 }
@@ -130,7 +137,7 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     );
 }
 
-function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode; label: string; href: string; active?: boolean; full: boolean }) {
+function NavItem({ icon: Icon, label, href, active = false, full }: { icon: React.ComponentType<{ size?: number }>; label: string; href: string; active?: boolean; full: boolean }) {
     return (
         <Link
             href={href}
@@ -140,33 +147,36 @@ function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode;
                 active ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : 'text-on-surface-variant hover:bg-primary/5 hover:text-primary'
             }`}
         >
-            {icon}
+            <Icon size={18} />
             {full && <span className="text-[11px] font-bold tracking-widest">{label}</span>}
         </Link>
     );
 }
 
 function DevToolsMenu({
+    item,
     currentUrl,
     isOpen,
     onCollapsedOpen,
     onToggle,
     full,
 }: {
+    item: CmsNavigationItem;
     currentUrl: string;
     isOpen: boolean;
     onCollapsedOpen: () => void;
     onToggle: () => void;
     full: boolean;
 }) {
+    const Icon = resolveCmsIcon(item.icon, resolveCmsIcon('Construction'));
     const isActive = currentUrl.startsWith('/dev-tools');
 
     return (
         <div className="space-y-1">
             <button
                 type="button"
-                aria-label="DEV_TOOLS"
-                title="DEV_TOOLS"
+                aria-label={item.label}
+                title={item.label}
                 onClick={() => {
                     if (full) {
                         onToggle();
@@ -177,16 +187,12 @@ function DevToolsMenu({
                 }}
                 className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all hover:bg-primary/5 hover:text-primary ${
                     full ? '' : 'justify-center'
-                } ${
-                    isActive
-                        ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]'
-                        : 'text-on-surface-variant'
-                }`}
+                } ${isActive ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : 'text-on-surface-variant'}`}
             >
-                <Construction size={18} />
+                <Icon size={18} />
                 {full && (
                     <>
-                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">DEV_TOOLS</span>
+                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">{item.label}</span>
                         <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </>
                 )}
@@ -194,7 +200,7 @@ function DevToolsMenu({
 
             {full && isOpen && (
                 <div className="ml-6 space-y-0.5 border-l border-primary/10 pl-3">
-                    {devLinks.map((tool) => {
+                    {item.children.map((tool) => {
                         const isChecked = isActiveHref(currentUrl, tool.href);
 
                         return (
@@ -219,28 +225,25 @@ function DevToolsMenu({
     );
 }
 
-function SocialLinks({ full }: { full: boolean }) {
-    const links = [
-        { label: 'Github', icon: <Github size={14} /> },
-        { label: 'Twitter', icon: <Twitter size={14} /> },
-        { label: 'Instagram', icon: <Instagram size={14} /> },
-        { label: 'Facebook', icon: <Facebook size={14} /> },
-    ];
-
+function SocialLinks({ full, links }: { full: boolean; links: SharedData['cms']['socialLinks'] }) {
     return (
         <div className={`shrink-0 border-t border-white/5 p-3 ${full ? '' : 'px-3'}`}>
             <div className={`grid gap-2 ${full ? 'grid-cols-4' : 'grid-cols-1'}`}>
-                {links.map((link) => (
-                    <a
-                        key={link.label}
-                        href="#"
-                        aria-label={link.label}
-                        title={link.label}
-                        className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
-                    >
-                        {link.icon}
-                    </a>
-                ))}
+                {links.map((link) => {
+                    const Icon = socialIconMap[link.platform as keyof typeof socialIconMap] ?? Github;
+
+                    return (
+                        <a
+                            key={link.platform}
+                            href={link.url ?? '#'}
+                            aria-label={link.platform}
+                            title={link.platform}
+                            className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
+                        >
+                            <Icon size={14} />
+                        </a>
+                    );
+                })}
             </div>
         </div>
     );

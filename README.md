@@ -57,6 +57,19 @@ This repo includes agent infrastructure for Cursor:
 
 Copy `.cursor/mcp.json.example` to `.cursor/mcp.json` and add your tokens in Cursor Desktop settings.
 
+## Admin (Filament CMS)
+
+Content is editable at `/admin` (admin users only).
+
+```bash
+php artisan migrate
+php artisan db:seed --class=CmsSeeder
+```
+
+Default admin: `admin@foray.local` / `password`
+
+Manage navigation, hero, stacks, tickers, social links, and deployment steps from the admin panel.
+
 ## License
 
 MIT

@@ -62,6 +62,26 @@ When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` 
 - Cyber identity fields: `role`, `title`, `avatar_seed`, `bio` (see `/profile`)
 - Settings profile (`/settings/profile`) handles email/name + account deletion
 - Shared Inertia prop: `auth.user` with `avatar_url`, `is_admin` appended
+- **Filament admin** at `/admin` — only `role: admin` users (`canAccessPanel`)
+
+## CMS (Filament)
+
+Content is database-driven and shared via Inertia `cms` prop (see `ContentService`).
+
+| Admin resource | Frontend usage |
+|----------------|----------------|
+| Menüpontok | Sidebar navigation + dev-tools submenu |
+| Social linkek | Sidebar footer icons |
+| Hero szekció | Welcome page hero |
+| Dev konzol preview | Welcome console section |
+| Integrity metrikák | Welcome skill bars |
+| Tech stack | Welcome stacks grid |
+| Ticker üzenetek | Topbar + footer tickers |
+| Deployment lépések | Deployments dev-tool page |
+| Oldal beállítások | Page titles, copyright |
+
+Seed default content: `php artisan db:seed --class=CmsSeeder`
+Default admin: `admin@foray.local` / `password`
 
 ## Testing conventions
 

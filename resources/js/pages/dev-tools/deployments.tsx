@@ -1,10 +1,11 @@
 import CyberShell from '@/components/cyber-shell';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Rocket } from 'lucide-react';
-
-const deployments = ['archive_01 prepared', 'manifest synced', 'assets compiled', 'queue clear'];
+import { type SharedData } from '@/types';
 
 export default function Deployments() {
+    const { cms } = usePage<SharedData>().props;
+
     return (
         <CyberShell>
             <Head title="Deployments" />
@@ -14,7 +15,7 @@ export default function Deployments() {
                     DEPLOYMENT_PROTOCOL
                 </div>
                 <div className="grid gap-3">
-                    {deployments.map((item, index) => (
+                    {cms.deploymentSteps.map((item, index) => (
                         <div key={item} className="flex items-center gap-4 rounded-2xl border border-white/5 bg-black/45 p-4">
                             <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 text-[10px] text-primary">
                                 0{index + 1}

@@ -1,5 +1,5 @@
 import { type SharedData } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Activity, Menu } from 'lucide-react';
 
 type CyberTopbarProps = {
@@ -10,7 +10,9 @@ type CyberTopbarProps = {
 };
 
 export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSidebar }: CyberTopbarProps) {
+    const { cms } = usePage<SharedData>().props;
     const sectionLabel = getSectionLabel(currentUrl);
+    const tickerItems = [...cms.tickers.topbar, ...cms.tickers.topbar];
 
     return (
         <header className={`sticky top-0 z-40 border-b border-primary/10 bg-background/80 backdrop-blur-xl ${isSidebarOpen ? 'topbar-inverse-corner' : ''}`}>
@@ -33,14 +35,11 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
 
                 <div className="relative flex-1 overflow-hidden border-x border-primary/10 py-1">
                     <div className="dev-ticker flex w-max items-center gap-8 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                        <span>// build: stable</span>
-                        <span className="text-primary">npm_run_dev --watch</span>
-                        <span>inertia.react.pipeline_online</span>
-                        <span className="text-primary">latency: 0.4ms</span>
-                        <span>deploy_queue: clear</span>
-                        <span>// build: stable</span>
-                        <span className="text-primary">npm_run_dev --watch</span>
-                        <span>inertia.react.pipeline_online</span>
+                        {tickerItems.map((item, index) => (
+                            <span key={`${item.text}-${index}`} className={item.isHighlighted ? 'text-primary' : undefined}>
+                                {item.text}
+                            </span>
+                        ))}
                     </div>
                 </div>
 
