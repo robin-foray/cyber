@@ -128,9 +128,9 @@ export default function QrGenerator() {
                                 size_px
                                 <input
                                     type="number"
-                                    min={120}
+                                    min={20}
                                     max={1024}
-                                    step={10}
+                                    step={1}
                                     value={size}
                                     onChange={(event) => setSize(Number(event.target.value) || 320)}
                                     className="mt-2 h-10 w-full rounded-lg border border-primary/15 bg-black px-3 text-primary outline-none"
@@ -180,7 +180,14 @@ export default function QrGenerator() {
                             <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
                         ) : dataUrl ? (
                             <div className="flex min-h-[430px] items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-6">
-                                <img src={dataUrl} alt="Generated QR code" className="h-auto max-h-[380px] w-full max-w-[380px] rounded-xl border border-primary/20" />
+                                <img
+                                    src={dataUrl}
+                                    alt="Generated QR code"
+                                    width={size}
+                                    height={size}
+                                    className="rounded-xl border border-primary/20"
+                                    style={{ width: size, height: size }}
+                                />
                             </div>
                         ) : (
                             <div className="flex min-h-[430px] items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs text-on-surface-variant">
