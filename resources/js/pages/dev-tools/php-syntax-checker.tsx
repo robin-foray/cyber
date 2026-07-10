@@ -1,3 +1,4 @@
+import CyberCodeEditor from '@/components/cyber/code-editor';
 import { CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
 import { Head } from '@inertiajs/react';
 import { Braces, CheckCircle2, Clipboard, Eraser, FileCode2, LoaderCircle, ScanSearch, XCircle } from 'lucide-react';
@@ -112,16 +113,15 @@ export default function PhpSyntaxChecker() {
                             <FileCode2 size={18} />
                             php_buffer
                         </div>
-                        <textarea
+                        <CyberCodeEditor
                             value={input}
-                            onChange={(event) => {
-                                setInput(event.target.value);
+                            onChange={(nextValue) => {
+                                setInput(nextValue);
                                 setReport('');
                                 setError('');
                                 setLine(null);
                             }}
-                            spellCheck={false}
-                            className="min-h-[430px] w-full resize-y rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-on-surface-variant outline-none transition-all focus:border-primary/50 focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                            highlightedLines={line ? [line] : []}
                             placeholder="<?php // paste php here"
                         />
                     </div>
@@ -142,7 +142,7 @@ export default function PhpSyntaxChecker() {
                             <CyberTextOutputSkeleton />
                         ) : (
                             <pre className="min-h-[430px] overflow-auto rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-primary">
-                                {report || (line ? `// error near line ${line}` : '// run check to lint with php -l')}
+                                {report || (line ? `// syntax error on line ${line}` : '// run check to lint with php -l')}
                             </pre>
                         )}
                     </div>

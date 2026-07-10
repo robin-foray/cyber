@@ -30,6 +30,18 @@ class PhpSyntaxCheckerTest extends TestCase
         $this->assertNotNull($response->json('line'));
     }
 
+    public function test_lint_endpoint_maps_line_numbers_without_opening_tag(): void
+    {
+        $response = $this->postJson(route('dev-tools.php-syntax-checker.lint'), [
+            'code' => "function broken(\n",
+        ]);
+
+        $response->assertOk()->assertJson([
+            'valid' => false,
+            'line' => 1,
+        ]);
+    }
+
     public function test_lint_endpoint_validates_payload(): void
     {
         $this->postJson(route('dev-tools.php-syntax-checker.lint'), [

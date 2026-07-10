@@ -1,3 +1,4 @@
+import CyberCodeEditor from '@/components/cyber/code-editor';
 import { checkHtmlSyntax, formatHtmlSyntaxReport } from '@/lib/html-syntax';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Code2, Eraser, FileCode2, ScanSearch, XCircle } from 'lucide-react';
@@ -20,6 +21,7 @@ export default function HtmlSyntaxChecker() {
     const [input, setInput] = useState(sampleHtml);
     const [report, setReport] = useState('');
     const [error, setError] = useState('');
+    const [errorLines, setErrorLines] = useState<number[]>([]);
     const [copied, setCopied] = useState(false);
 
     const stats = useMemo(() => {
@@ -35,6 +37,7 @@ export default function HtmlSyntaxChecker() {
         const result = checkHtmlSyntax(input);
         setReport(formatHtmlSyntaxReport(result));
         setError(result.error);
+        setErrorLines([...new Set(result.issues.filter((issue) => issue.severity === 'error').map((issue) => issue.line))]);
         setCopied(false);
     }
 
@@ -52,6 +55,7 @@ export default function HtmlSyntaxChecker() {
         setInput('');
         setReport('');
         setError('');
+        setErrorLines([]);
         setCopied(false);
     }
 
@@ -95,15 +99,15 @@ export default function HtmlSyntaxChecker() {
                             <Code2 size={18} />
                             html_buffer
                         </div>
-                        <textarea
+                        <CyberCodeEditor
                             value={input}
-                            onChange={(event) => {
-                                setInput(event.target.value);
+                            onChange={(nextValue) => {
+                                setInput(nextValue);
                                 setReport('');
                                 setError('');
+                                setErrorLines([]);
                             }}
-                            spellCheck={false}
-                            className="min-h-[430px] w-full resize-y rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-on-surface-variant outline-none transition-all focus:border-primary/50 focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                            highlightedLines={errorLines}
                             placeholder="<section>paste_html_here</section>"
                         />
                     </div>

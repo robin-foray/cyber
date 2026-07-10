@@ -28,7 +28,9 @@ class PhpSyntaxCheckerController extends Controller
             'code' => ['required', 'string', 'max:50000'],
         ]);
 
-        $code = $this->normalizePhpPayload($validated['code']);
+        $code = $validated['code'];
+        $lineOffset = 0;
+        $code = $this->normalizePhpPayload($code, $lineOffset);
         $tempFile = tempnam(sys_get_temp_dir(), 'foray-php-lint-');
 
         if ($tempFile === false) {
@@ -47,6 +49,10 @@ class PhpSyntaxCheckerController extends Controller
         $message = trim($result->output().$result->errorOutput());
         $line = $this->extractLineNumber($message);
 
+        if ($line !== null && $lineOffset > 0) {
+            $line = max(1, $line - $lineOffset);
+        }
+
         return response()->json([
             'valid' => $result->successful(),
             'message' => $message === '' ? 'No syntax errors detected.' : $message,
@@ -54,11 +60,13 @@ class PhpSyntaxCheckerController extends Controller
         ]);
     }
 
-    private function normalizePhpPayload(string $code): string
+    private function normalizePhpPayload(string $code, int &$lineOffset = 0): string
     {
         $trimmed = ltrim($code);
 
         if (! str_starts_with($trimmed, '<?php') && ! str_starts_with($trimmed, '<?')) {
+            $lineOffset = 1;
+
             return "<?php\n".$code;
         }
 
