@@ -1,5 +1,5 @@
 import { type SharedData } from '@/types';
-import { useInstantDevToolClick } from '@/contexts/instant-navigation-context';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { devToolLinks } from '@/lib/dev-tools-pages';
 import { Link } from '@inertiajs/react';
 import {
@@ -100,9 +100,17 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     const label = user?.name ?? 'GUEST_NODE';
     const role = user?.is_admin ? 'ADMIN' : (user?.role ?? 'VISITOR').toString().toUpperCase();
     const title = user?.title ?? 'SYSTEM: ONLINE';
+    const href = user ? '/profile' : '/login';
+    const handleClick = useInstantCyberClick(href);
 
     return (
-        <Link href={user ? '/profile' : '/login'} className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5">
+        <Link
+            href={href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
+            className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
+        >
             <p className="truncate text-[10px] tracking-widest text-primary uppercase opacity-70">Node_Identity</p>
             <div className="mt-2 flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary/10 text-primary">
@@ -123,10 +131,14 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
 }
 
 function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode; label: string; href: string; active?: boolean; full: boolean }) {
+    const handleClick = useInstantCyberClick(href);
+
     return (
         <Link
             href={href}
-            prefetch
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
             aria-label={label}
             title={label}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${full ? '' : 'justify-center'} ${
@@ -203,7 +215,7 @@ function DevToolLink({
     currentUrl: string;
     tool: (typeof devToolLinks)[number];
 }) {
-    const handleClick = useInstantDevToolClick(tool.href);
+    const handleClick = useInstantCyberClick(tool.href);
     const isChecked = isActiveHref(currentUrl, tool.href);
 
     return (

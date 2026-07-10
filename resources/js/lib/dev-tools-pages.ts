@@ -41,15 +41,11 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/deployments': Deployments,
 };
 
-export function hrefToPageName(href: string) {
-    const path = href.split('?')[0]?.split('#')[0]?.replace(/^\//, '') ?? '';
-
-    return path === '' ? 'welcome' : path;
-}
-
 export function isDevToolPageName(pageName: string): pageName is DevToolPageName {
     return pageName in devToolPages;
 }
+
+import { hrefToPageName } from '@/lib/cyber-pages-registry';
 
 export function isDevToolHref(href: string) {
     return isDevToolPageName(hrefToPageName(href));

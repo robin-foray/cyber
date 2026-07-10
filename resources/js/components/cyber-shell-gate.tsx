@@ -1,6 +1,6 @@
 import CyberShell from '@/components/cyber-shell';
 import { useInstantNavigation } from '@/contexts/instant-navigation-context';
-import { devToolPages, isDevToolPageName } from '@/lib/dev-tools-pages';
+import { isCyberShellPageName, resolveCyberShellPage } from '@/lib/cyber-pages-registry';
 import { usesCyberShellLayout } from '@/lib/cyber-pages';
 import { usePage } from '@inertiajs/react';
 import { type ComponentType, createElement } from 'react';
@@ -15,9 +15,10 @@ export default function CyberShellGate({ Component, key: componentKey, props }: 
     const { component } = usePage();
     const { optimisticPage } = useInstantNavigation();
     const activePageName = optimisticPage ?? component;
+    const EagerPage = isCyberShellPageName(activePageName) ? resolveCyberShellPage(activePageName) : null;
 
-    const page = isDevToolPageName(activePageName)
-        ? createElement(devToolPages[activePageName], { key: activePageName, ...props })
+    const page = EagerPage
+        ? createElement(EagerPage, { key: activePageName, ...props })
         : createElement(Component, { key: componentKey, ...props });
 
     if (usesCyberShellLayout(activePageName)) {

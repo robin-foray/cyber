@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { devToolLinks, hrefToPageName, isDevToolHref, isDevToolPageName } from './dev-tools-pages';
+import { devToolLinks, isDevToolHref, isDevToolPageName } from './dev-tools-pages';
+import { hrefToPageName } from './cyber-pages-registry';
 
 describe('dev-tools-pages', () => {
     it('maps hrefs to page names', () => {

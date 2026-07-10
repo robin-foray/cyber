@@ -1,4 +1,4 @@
-import { hrefToPageName, isDevToolPageName } from '@/lib/dev-tools-pages';
+import { hrefToPageName, isCyberShellPageName, isInstantNavigationHref } from '@/lib/cyber-pages-registry';
 import { router } from '@inertiajs/react';
 import { createContext, type MouseEvent, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
@@ -27,7 +27,7 @@ export function InstantNavigationProvider({ children }: { children: ReactNode })
         (href: string) => {
             const pageName = hrefToPageName(href);
 
-            if (isDevToolPageName(pageName)) {
+            if (isInstantNavigationHref(href)) {
                 setOptimisticPage(pageName);
                 setOptimisticHref(href);
             }
@@ -64,15 +64,20 @@ export function useInstantNavigation() {
     return context;
 }
 
-export function useInstantDevToolClick(href: string) {
+export function useInstantCyberClick(href: string) {
     const { instantVisit } = useInstantNavigation();
 
     return (event: MouseEvent<HTMLAnchorElement>) => {
-        if (shouldOpenInNewTab(event)) {
+        if (!isInstantNavigationHref(href) || shouldOpenInNewTab(event)) {
             return;
         }
 
         event.preventDefault();
         instantVisit(href);
     };
+}
+
+/** @deprecated Use useInstantCyberClick */
+export function useInstantDevToolClick(href: string) {
+    return useInstantCyberClick(href);
 }
