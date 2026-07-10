@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { coolStuffLinks } from '@/lib/cool-stuff-menu';
 import ColorConverter from '@/pages/dev-tools/color-converter';
 import Console from '@/pages/dev-tools/console';
 import CronGuru from '@/pages/dev-tools/cron-guru';
@@ -10,22 +11,11 @@ import PhpSyntaxChecker from '@/pages/dev-tools/php-syntax-checker';
 import QrGenerator from '@/pages/dev-tools/qr-generator';
 import RegexLab from '@/pages/dev-tools/regex-lab';
 import Runtime from '@/pages/dev-tools/runtime';
+import { hrefToPageName } from '@/lib/cyber-pages-registry';
 
-export const devToolLinks = [
-    { label: 'CONSOLE', href: '/dev-tools/console', page: 'dev-tools/console' },
-    { label: 'RUNTIME', href: '/dev-tools/runtime', page: 'dev-tools/runtime' },
-    { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator', page: 'dev-tools/hash-generator' },
-    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator', page: 'dev-tools/qr-generator' },
-    { label: 'CRON_GURU', href: '/dev-tools/cron-guru', page: 'dev-tools/cron-guru' },
-    { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor', page: 'dev-tools/image-compressor' },
-    { label: 'PHP_SYNTAX', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
-    { label: 'HTML_SYNTAX', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
-    { label: 'COLOR_CONVERTER', href: '/dev-tools/color-converter', page: 'dev-tools/color-converter' },
-    { label: 'REGEX_LAB', href: '/dev-tools/regex-lab', page: 'dev-tools/regex-lab' },
-    { label: 'DEPLOYMENTS', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
-] as const;
+export const devToolLinks = coolStuffLinks;
 
-export type DevToolPageName = (typeof devToolLinks)[number]['page'];
+export type DevToolPageName = (typeof coolStuffLinks)[number]['page'];
 
 export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/console': Console,
@@ -44,8 +34,6 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
 export function isDevToolPageName(pageName: string): pageName is DevToolPageName {
     return pageName in devToolPages;
 }
-
-import { hrefToPageName } from '@/lib/cyber-pages-registry';
 
 export function isDevToolHref(href: string) {
     return isDevToolPageName(hrefToPageName(href));
