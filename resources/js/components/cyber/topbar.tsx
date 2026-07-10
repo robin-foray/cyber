@@ -1,3 +1,4 @@
+import DevTicker from '@/components/cyber/dev-ticker';
 import { type SharedData } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Activity, Menu } from 'lucide-react';
@@ -32,7 +33,7 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
                 </div>
 
                 <div className="relative flex-1 overflow-hidden border-x border-primary/10 py-1">
-                    <div className="dev-ticker flex w-max items-center gap-8 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+                    <DevTicker className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                         <span>// build: stable</span>
                         <span className="text-primary">npm_run_dev --watch</span>
                         <span>inertia.react.pipeline_online</span>
@@ -41,7 +42,7 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
                         <span>// build: stable</span>
                         <span className="text-primary">npm_run_dev --watch</span>
                         <span>inertia.react.pipeline_online</span>
-                    </div>
+                    </DevTicker>
                 </div>
 
                 <Link

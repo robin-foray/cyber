@@ -11,18 +11,17 @@ type CyberShellGateProps = {
     props: Record<string, unknown>;
 };
 
-export default function CyberShellGate({ Component, key: componentKey, props }: CyberShellGateProps) {
+export default function CyberShellGate({ Component, props }: Omit<CyberShellGateProps, 'key'>) {
     const { component } = usePage();
     const { optimisticPage } = useInstantNavigation();
     const activePageName = optimisticPage ?? component;
-    const EagerPage = isCyberShellPageName(activePageName) ? resolveCyberShellPage(activePageName) : null;
+    const RegistryPage = isCyberShellPageName(activePageName) ? resolveCyberShellPage(activePageName) : null;
+    const PageComponent = RegistryPage ?? Component;
 
-    const page = EagerPage
-        ? createElement(EagerPage, { key: activePageName, ...props })
-        : createElement(Component, { key: componentKey, ...props });
+    const page = createElement(PageComponent, { key: activePageName, ...props });
 
     if (usesCyberShellLayout(activePageName)) {
-        return <CyberShell>{page}</CyberShell>;
+        return <CyberShell key="foray-cyber-shell">{page}</CyberShell>;
     }
 
     return page;

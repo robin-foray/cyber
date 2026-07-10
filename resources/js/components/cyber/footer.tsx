@@ -1,3 +1,4 @@
+import DevTicker from '@/components/cyber/dev-ticker';
 import { Command } from 'lucide-react';
 
 export default function CyberFooter() {
@@ -7,7 +8,7 @@ export default function CyberFooter() {
                 <Command size={16} /> (c)2026 DEV_HUB_CORE.
             </div>
             <div className="relative hidden flex-1 overflow-hidden border-l border-primary/10 py-1 pl-6 md:block">
-                <div className="dev-ticker flex w-max items-center gap-8 tracking-widest text-on-surface-variant uppercase">
+                <DevTicker className="tracking-widest text-on-surface-variant uppercase">
                     <span>node_identity synced</span>
                     <span className="text-primary">profile_channel online</span>
                     <span>admin_gate armed</span>
@@ -16,7 +17,7 @@ export default function CyberFooter() {
                     <span className="text-primary">profile_channel online</span>
                     <span>admin_gate armed</span>
                     <span className="text-primary">register_core ready</span>
-                </div>
+                </DevTicker>
             </div>
         </footer>
     );

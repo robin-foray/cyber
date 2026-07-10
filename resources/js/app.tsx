@@ -2,6 +2,7 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { route as routeFn } from 'ziggy-js';
 import CyberShellGate from '@/components/cyber-shell-gate';
@@ -26,6 +27,16 @@ const inertiaPages = {
     ...eagerCyberPages,
 };
 
+type CyberShellGateProps = {
+    Component: ComponentType;
+    key: number;
+    props: Record<string, unknown>;
+};
+
+function RenderCyberPage({ Component, props }: Omit<CyberShellGateProps, 'key'>) {
+    return <CyberShellGate Component={Component} props={props} />;
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, inertiaPages),
@@ -34,7 +45,7 @@ createInertiaApp({
 
         root.render(
             <InstantNavigationProvider>
-                <App {...props}>{(renderProps) => <CyberShellGate {...renderProps} />}</App>
+                <App {...props}>{RenderCyberPage}</App>
             </InstantNavigationProvider>,
         );
     },
