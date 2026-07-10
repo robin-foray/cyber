@@ -37,12 +37,16 @@ export function useCyberNavigation() {
 
         const removeFinish = router.on('finish', finishNavigation);
         const removeCancel = router.on('cancel', finishNavigation);
+        const removeError = router.on('error', finishNavigation);
+        const removeException = router.on('exception', finishNavigation);
 
         return () => {
             clearSkeletonTimer();
             removeStart();
             removeFinish();
             removeCancel();
+            removeError();
+            removeException();
         };
     }, []);
 
