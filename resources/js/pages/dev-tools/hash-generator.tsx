@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import { CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
 import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
@@ -94,7 +93,7 @@ export default function HashGenerator() {
     }
 
     return (
-        <CyberShell>
+        <>
             <Head title="Hash Generator" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -211,7 +210,7 @@ export default function HashGenerator() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 

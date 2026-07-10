@@ -1,5 +1,7 @@
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const skeletonDelayMs = 100;
 
 function isFullPageVisit(visit: { only?: string[]; showProgress?: boolean }) {
     const isPartialReload = Array.isArray(visit.only) && visit.only.length > 0;
@@ -8,29 +10,41 @@ function isFullPageVisit(visit: { only?: string[]; showProgress?: boolean }) {
 }
 
 export function useCyberNavigation() {
-    const [isNavigating, setIsNavigating] = useState(false);
+    const [showSkeleton, setShowSkeleton] = useState(false);
+    const skeletonTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
     useEffect(() => {
-        const removeStart = router.on('start', (event) => {
-            if (isFullPageVisit(event.detail.visit)) {
-                setIsNavigating(true);
+        const clearSkeletonTimer = () => {
+            if (skeletonTimerRef.current) {
+                clearTimeout(skeletonTimerRef.current);
+                skeletonTimerRef.current = undefined;
             }
+        };
+
+        const removeStart = router.on('start', (event) => {
+            if (!isFullPageVisit(event.detail.visit)) {
+                return;
+            }
+
+            clearSkeletonTimer();
+            skeletonTimerRef.current = setTimeout(() => setShowSkeleton(true), skeletonDelayMs);
         });
 
-        const removeFinish = router.on('finish', () => {
-            setIsNavigating(false);
-        });
+        const finishNavigation = () => {
+            clearSkeletonTimer();
+            setShowSkeleton(false);
+        };
 
-        const removeCancel = router.on('cancel', () => {
-            setIsNavigating(false);
-        });
+        const removeFinish = router.on('finish', finishNavigation);
+        const removeCancel = router.on('cancel', finishNavigation);
 
         return () => {
+            clearSkeletonTimer();
             removeStart();
             removeFinish();
             removeCancel();
         };
     }, []);
 
-    return isNavigating;
+    return showSkeleton;
 }

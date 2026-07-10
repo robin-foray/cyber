@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import InputError from '@/components/input-error';
 import { type SharedData } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
@@ -29,7 +28,7 @@ export default function Profile() {
     };
 
     return (
-        <CyberShell>
+        <>
             <Head title="Profile" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
@@ -95,7 +94,7 @@ export default function Profile() {
                     </form>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 

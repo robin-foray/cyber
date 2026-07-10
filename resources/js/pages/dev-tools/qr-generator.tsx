@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import { CyberImagePreviewSkeleton } from '@/components/cyber/skeleton';
 import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
@@ -70,7 +69,7 @@ export default function QrGenerator() {
     }
 
     return (
-        <CyberShell>
+        <>
             <Head title="QR Generator" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -193,7 +192,7 @@ export default function QrGenerator() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 

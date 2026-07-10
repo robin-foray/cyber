@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import { CyberPreviewPanelSkeleton } from '@/components/cyber/skeleton';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
@@ -144,7 +143,7 @@ export default function ImageCompressor() {
     }
 
     return (
-        <CyberShell>
+        <>
             <Head title="Image Compressor" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -255,7 +254,7 @@ export default function ImageCompressor() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
