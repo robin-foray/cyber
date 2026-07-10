@@ -28,6 +28,8 @@ class DevToolsRoutesTest extends TestCase
             'image-compressor' => ['dev-tools.image-compressor', 'dev-tools/image-compressor'],
             'deployments' => ['dev-tools.deployments', 'dev-tools/deployments'],
             'qr-generator' => ['dev-tools.qr-generator', 'dev-tools/qr-generator'],
+            'php-syntax-checker' => ['dev-tools.php-syntax-checker', 'dev-tools/php-syntax-checker'],
+            'html-syntax-checker' => ['dev-tools.html-syntax-checker', 'dev-tools/html-syntax-checker'],
         ];
     }
 }

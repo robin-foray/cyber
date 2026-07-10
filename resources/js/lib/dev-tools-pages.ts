@@ -3,7 +3,9 @@ import Console from '@/pages/dev-tools/console';
 import CronGuru from '@/pages/dev-tools/cron-guru';
 import Deployments from '@/pages/dev-tools/deployments';
 import HashGenerator from '@/pages/dev-tools/hash-generator';
+import HtmlSyntaxChecker from '@/pages/dev-tools/html-syntax-checker';
 import ImageCompressor from '@/pages/dev-tools/image-compressor';
+import PhpSyntaxChecker from '@/pages/dev-tools/php-syntax-checker';
 import QrGenerator from '@/pages/dev-tools/qr-generator';
 import Runtime from '@/pages/dev-tools/runtime';
 
@@ -14,6 +16,8 @@ export const devToolLinks = [
     { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator', page: 'dev-tools/qr-generator' },
     { label: 'CRON_GURU', href: '/dev-tools/cron-guru', page: 'dev-tools/cron-guru' },
     { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor', page: 'dev-tools/image-compressor' },
+    { label: 'PHP_SYNTAX', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
+    { label: 'HTML_SYNTAX', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
     { label: 'DEPLOYMENTS', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
 ] as const;
 
@@ -26,6 +30,8 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/qr-generator': QrGenerator,
     'dev-tools/cron-guru': CronGuru,
     'dev-tools/image-compressor': ImageCompressor,
+    'dev-tools/php-syntax-checker': PhpSyntaxChecker,
+    'dev-tools/html-syntax-checker': HtmlSyntaxChecker,
     'dev-tools/deployments': Deployments,
 };
 
