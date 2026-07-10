@@ -4,7 +4,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { route as routeFn } from 'ziggy-js';
-import { inertiaPages, usesCyberShellLayout } from '@/lib/cyber-pages';
+import { usesCyberShellLayout } from '@/lib/cyber-pages';
 import cyberShellLayout from '@/layouts/cyber-shell-layout';
 import { initializeTheme } from './hooks/use-appearance';
 
@@ -13,6 +13,15 @@ declare global {
 }
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+const lazyPages = import.meta.glob('./pages/**/*.tsx');
+const eagerCyberPages = import.meta.glob(['./pages/welcome.tsx', './pages/profile.tsx', './pages/dev-tools/*.tsx'], {
+    eager: true,
+});
+const inertiaPages = {
+    ...lazyPages,
+    ...eagerCyberPages,
+};
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
