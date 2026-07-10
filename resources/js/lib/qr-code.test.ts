@@ -41,6 +41,12 @@ describe('generateQrCodeDataUrl', () => {
         expect(isQrCodeDataUrl(large)).toBe(true);
     });
 
+    it('supports small output sizes such as 20px', async () => {
+        const dataUrl = await generateQrCodeDataUrl('tiny', { width: 20, margin: 0 });
+
+        expect(isQrCodeDataUrl(dataUrl)).toBe(true);
+    });
+
     it('rejects empty payloads', async () => {
         await expect(generateQrCodeDataUrl('')).rejects.toThrow();
     });
