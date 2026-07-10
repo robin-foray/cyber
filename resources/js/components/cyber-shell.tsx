@@ -1,22 +1,12 @@
 import { useCyberNavigation } from '@/hooks/use-cyber-navigation';
 import { type SharedData } from '@/types';
-import { router, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { type ReactNode, useEffect, useState } from 'react';
 import CyberFooter from './cyber/footer';
 import { CyberPageSkeleton } from './cyber/skeleton';
 import LetterGlitchBackground from './cyber/letter-glitch-background';
 import CyberSidebar from './cyber/sidebar';
 import CyberTopbar from './cyber/topbar';
-
-const devToolPrefetchRoutes = [
-    '/dev-tools/console',
-    '/dev-tools/runtime',
-    '/dev-tools/hash-generator',
-    '/dev-tools/qr-generator',
-    '/dev-tools/cron-guru',
-    '/dev-tools/image-compressor',
-    '/dev-tools/deployments',
-];
 
 type CyberShellProps = {
     children: ReactNode;
@@ -45,10 +35,6 @@ export default function CyberShell({ children }: CyberShellProps) {
     useEffect(() => {
         window.localStorage.setItem(sidebarStorageKey, String(isSidebarOpen));
     }, [isSidebarOpen]);
-
-    useEffect(() => {
-        devToolPrefetchRoutes.forEach((href) => router.prefetch(href));
-    }, []);
 
     function setSidebarOpen(open: boolean) {
         if (typeof window !== 'undefined') {
