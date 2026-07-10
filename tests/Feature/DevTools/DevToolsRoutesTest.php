@@ -31,6 +31,7 @@ class DevToolsRoutesTest extends TestCase
             'php-syntax-checker' => ['dev-tools.php-syntax-checker', 'dev-tools/php-syntax-checker'],
             'html-syntax-checker' => ['dev-tools.html-syntax-checker', 'dev-tools/html-syntax-checker'],
             'color-converter' => ['dev-tools.color-converter', 'dev-tools/color-converter'],
+            'regex-lab' => ['dev-tools.regex-lab', 'dev-tools/regex-lab'],
         ];
     }
 }

@@ -44,6 +44,9 @@ Route::get('dev-tools/html-syntax-checker', function () {
 Route::get('dev-tools/color-converter', function () {
     return Inertia::render('dev-tools/color-converter');
 })->name('dev-tools.color-converter');
+Route::get('dev-tools/regex-lab', function () {
+    return Inertia::render('dev-tools/regex-lab');
+})->name('dev-tools.regex-lab');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {

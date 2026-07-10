@@ -8,6 +8,7 @@ import HtmlSyntaxChecker from '@/pages/dev-tools/html-syntax-checker';
 import ImageCompressor from '@/pages/dev-tools/image-compressor';
 import PhpSyntaxChecker from '@/pages/dev-tools/php-syntax-checker';
 import QrGenerator from '@/pages/dev-tools/qr-generator';
+import RegexLab from '@/pages/dev-tools/regex-lab';
 import Runtime from '@/pages/dev-tools/runtime';
 
 export const devToolLinks = [
@@ -20,6 +21,7 @@ export const devToolLinks = [
     { label: 'PHP_SYNTAX', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
     { label: 'HTML_SYNTAX', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
     { label: 'COLOR_CONVERTER', href: '/dev-tools/color-converter', page: 'dev-tools/color-converter' },
+    { label: 'REGEX_LAB', href: '/dev-tools/regex-lab', page: 'dev-tools/regex-lab' },
     { label: 'DEPLOYMENTS', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
 ] as const;
 
@@ -35,6 +37,7 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/php-syntax-checker': PhpSyntaxChecker,
     'dev-tools/html-syntax-checker': HtmlSyntaxChecker,
     'dev-tools/color-converter': ColorConverter,
+    'dev-tools/regex-lab': RegexLab,
     'dev-tools/deployments': Deployments,
 };
 
