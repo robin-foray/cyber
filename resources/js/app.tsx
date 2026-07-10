@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { route as routeFn } from 'ziggy-js';
 import CyberShellGate from '@/components/cyber-shell-gate';
+import { InstantNavigationProvider } from '@/contexts/instant-navigation-context';
 import { initializeTheme } from './hooks/use-appearance';
 
 declare global {
@@ -29,9 +30,9 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <App {...props}>
-                {(renderProps) => <CyberShellGate {...renderProps} />}
-            </App>,
+            <InstantNavigationProvider>
+                <App {...props}>{(renderProps) => <CyberShellGate {...renderProps} />}</App>
+            </InstantNavigationProvider>,
         );
     },
     progress: false,

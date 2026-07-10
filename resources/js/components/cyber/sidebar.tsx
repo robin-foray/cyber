@@ -1,4 +1,6 @@
 import { type SharedData } from '@/types';
+import { useInstantDevToolClick } from '@/contexts/instant-navigation-context';
+import { devToolLinks } from '@/lib/dev-tools-pages';
 import { Link } from '@inertiajs/react';
 import {
     ChevronDown,
@@ -25,16 +27,6 @@ type CyberSidebarProps = {
     onClose: () => void;
     onOpen: () => void;
 };
-
-const devLinks = [
-    { label: 'CONSOLE', href: '/dev-tools/console' },
-    { label: 'RUNTIME', href: '/dev-tools/runtime' },
-    { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator' },
-    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator' },
-    { label: 'CRON_GURU', href: '/dev-tools/cron-guru' },
-    { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor' },
-    { label: 'DEPLOYMENTS', href: '/dev-tools/deployments' },
-];
 
 const devToolsStorageKey = 'foray.dev-tools.open';
 
@@ -195,29 +187,41 @@ function DevToolsMenu({
 
             {full && isOpen && (
                 <div className="ml-6 space-y-0.5 border-l border-primary/10 pl-3">
-                    {devLinks.map((tool) => {
-                        const isChecked = isActiveHref(currentUrl, tool.href);
-
-                        return (
-                            <Link
-                                key={tool.label}
-                                href={tool.href}
-                                prefetch
-                                aria-current={isChecked ? 'page' : undefined}
-                                className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
-                                    isChecked
-                                        ? 'border-primary/25 bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(204,255,0,0.12)]'
-                                        : 'border-transparent text-on-surface-variant/70'
-                                }`}
-                            >
-                                <span className="min-w-0 flex-1 truncate">{tool.label}</span>
-                                {isChecked && <Check size={12} className="shrink-0 drop-shadow-[0_0_5px_rgba(204,255,0,0.7)]" />}
-                            </Link>
-                        );
-                    })}
+                    {devToolLinks.map((tool) => (
+                        <DevToolLink key={tool.label} currentUrl={currentUrl} tool={tool} />
+                    ))}
                 </div>
             )}
         </div>
+    );
+}
+
+function DevToolLink({
+    currentUrl,
+    tool,
+}: {
+    currentUrl: string;
+    tool: (typeof devToolLinks)[number];
+}) {
+    const handleClick = useInstantDevToolClick(tool.href);
+    const isChecked = isActiveHref(currentUrl, tool.href);
+
+    return (
+        <Link
+            href={tool.href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
+            aria-current={isChecked ? 'page' : undefined}
+            className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
+                isChecked
+                    ? 'border-primary/25 bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(204,255,0,0.12)]'
+                    : 'border-transparent text-on-surface-variant/70'
+            }`}
+        >
+            <span className="min-w-0 flex-1 truncate">{tool.label}</span>
+            {isChecked && <Check size={12} className="shrink-0 drop-shadow-[0_0_5px_rgba(204,255,0,0.7)]" />}
+        </Link>
     );
 }
 

@@ -1,3 +1,4 @@
+import { useInstantNavigation } from '@/contexts/instant-navigation-context';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -15,6 +16,8 @@ const sidebarStorageKey = 'foray.sidebar.open';
 export default function CyberShell({ children }: CyberShellProps) {
     const { auth } = usePage<SharedData>().props;
     const { url } = usePage();
+    const { optimisticHref } = useInstantNavigation();
+    const currentUrl = optimisticHref ?? url;
     const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return true;
@@ -44,7 +47,7 @@ export default function CyberShell({ children }: CyberShellProps) {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <CyberSidebar
-                currentUrl={url}
+                currentUrl={currentUrl}
                 isOpen={isSidebarOpen}
                 user={auth.user}
                 onClose={() => setSidebarOpen(false)}
@@ -52,7 +55,7 @@ export default function CyberShell({ children }: CyberShellProps) {
             />
 
             <div className={`flex min-h-screen flex-col transition-all duration-300 ${isSidebarOpen ? 'md:pl-64' : 'md:pl-20'}`}>
-                <CyberTopbar currentUrl={url} isSidebarOpen={isSidebarOpen} user={auth.user} onOpenSidebar={() => setSidebarOpen(true)} />
+                <CyberTopbar currentUrl={currentUrl} isSidebarOpen={isSidebarOpen} user={auth.user} onOpenSidebar={() => setSidebarOpen(true)} />
 
                 <main className="relative w-full flex-1 overflow-hidden">
                     <LetterGlitchBackground />
