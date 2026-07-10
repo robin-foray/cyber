@@ -4,8 +4,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { route as routeFn } from 'ziggy-js';
-import { usesCyberShellLayout } from '@/lib/cyber-pages';
-import cyberShellLayout from '@/layouts/cyber-shell-layout';
+import CyberShellGate from '@/components/cyber-shell-gate';
 import { initializeTheme } from './hooks/use-appearance';
 
 declare global {
@@ -25,19 +24,15 @@ const inertiaPages = {
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: async (name) => {
-        const page = await resolvePageComponent(`./pages/${name}.tsx`, inertiaPages);
-
-        if (usesCyberShellLayout(name)) {
-            page.default.layout = cyberShellLayout;
-        }
-
-        return page;
-    },
+    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, inertiaPages),
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <App {...props}>
+                {(renderProps) => <CyberShellGate {...renderProps} />}
+            </App>,
+        );
     },
     progress: false,
 });
