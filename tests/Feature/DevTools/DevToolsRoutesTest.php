@@ -30,6 +30,7 @@ class DevToolsRoutesTest extends TestCase
             'qr-generator' => ['dev-tools.qr-generator', 'dev-tools/qr-generator'],
             'php-syntax-checker' => ['dev-tools.php-syntax-checker', 'dev-tools/php-syntax-checker'],
             'html-syntax-checker' => ['dev-tools.html-syntax-checker', 'dev-tools/html-syntax-checker'],
+            'color-converter' => ['dev-tools.color-converter', 'dev-tools/color-converter'],
         ];
     }
 }

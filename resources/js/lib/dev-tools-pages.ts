@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import ColorConverter from '@/pages/dev-tools/color-converter';
 import Console from '@/pages/dev-tools/console';
 import CronGuru from '@/pages/dev-tools/cron-guru';
 import Deployments from '@/pages/dev-tools/deployments';
@@ -18,6 +19,7 @@ export const devToolLinks = [
     { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor', page: 'dev-tools/image-compressor' },
     { label: 'PHP_SYNTAX', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
     { label: 'HTML_SYNTAX', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
+    { label: 'COLOR_CONVERTER', href: '/dev-tools/color-converter', page: 'dev-tools/color-converter' },
     { label: 'DEPLOYMENTS', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
 ] as const;
 
@@ -32,6 +34,7 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/image-compressor': ImageCompressor,
     'dev-tools/php-syntax-checker': PhpSyntaxChecker,
     'dev-tools/html-syntax-checker': HtmlSyntaxChecker,
+    'dev-tools/color-converter': ColorConverter,
     'dev-tools/deployments': Deployments,
 };
 

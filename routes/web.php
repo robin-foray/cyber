@@ -41,6 +41,9 @@ Route::post('dev-tools/php-syntax-checker/lint', [PhpSyntaxCheckerController::cl
 Route::get('dev-tools/html-syntax-checker', function () {
     return Inertia::render('dev-tools/html-syntax-checker');
 })->name('dev-tools.html-syntax-checker');
+Route::get('dev-tools/color-converter', function () {
+    return Inertia::render('dev-tools/color-converter');
+})->name('dev-tools.color-converter');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
