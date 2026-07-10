@@ -59,3 +59,32 @@ export function CyberPreviewPanelSkeleton({ minHeight = 420 }: { minHeight?: num
         </div>
     );
 }
+
+export function CyberPageSkeleton() {
+    return (
+        <section
+            aria-busy="true"
+            aria-label="Loading page"
+            className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8"
+        >
+            <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div className="space-y-3">
+                    <CyberSkeleton className="h-4 w-52" />
+                    <CyberSkeleton className="h-10 w-72 max-w-full" />
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:flex">
+                    {Array.from({ length: 4 }, (_, index) => (
+                        <CyberSkeleton key={index} className="h-10 w-28 rounded-xl" />
+                    ))}
+                </div>
+            </div>
+
+            <CyberStatusTilesSkeleton count={3} />
+
+            <div className="mt-6 grid gap-6 xl:grid-cols-2">
+                <CyberSkeleton className="min-h-[430px] rounded-2xl" />
+                <CyberSkeleton className="min-h-[430px] rounded-2xl" />
+            </div>
+        </section>
+    );
+}

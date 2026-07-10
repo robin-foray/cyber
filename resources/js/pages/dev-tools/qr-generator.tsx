@@ -1,5 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
-import { CyberImagePreviewSkeleton, CyberStatusTilesSkeleton } from '@/components/cyber/skeleton';
+import { CyberImagePreviewSkeleton } from '@/components/cyber/skeleton';
 import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Download, Eraser, LoaderCircle, QrCode, XCircle } from 'lucide-react';
@@ -102,15 +102,9 @@ export default function QrGenerator() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    {processing ? (
-                        <CyberStatusTilesSkeleton count={3} />
-                    ) : (
-                        <>
-                            <StatusTile label="Chars" value={String(telemetry.chars)} />
-                            <StatusTile label="Size" value={telemetry.size} />
-                            <StatusTile label="ECL" value={telemetry.ecl} />
-                        </>
-                    )}
+                    <StatusTile label="Chars" value={String(telemetry.chars)} />
+                    <StatusTile label="Size" value={telemetry.size} />
+                    <StatusTile label="ECL" value={telemetry.ecl} />
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-2">

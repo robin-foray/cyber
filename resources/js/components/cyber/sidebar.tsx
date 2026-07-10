@@ -134,6 +134,7 @@ function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode;
     return (
         <Link
             href={href}
+            prefetch
             aria-label={label}
             title={label}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${full ? '' : 'justify-center'} ${
@@ -201,6 +202,7 @@ function DevToolsMenu({
                             <Link
                                 key={tool.label}
                                 href={tool.href}
+                                prefetch
                                 aria-current={isChecked ? 'page' : undefined}
                                 className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
                                     isChecked

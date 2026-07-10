@@ -2,9 +2,11 @@ import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { type ReactNode, useEffect, useState } from 'react';
 import CyberFooter from './cyber/footer';
+import { CyberPageSkeleton } from './cyber/skeleton';
 import LetterGlitchBackground from './cyber/letter-glitch-background';
 import CyberSidebar from './cyber/sidebar';
 import CyberTopbar from './cyber/topbar';
+import { useCyberNavigation } from '@/hooks/use-cyber-navigation';
 
 type CyberShellProps = {
     children: ReactNode;
@@ -15,6 +17,7 @@ const sidebarStorageKey = 'foray.sidebar.open';
 export default function CyberShell({ children }: CyberShellProps) {
     const { auth } = usePage<SharedData>().props;
     const { url } = usePage();
+    const isNavigating = useCyberNavigation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return true;
@@ -56,7 +59,9 @@ export default function CyberShell({ children }: CyberShellProps) {
 
                 <main className="relative w-full flex-1 overflow-hidden">
                     <LetterGlitchBackground />
-                    <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 px-4 py-6 sm:p-8">{children}</div>
+                    <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 px-4 py-6 sm:p-8">
+                        {isNavigating ? <CyberPageSkeleton /> : children}
+                    </div>
                 </main>
 
                 <CyberFooter />

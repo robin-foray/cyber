@@ -1,5 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
-import { CyberPreviewPanelSkeleton, CyberStatusTilesSkeleton } from '@/components/cyber/skeleton';
+import { CyberPreviewPanelSkeleton } from '@/components/cyber/skeleton';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
@@ -173,15 +173,9 @@ export default function ImageCompressor() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    {processing ? (
-                        <CyberStatusTilesSkeleton count={3} />
-                    ) : (
-                        <>
-                            <StatusTile label="Original" value={telemetry.original} />
-                            <StatusTile label="Compressed" value={telemetry.compressed} />
-                            <StatusTile label="Saved" value={telemetry.saved} />
-                        </>
-                    )}
+                    <StatusTile label="Original" value={telemetry.original} />
+                    <StatusTile label="Compressed" value={telemetry.compressed} />
+                    <StatusTile label="Saved" value={telemetry.saved} />
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-[360px_1fr]">

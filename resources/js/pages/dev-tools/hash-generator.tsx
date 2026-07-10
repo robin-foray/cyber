@@ -1,5 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
-import { CyberStatusTilesSkeleton, CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
+import { CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
 import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
@@ -126,15 +126,9 @@ export default function HashGenerator() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    {processing ? (
-                        <CyberStatusTilesSkeleton count={3} />
-                    ) : (
-                        <>
-                            <StatusTile label="Mode" value={telemetry.mode} />
-                            <StatusTile label="Chars" value={String(telemetry.chars)} />
-                            <StatusTile label="Bytes" value={String(telemetry.bytes)} />
-                        </>
-                    )}
+                    <StatusTile label="Mode" value={telemetry.mode} />
+                    <StatusTile label="Chars" value={String(telemetry.chars)} />
+                    <StatusTile label="Bytes" value={String(telemetry.bytes)} />
                 </div>
 
                 <div className="mb-6 grid gap-2 md:grid-cols-2">
