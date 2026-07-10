@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { CyberImagePreviewSkeleton, CyberStatusTilesSkeleton } from '@/components/cyber/skeleton';
 import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Download, Eraser, LoaderCircle, QrCode, XCircle } from 'lucide-react';
@@ -101,9 +102,15 @@ export default function QrGenerator() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    <StatusTile label="Chars" value={String(telemetry.chars)} />
-                    <StatusTile label="Size" value={telemetry.size} />
-                    <StatusTile label="ECL" value={telemetry.ecl} />
+                    {processing ? (
+                        <CyberStatusTilesSkeleton count={3} />
+                    ) : (
+                        <>
+                            <StatusTile label="Chars" value={String(telemetry.chars)} />
+                            <StatusTile label="Size" value={telemetry.size} />
+                            <StatusTile label="ECL" value={telemetry.ecl} />
+                        </>
+                    )}
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-2">
@@ -170,14 +177,16 @@ export default function QrGenerator() {
                                 <QrCode size={18} />
                                 qr_output
                             </div>
-                            <div className={statusClass(error)}>
-                                {error ? <XCircle size={14} /> : <CheckCircle2 size={14} />}
-                                {error ? 'generation_error' : dataUrl ? 'ready' : 'idle'}
+                            <div className={statusClass(error, processing)}>
+                                {error ? <XCircle size={14} /> : processing ? <LoaderCircle size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                                {error ? 'generation_error' : processing ? 'processing' : dataUrl ? 'ready' : 'idle'}
                             </div>
                         </div>
 
                         {error ? (
                             <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
+                        ) : processing ? (
+                            <CyberImagePreviewSkeleton size={size} />
                         ) : dataUrl ? (
                             <div className="flex min-h-[430px] items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-6">
                                 <img src={dataUrl} alt="Generated QR code" className="h-auto max-h-[380px] w-full max-w-[380px] rounded-xl border border-primary/20" />
@@ -203,8 +212,8 @@ function StatusTile({ label, value }: { label: string; value: string }) {
     );
 }
 
-function statusClass(error: string) {
-    const color = error ? 'text-red-300' : 'text-primary';
+function statusClass(error: string, processing = false) {
+    const color = error ? 'text-red-300' : processing ? 'text-on-surface-variant' : 'text-primary';
 
     return `flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${color}`;
 }

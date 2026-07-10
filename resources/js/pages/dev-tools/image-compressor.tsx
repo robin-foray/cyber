@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { CyberPreviewPanelSkeleton, CyberStatusTilesSkeleton } from '@/components/cyber/skeleton';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
@@ -172,9 +173,15 @@ export default function ImageCompressor() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    <StatusTile label="Original" value={telemetry.original} />
-                    <StatusTile label="Compressed" value={telemetry.compressed} />
-                    <StatusTile label="Saved" value={telemetry.saved} />
+                    {processing ? (
+                        <CyberStatusTilesSkeleton count={3} />
+                    ) : (
+                        <>
+                            <StatusTile label="Original" value={telemetry.original} />
+                            <StatusTile label="Compressed" value={telemetry.compressed} />
+                            <StatusTile label="Saved" value={telemetry.saved} />
+                        </>
+                    )}
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
@@ -249,6 +256,7 @@ export default function ImageCompressor() {
                             icon={<ScanSearch size={18} />}
                             imageUrl={compressed?.url ?? ''}
                             meta={compressed ? `${compressed.width}x${compressed.height} // ${formatBytes(compressed.blob.size)}` : 'run compression'}
+                            loading={processing}
                         />
                     </div>
                 </div>
@@ -291,7 +299,23 @@ function NumberInput({ value, onChange }: { value: number; onChange: (value: num
     );
 }
 
-function PreviewPanel({ title, icon, imageUrl, meta }: { title: string; icon: ReactNode; imageUrl: string; meta: string }) {
+function PreviewPanel({
+    title,
+    icon,
+    imageUrl,
+    meta,
+    loading = false,
+}: {
+    title: string;
+    icon: ReactNode;
+    imageUrl: string;
+    meta: string;
+    loading?: boolean;
+}) {
+    if (loading) {
+        return <CyberPreviewPanelSkeleton />;
+    }
+
     return (
         <div className="rounded-2xl border border-primary/15 bg-black/45 p-5">
             <div className="mb-4 flex items-center justify-between gap-4">

@@ -1,4 +1,5 @@
 import CyberShell from '@/components/cyber-shell';
+import { CyberStatusTilesSkeleton, CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
 import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
@@ -125,9 +126,15 @@ export default function HashGenerator() {
                 </div>
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
-                    <StatusTile label="Mode" value={telemetry.mode} />
-                    <StatusTile label="Chars" value={String(telemetry.chars)} />
-                    <StatusTile label="Bytes" value={String(telemetry.bytes)} />
+                    {processing ? (
+                        <CyberStatusTilesSkeleton count={3} />
+                    ) : (
+                        <>
+                            <StatusTile label="Mode" value={telemetry.mode} />
+                            <StatusTile label="Chars" value={String(telemetry.chars)} />
+                            <StatusTile label="Bytes" value={String(telemetry.bytes)} />
+                        </>
+                    )}
                 </div>
 
                 <div className="mb-6 grid gap-2 md:grid-cols-2">
@@ -192,14 +199,16 @@ export default function HashGenerator() {
                                 <Fingerprint size={18} />
                                 hash_output
                             </div>
-                            <div className={statusClass(error, verifyResult)}>
-                                {error ? <XCircle size={14} /> : verifyResult === true ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}
-                                {error ? 'hash_error' : verifyResult === null ? 'ready' : verifyResult ? 'match' : 'no_match'}
+                            <div className={statusClass(error, verifyResult, processing)}>
+                                {error ? <XCircle size={14} /> : processing ? <LoaderCircle size={14} className="animate-spin" /> : verifyResult === true ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}
+                                {error ? 'hash_error' : processing ? 'processing' : verifyResult === null ? 'ready' : verifyResult ? 'match' : 'no_match'}
                             </div>
                         </div>
 
                         {error ? (
                             <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
+                        ) : processing ? (
+                            <CyberTextOutputSkeleton />
                         ) : (
                             <pre className="min-h-[430px] overflow-auto rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-primary">
                                 {hash || '// generate SHA-256 or Laravel bcrypt output'}
@@ -238,8 +247,8 @@ function StatusTile({ label, value }: { label: string; value: string }) {
     );
 }
 
-function statusClass(error: string, verifyResult: boolean | null) {
-    const color = error ? 'text-red-300' : verifyResult === false ? 'text-red-300' : 'text-primary';
+function statusClass(error: string, verifyResult: boolean | null, processing = false) {
+    const color = error ? 'text-red-300' : processing ? 'text-on-surface-variant' : verifyResult === false ? 'text-red-300' : 'text-primary';
 
     return `flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${color}`;
 }
