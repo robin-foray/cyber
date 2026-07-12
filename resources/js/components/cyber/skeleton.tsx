@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type ReactNode } from 'react';
 
 type CyberSkeletonProps = HTMLAttributes<HTMLDivElement>;
 
@@ -28,36 +28,114 @@ export function CyberStatusTilesSkeleton({ count = 3 }: { count?: number }) {
 
 const textLineWidths = ['92%', '78%', '86%', '64%', '88%', '72%', '80%', '58%'];
 
-export function CyberTextOutputSkeleton({ lines = 8, minHeight = 430 }: { lines?: number; minHeight?: number }) {
+type CyberSkeletonLinesProps = {
+    lines?: number;
+    className?: string;
+};
+
+export function CyberSkeletonLines({ lines = 6, className }: CyberSkeletonLinesProps) {
     return (
-        <div className="rounded-2xl border border-primary/10 bg-black/50 p-4" style={{ minHeight }}>
-            <div className="space-y-3">
-                {Array.from({ length: lines }, (_, index) => (
-                    <CyberSkeleton key={index} className="h-3" style={{ width: textLineWidths[index % textLineWidths.length] }} />
-                ))}
+        <div className={cn('space-y-3', className)}>
+            {Array.from({ length: lines }, (_, index) => (
+                <CyberSkeleton key={index} className="h-3" style={{ width: textLineWidths[index % textLineWidths.length] }} />
+            ))}
+        </div>
+    );
+}
+
+export function CyberTextOutputSkeleton({
+    lines = 8,
+    minHeight = 430,
+    label = 'syncing_buffer',
+}: {
+    lines?: number;
+    minHeight?: number;
+    label?: string;
+}) {
+    return (
+        <div
+            aria-busy="true"
+            aria-live="polite"
+            className="rounded-2xl border border-primary/10 bg-black/50 p-4"
+            style={{ minHeight }}
+        >
+            <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="cyber-skeleton-label font-mono">// {label}</div>
+                <CyberSkeleton className="h-3 w-16" />
+            </div>
+            <CyberSkeletonLines lines={lines} />
+        </div>
+    );
+}
+
+export function CyberImagePreviewSkeleton({
+    size,
+    minHeight = 430,
+    label = 'rendering_frame',
+}: {
+    size?: number;
+    minHeight?: number;
+    label?: string;
+}) {
+    return (
+        <div
+            aria-busy="true"
+            aria-live="polite"
+            className="flex flex-col items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-6"
+            style={{ minHeight }}
+        >
+            <div className="cyber-skeleton-label mb-4 font-mono">// {label}</div>
+            <CyberSkeleton className="rounded-xl" style={{ width: size ?? 192, height: size ?? 192 }} />
+            <div className="mt-5 flex w-full max-w-xs flex-col gap-2">
+                <CyberSkeleton className="h-2.5 w-full" />
+                <CyberSkeleton className="h-2.5 w-2/3" />
             </div>
         </div>
     );
 }
 
-export function CyberImagePreviewSkeleton({ size, minHeight = 430 }: { size?: number; minHeight?: number }) {
-    return (
-        <div className="flex items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-6" style={{ minHeight }}>
-            <CyberSkeleton className="rounded-xl" style={{ width: size ?? 192, height: size ?? 192 }} />
-        </div>
-    );
-}
-
-export function CyberPreviewPanelSkeleton({ minHeight = 420 }: { minHeight?: number }) {
+export function CyberPreviewPanelSkeleton({ minHeight = 420, label = 'processing_frame' }: { minHeight?: number; label?: string }) {
     return (
         <div className="rounded-2xl border border-primary/15 bg-black/45 p-5">
             <div className="mb-4 flex items-center justify-between gap-4">
                 <CyberSkeleton className="h-3 w-28" />
-                <CyberSkeleton className="h-3 w-24" />
+                <div className="cyber-skeleton-label font-mono">// {label}</div>
             </div>
-            <CyberImagePreviewSkeleton minHeight={minHeight} />
+            <CyberImagePreviewSkeleton minHeight={minHeight} label={label} />
         </div>
     );
+}
+
+export function CyberSkeletonForm({ fields = 4, className, label = 'transmitting_signal' }: { fields?: number; className?: string; label?: string }) {
+    return (
+        <div aria-busy="true" aria-live="polite" className={cn('space-y-5', className)}>
+            <div className="cyber-skeleton-label font-mono">// {label}</div>
+            {Array.from({ length: fields }, (_, index) => (
+                <div key={index} className="space-y-2">
+                    <CyberSkeleton className="h-2.5 w-24" />
+                    <CyberSkeleton className="h-11 w-full rounded-xl" />
+                </div>
+            ))}
+            <CyberSkeleton className="mt-2 h-11 w-full rounded-xl" />
+        </div>
+    );
+}
+
+type CyberLoadingZoneProps = {
+    loading: boolean;
+    children: ReactNode;
+    skeleton?: ReactNode;
+    className?: string;
+    label?: string;
+    fields?: number;
+};
+
+export function CyberLoadingZone({ loading, children, skeleton, className, label, fields }: CyberLoadingZoneProps) {
+    if (loading) {
+        return <div className={cn('cyber-skeleton-zone', className)}>{skeleton ?? <CyberSkeletonForm label={label} fields={fields} />}</div>;
+    }
+
+    return <>{children}</>;
 }
 
 export function CyberPageSkeleton() {

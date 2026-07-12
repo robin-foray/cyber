@@ -1,7 +1,7 @@
 import { CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
 import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, ShieldCheck, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 type HashMode = 'sha256' | 'bcrypt';
@@ -109,7 +109,7 @@ export default function HashGenerator() {
 
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
-                            {processing ? <LoaderCircle size={15} className="animate-spin" /> : <Hash size={15} />}
+                            <Hash size={15} />
                             Generate
                         </button>
                         <button type="button" onClick={verify} className="cyber-tool-button" disabled={processing}>
@@ -193,7 +193,7 @@ export default function HashGenerator() {
                                 hash_output
                             </div>
                             <div className={statusClass(error, verifyResult, processing)}>
-                                {error ? <XCircle size={14} /> : processing ? <LoaderCircle size={14} className="animate-spin" /> : verifyResult === true ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}
+                                {error ? <XCircle size={14} /> : verifyResult === true ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}
                                 {error ? 'hash_error' : processing ? 'processing' : verifyResult === null ? 'ready' : verifyResult ? 'match' : 'no_match'}
                             </div>
                         </div>
@@ -201,7 +201,7 @@ export default function HashGenerator() {
                         {error ? (
                             <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
                         ) : processing ? (
-                            <CyberTextOutputSkeleton />
+                            <CyberTextOutputSkeleton label="hash_pipeline" />
                         ) : (
                             <pre className="min-h-[430px] overflow-auto rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-primary">
                                 {hash || '// generate SHA-256 or Laravel bcrypt output'}
