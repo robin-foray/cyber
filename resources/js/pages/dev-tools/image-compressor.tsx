@@ -1,7 +1,7 @@
 import { CyberPreviewPanelSkeleton } from '@/components/cyber/skeleton';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
-import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
+import { Download, Eraser, FileImage, Gauge, ImageDown, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 
 type OutputFormat = 'image/webp' | 'image/jpeg' | 'image/png';
@@ -159,7 +159,7 @@ export default function ImageCompressor() {
 
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={compressImage} className="cyber-tool-button" disabled={processing}>
-                            {processing ? <LoaderCircle size={15} className="animate-spin" /> : <Gauge size={15} />}
+                            <Gauge size={15} />
                             Compress
                         </button>
                         <button type="button" onClick={downloadImage} className="cyber-tool-button" disabled={!compressed}>
@@ -306,7 +306,7 @@ function PreviewPanel({
     loading?: boolean;
 }) {
     if (loading) {
-        return <CyberPreviewPanelSkeleton />;
+        return <CyberPreviewPanelSkeleton label="compress_pipeline" />;
     }
 
     return (

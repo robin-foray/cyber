@@ -1,7 +1,7 @@
 import { CyberImagePreviewSkeleton } from '@/components/cyber/skeleton';
 import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Download, Eraser, LoaderCircle, QrCode, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Download, Eraser, QrCode, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function QrGenerator() {
@@ -85,7 +85,7 @@ export default function QrGenerator() {
 
                     <div className="grid grid-cols-2 gap-2 sm:flex">
                         <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
-                            {processing ? <LoaderCircle size={15} className="animate-spin" /> : <QrCode size={15} />}
+                            <QrCode size={15} />
                             Generate
                         </button>
                         <button type="button" onClick={copyValue} className="cyber-tool-button">
@@ -171,7 +171,7 @@ export default function QrGenerator() {
                                 qr_output
                             </div>
                             <div className={statusClass(error, processing)}>
-                                {error ? <XCircle size={14} /> : processing ? <LoaderCircle size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                                {error ? <XCircle size={14} /> : <CheckCircle2 size={14} />}
                                 {error ? 'generation_error' : processing ? 'processing' : dataUrl ? 'ready' : 'idle'}
                             </div>
                         </div>
@@ -179,7 +179,7 @@ export default function QrGenerator() {
                         {error ? (
                             <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
                         ) : processing ? (
-                            <CyberImagePreviewSkeleton size={size} />
+                            <CyberImagePreviewSkeleton size={Math.min(size, 280)} label="qr_render" />
                         ) : dataUrl ? (
                             <div className="flex min-h-[430px] items-center justify-center rounded-2xl border border-primary/10 bg-black/50 p-6">
                                 <img
