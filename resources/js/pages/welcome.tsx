@@ -1,7 +1,8 @@
+import CyberExpandablePanel from '@/components/cyber/expandable-panel';
 import { StackIcon } from '@/lib/stack-icon';
 import { type CmsPageSection, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Database, ExternalLink, Layers, Play } from 'lucide-react';
+import { Database, ExternalLink, Layers, Play, Terminal } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -20,11 +21,42 @@ type WelcomeStack = {
     accent: string;
 };
 
-type WelcomeProps = {
-    stacks?: WelcomeStack[];
+type WelcomeIntegrity = {
+    id: number;
+    name: string;
+    slug: string;
+    icon: string;
+    level: number;
+    category: string | null;
+    signal: string | null;
 };
 
-export default function Welcome({ stacks = [] }: WelcomeProps) {
+type WelcomeTelemetry = {
+    status: string;
+    node: string;
+    protocol: string;
+    avg_integrity: number;
+    counts: {
+        stacks: number;
+        layers: number;
+        machines: number;
+        free_apis: number;
+        useful_sites: number;
+    };
+    top_layer: string | null;
+    scanned_at: string;
+};
+
+type WelcomeProps = {
+    stacks?: WelcomeStack[];
+    integrity?: WelcomeIntegrity[];
+    telemetry?: WelcomeTelemetry | null;
+};
+
+const consoleStorageKey = 'foray.welcome.console.open';
+const integrityStorageKey = 'foray.welcome.integrity.open';
+
+export default function Welcome({ stacks = [], integrity = [], telemetry = null }: WelcomeProps) {
     const { cms } = usePage<SharedData>().props;
     const pageTitle = cms.settings.welcome_page_title ?? 'Neural Dev Dashboard';
     const integrityTitle = cms.settings.integrity_section_title ?? 'Integrity_Check';
@@ -32,6 +64,22 @@ export default function Welcome({ stacks = [] }: WelcomeProps) {
     const stacksHeadingPrefix = cms.settings.stacks_heading_prefix ?? 'Tech';
     const stacksHeadingAccent = cms.settings.stacks_heading_accent ?? 'Stack';
     const stacksPanelHint = cms.settings.stacks_panel_hint ?? 'live module registry // click a cell to open stack telemetry';
+
+    const integrityItems = integrity.length
+        ? integrity.map((item) => ({
+              key: String(item.id),
+              label: item.name,
+              progress: item.level,
+              meta: item.category ?? item.signal,
+              icon: item.icon,
+          }))
+        : cms.skills.map((skill) => ({
+              key: skill.label,
+              label: skill.label,
+              progress: skill.progress,
+              meta: null as string | null,
+              icon: null as string | null,
+          }));
 
     return (
         <>
@@ -75,33 +123,71 @@ export default function Welcome({ stacks = [] }: WelcomeProps) {
             </section>
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-                <section className="cyber-grid rounded-3xl border border-white/5 bg-surface p-8 lg:col-span-8">
-                    <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                        <div className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_10px_#ccff00]" />
-                        {cms.homeConsole.sectionLabel}
-                    </div>
-                    <div className="grid min-h-64 grid-cols-1 gap-6 md:grid-cols-2">
+                <CyberExpandablePanel
+                    storageKey={consoleStorageKey}
+                    title={cms.homeConsole.sectionLabel}
+                    subtitle="input // output preview channel"
+                    className="cyber-grid lg:col-span-8"
+                    trailing={
+                        <Link
+                            href="/dev-tools/console"
+                            onClick={(event) => event.stopPropagation()}
+                            className="hidden items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-[9px] font-bold tracking-widest text-primary uppercase transition hover:bg-primary hover:text-black sm:inline-flex"
+                        >
+                            <Terminal size={12} /> Open_Tool
+                        </Link>
+                    }
+                >
+                    <div className="grid min-h-52 grid-cols-1 gap-6 md:grid-cols-2">
                         <div className="rounded-2xl border border-white/5 bg-black/40 p-6 font-mono text-[11px]">
                             <p className="mb-2 text-primary/30">// INPUT_BUFFER</p>
-                            <code className="text-on-surface-variant">{cms.homeConsole.inputSample}</code>
+                            <code className="break-words text-on-surface-variant">{cms.homeConsole.inputSample}</code>
                         </div>
                         <div className="rounded-2xl border border-primary/20 bg-black/60 p-6 font-mono text-[11px]">
                             <p className="mb-2 text-primary">// OUTPUT</p>
-                            <code className="text-primary">{cms.homeConsole.outputSample}</code>
+                            <code className="break-words text-primary">{cms.homeConsole.outputSample}</code>
                         </div>
                     </div>
-                </section>
+                    <div className="mt-4 sm:hidden">
+                        <Link
+                            href="/dev-tools/console"
+                            className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase"
+                        >
+                            <Terminal size={12} /> Open console tool
+                        </Link>
+                    </div>
+                </CyberExpandablePanel>
 
-                <section className="rounded-3xl border border-white/5 bg-surface p-8 lg:col-span-4">
-                    <h3 className="mb-8 border-b border-primary/10 pb-4 text-[10px] font-bold tracking-[0.3em] text-primary uppercase">
-                        {integrityTitle}
-                    </h3>
-                    <div className="space-y-6">
-                        {cms.skills.map((skill) => (
-                            <SkillItem key={skill.label} label={skill.label} progress={skill.progress} />
+                <CyberExpandablePanel
+                    storageKey={integrityStorageKey}
+                    title={integrityTitle}
+                    subtitle={
+                        telemetry
+                            ? `avg ${telemetry.avg_integrity}% // ${telemetry.counts.stacks} modules`
+                            : 'skill channel integrity'
+                    }
+                    className="lg:col-span-4"
+                >
+                    {telemetry && (
+                        <div className="mb-5 grid grid-cols-2 gap-2">
+                            <TelemetryChip label="Status" value={telemetry.status} />
+                            <TelemetryChip label="Node" value={telemetry.node} />
+                            <TelemetryChip label="Layers" value={String(telemetry.counts.layers)} />
+                            <TelemetryChip label="Top_Layer" value={telemetry.top_layer ?? 'n/a'} />
+                        </div>
+                    )}
+                    <div className="space-y-5">
+                        {integrityItems.map((item) => (
+                            <IntegrityItem
+                                key={item.key}
+                                label={item.label}
+                                progress={item.progress}
+                                meta={item.meta}
+                                icon={item.icon}
+                            />
                         ))}
                     </div>
-                </section>
+                </CyberExpandablePanel>
             </div>
 
             <StacksSection
@@ -114,6 +200,48 @@ export default function Welcome({ stacks = [] }: WelcomeProps) {
 
             <PageSections sections={cms.pageSections} />
         </>
+    );
+}
+
+function TelemetryChip({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="rounded-xl border border-primary/15 bg-black/35 px-3 py-2">
+            <p className="text-[8px] font-bold tracking-widest text-on-surface-variant/60 uppercase">{label}</p>
+            <p className="mt-1 truncate text-[10px] font-bold tracking-widest text-primary uppercase">{value}</p>
+        </div>
+    );
+}
+
+function IntegrityItem({
+    label,
+    progress,
+    meta,
+    icon,
+}: {
+    label: string;
+    progress: number;
+    meta: string | null;
+    icon: string | null;
+}) {
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3 text-[10px] font-bold">
+                <span className="flex min-w-0 items-center gap-2">
+                    {icon ? <StackIcon icon={icon} className="h-4 w-4" /> : <Database size={12} className="shrink-0 text-primary" />}
+                    <span className="min-w-0 truncate uppercase">{label}</span>
+                </span>
+                <span className="shrink-0 text-primary">{progress}%</span>
+            </div>
+            {meta && <p className="text-[8px] font-bold tracking-widest text-on-surface-variant/50 uppercase">{meta}</p>}
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
+                <motion.div
+                    className="h-full rounded-full bg-primary shadow-[0_0_8px_#ccff00]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.55 }}
+                />
+            </div>
+        </div>
     );
 }
 
@@ -338,22 +466,6 @@ function PageSections({ sections }: { sections: CmsPageSection[] }) {
                     {section.body && <p className="mt-4 text-sm leading-7 text-on-surface-variant">{section.body}</p>}
                 </section>
             ))}
-        </div>
-    );
-}
-
-function SkillItem({ label, progress }: { label: string; progress: number }) {
-    return (
-        <div className="space-y-3">
-            <div className="flex items-center justify-between text-[10px] font-bold">
-                <span className="flex items-center gap-2">
-                    <Database size={12} /> {label}
-                </span>
-                <span className="text-primary">{progress}%</span>
-            </div>
-            <div className="h-1 overflow-hidden rounded-full bg-white/5">
-                <div className="h-full bg-primary shadow-[0_0_8px_#ccff00]" style={{ width: `${progress}%` }} />
-            </div>
         </div>
     );
 }

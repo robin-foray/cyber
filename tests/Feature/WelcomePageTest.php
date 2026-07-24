@@ -56,6 +56,9 @@ class WelcomePageTest extends TestCase
                 ->where('stacks.0.category', 'Backend')
                 ->has('stacks.0.level')
                 ->has('stacks.0.accent')
+                ->has('integrity')
+                ->has('telemetry.avg_integrity')
+                ->has('telemetry.counts.stacks')
             );
     }
 }

@@ -12,6 +12,7 @@ description: Build or modify cyber-themed UI components, pages, and styling. Use
 | CyberShell | `components/cyber-shell.tsx` | Root layout, sidebar state |
 | CyberSidebar | `components/cyber/sidebar.tsx` | Nav, dev-tools menu, identity card |
 | CyberTopbar | `components/cyber/topbar.tsx` | Section label from URL; mobile auth = profile icon → `/login` or `/profile` |
+| CyberExpandablePanel | `components/cyber/expandable-panel.tsx` | Collapsible cyber panels (welcome console / integrity) |
 | CyberFooter | `components/cyber/footer.tsx` | Footer links |
 | ForayBrand | `components/cyber/foray-brand.tsx` | Logo / brand mark |
 | GlitchText | `components/cyber/glitch-text.tsx` | Animated glitch heading |
@@ -45,7 +46,10 @@ Defined in `resources/css/app.css` `@theme` block:
 ## localStorage keys
 
 - `foray.sidebar.open` — sidebar expanded state
-- `foray.dev-tools.open` — dev-tools submenu expanded
+- `foray.dev-tools.open` — legacy; prefer `foray.cool-stuff.open`
+- `foray.cool-stuff.open` — COOL_STUFF menu open
+- `foray.welcome.console.open` — Terminal console panel
+- `foray.welcome.integrity.open` — Terminal integrity panel
 
 Prefix new keys with `foray.`.
 
