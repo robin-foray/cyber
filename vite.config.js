@@ -14,6 +14,9 @@ export default defineConfig({
         hmr: {
             host: 'localhost',
         },
+        watch: {
+            ignored: ['**/public/stacks/**', '**/public/build/**', '**/storage/**'],
+        },
     },
     test: {
         environment: 'node',
@@ -30,13 +33,5 @@ export default defineConfig({
     ],
     esbuild: {
         jsx: 'automatic',
-    },
-    server: {
-        host: '127.0.0.1',
-        port: 5173,
-        strictPort: true,
-        watch: {
-            ignored: ['**/public/stacks/**', '**/public/build/**', '**/storage/**'],
-        },
     },
 });
