@@ -1,21 +1,12 @@
-import { type SharedData } from '@/types';
-import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import CoolStuffMenu, { coolStuffStorageKey } from '@/components/cyber/cool-stuff-menu';
-import { Link } from '@inertiajs/react';
-import {
-    ChevronLeft,
-    Command,
-    Facebook,
-    FileText,
-    Github,
-    Instagram,
-    Share2,
-    Terminal,
-    Twitter,
-    Zap,
-} from 'lucide-react';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
+import { resolveCmsIcon } from '@/lib/cms-icons';
+import { type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { Facebook, Github, Instagram, Twitter, Zap } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import ForayBrand from './foray-brand';
+import { ChevronLeft } from 'lucide-react';
 
 type CyberSidebarProps = {
     currentUrl: string;
@@ -25,7 +16,15 @@ type CyberSidebarProps = {
     onOpen: () => void;
 };
 
+const socialIconMap = {
+    Github,
+    Twitter,
+    Instagram,
+    Facebook,
+} as const;
+
 export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen }: CyberSidebarProps) {
+    const { cms } = usePage<SharedData>().props;
     const [isCoolStuffOpen, setIsCoolStuffOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return false;
@@ -53,6 +52,9 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
         setIsCoolStuffOpen(open);
     }
 
+    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user);
+    let coolStuffRendered = false;
+
     return (
         <aside
             className={`fixed top-0 left-0 z-50 flex h-full flex-col border-r border-primary/20 bg-surface-low/95 backdrop-blur-md transition-all duration-300 ${
@@ -77,23 +79,43 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
             </div>
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
-                <NavItem icon={<Terminal size={18} />} label="TERMINAL" href="/" active={isActiveHref(currentUrl, '/')} full={isOpen} />
-                <CoolStuffMenu
-                    currentUrl={currentUrl}
-                    isOpen={isCoolStuffOpen}
-                    onCollapsedOpen={() => {
-                        setCoolStuffOpen(true);
-                        onOpen();
-                    }}
-                    onToggle={() => setCoolStuffOpen(!isCoolStuffOpen)}
-                    full={isOpen}
-                />
-                <NavItem icon={<Share2 size={18} />} label="PROJECTS" href="/#projects" full={isOpen} />
-                <NavItem icon={<FileText size={18} />} label="SYSTEM_LOGS" href="/#logs" full={isOpen} />
-                {user && <NavItem icon={<Command size={18} />} label="PROFILE" href="/profile" active={isActiveHref(currentUrl, '/profile')} full={isOpen} />}
+                {navigation.map((item) => {
+                    if (item.isGroup) {
+                        if (coolStuffRendered) {
+                            return null;
+                        }
+
+                        coolStuffRendered = true;
+
+                        return (
+                            <CoolStuffMenu
+                                key={item.id}
+                                currentUrl={currentUrl}
+                                isOpen={isCoolStuffOpen}
+                                onCollapsedOpen={() => {
+                                    setCoolStuffOpen(true);
+                                    onOpen();
+                                }}
+                                onToggle={() => setCoolStuffOpen(!isCoolStuffOpen)}
+                                full={isOpen}
+                            />
+                        );
+                    }
+
+                    return (
+                        <NavItem
+                            key={item.id}
+                            icon={resolveCmsIcon(item.icon)}
+                            label={item.label}
+                            href={item.href ?? '/'}
+                            active={isActiveHref(currentUrl, item.href ?? '/')}
+                            full={isOpen}
+                        />
+                    );
+                })}
             </nav>
 
-            <SocialLinks full={isOpen} />
+            <SocialLinks full={isOpen} links={cms.socialLinks} />
         </aside>
     );
 }
@@ -132,7 +154,19 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     );
 }
 
-function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode; label: string; href: string; active?: boolean; full: boolean }) {
+function NavItem({
+    icon: Icon,
+    label,
+    href,
+    active = false,
+    full,
+}: {
+    icon: React.ComponentType<{ size?: number }>;
+    label: string;
+    href: string;
+    active?: boolean;
+    full: boolean;
+}) {
     const handleClick = useInstantCyberClick(href);
 
     return (
@@ -147,34 +181,31 @@ function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode;
                 active ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : 'text-on-surface-variant hover:bg-primary/5 hover:text-primary'
             }`}
         >
-            {icon}
+            <Icon size={18} />
             {full && <span className="text-[11px] font-bold tracking-widest">{label}</span>}
         </Link>
     );
 }
 
-function SocialLinks({ full }: { full: boolean }) {
-    const links = [
-        { label: 'Github', icon: <Github size={14} /> },
-        { label: 'Twitter', icon: <Twitter size={14} /> },
-        { label: 'Instagram', icon: <Instagram size={14} /> },
-        { label: 'Facebook', icon: <Facebook size={14} /> },
-    ];
-
+function SocialLinks({ full, links }: { full: boolean; links: SharedData['cms']['socialLinks'] }) {
     return (
         <div className={`shrink-0 border-t border-white/5 p-3 ${full ? '' : 'px-3'}`}>
             <div className={`grid gap-2 ${full ? 'grid-cols-4' : 'grid-cols-1'}`}>
-                {links.map((link) => (
-                    <a
-                        key={link.label}
-                        href="#"
-                        aria-label={link.label}
-                        title={link.label}
-                        className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
-                    >
-                        {link.icon}
-                    </a>
-                ))}
+                {links.map((link) => {
+                    const Icon = socialIconMap[link.platform as keyof typeof socialIconMap] ?? Github;
+
+                    return (
+                        <a
+                            key={link.platform}
+                            href={link.url ?? '#'}
+                            aria-label={link.platform}
+                            title={link.platform}
+                            className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
+                        >
+                            <Icon size={14} />
+                        </a>
+                    );
+                })}
             </div>
         </div>
     );

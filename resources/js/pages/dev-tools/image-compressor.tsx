@@ -1,7 +1,8 @@
 import { CyberPreviewPanelSkeleton } from '@/components/cyber/skeleton';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
-import { Download, Eraser, FileImage, Gauge, ImageDown, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
+import { Download, Eraser, FileImage, Gauge, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
 
 type OutputFormat = 'image/webp' | 'image/jpeg' | 'image/png';
@@ -21,6 +22,7 @@ const formats: Array<{ label: string; value: OutputFormat; extension: string }> 
 ];
 
 export default function ImageCompressor() {
+    const page = useDevToolPage('image-compressor');
     const [sourceFile, setSourceFile] = useState<File | null>(null);
     const [sourceUrl, setSourceUrl] = useState('');
     const [sourceSize, setSourceSize] = useState({ width: 0, height: 0 });
@@ -144,32 +146,25 @@ export default function ImageCompressor() {
 
     return (
         <>
-            <Head title="Image Compressor" />
-            <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <ImageDown size={18} />
-                            DEV_TOOL_05 // IMAGE_COMPRESSOR
+            <Head title={page.pageTitle} />
+            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+                <DevToolPageHeader
+                    slug="image-compressor"
+                    actions={
+                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                            <button type="button" onClick={compressImage} className="cyber-tool-button" disabled={processing}>
+                                <Gauge size={15} />
+                                Compress
+                            </button>
+                            <button type="button" onClick={downloadImage} className="cyber-tool-button" disabled={!compressed}>
+                                <Download size={15} /> Download
+                            </button>
+                            <button type="button" onClick={resetTool} className="cyber-tool-button">
+                                <Eraser size={15} /> Clear
+                            </button>
                         </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Image <span className="glow-text text-primary">Compressor</span>
-                        </h1>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 sm:flex">
-                        <button type="button" onClick={compressImage} className="cyber-tool-button" disabled={processing}>
-                            <Gauge size={15} />
-                            Compress
-                        </button>
-                        <button type="button" onClick={downloadImage} className="cyber-tool-button" disabled={!compressed}>
-                            <Download size={15} /> Download
-                        </button>
-                        <button type="button" onClick={resetTool} className="cyber-tool-button">
-                            <Eraser size={15} /> Clear
-                        </button>
-                    </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Original" value={telemetry.original} />
@@ -178,11 +173,13 @@ export default function ImageCompressor() {
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
-                    <aside className="space-y-5 rounded-2xl border border-primary/15 bg-black/45 p-5">
-                        <label className="flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-primary/25 bg-primary/5 px-5 text-center transition-all hover:border-primary/60 hover:bg-primary/10">
-                            <UploadCloud className="mb-4 text-primary" size={34} />
+                    <aside className="border-primary/15 space-y-5 rounded-2xl border bg-black/45 p-5">
+                        <label className="border-primary/25 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-5 text-center transition-all">
+                            <UploadCloud className="text-primary mb-4" size={34} />
                             <span className="font-display text-lg font-bold text-white uppercase">Upload image</span>
-                            <span className="mt-2 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">JPG, PNG, WebP, GIF source</span>
+                            <span className="text-on-surface-variant mt-2 text-[10px] font-bold tracking-widest uppercase">
+                                JPG, PNG, WebP, GIF source
+                            </span>
                             <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                         </label>
 
@@ -195,10 +192,10 @@ export default function ImageCompressor() {
                                     value={quality}
                                     disabled={format === 'image/png'}
                                     onChange={(event) => setQuality(Number(event.target.value))}
-                                    className="w-full accent-primary disabled:opacity-35"
+                                    className="accent-primary w-full disabled:opacity-35"
                                 />
                                 {format === 'image/png' && (
-                                    <div className="mt-2 text-[9px] font-bold tracking-widest text-on-surface-variant/55 uppercase">
+                                    <div className="text-on-surface-variant/55 mt-2 text-[9px] font-bold tracking-widest uppercase">
                                         PNG ignores quality. Use WebP/JPEG for real compression.
                                     </div>
                                 )}
@@ -214,7 +211,7 @@ export default function ImageCompressor() {
                                             className={`rounded-xl border px-3 py-3 text-[10px] font-bold uppercase transition-all ${
                                                 format === item.value
                                                     ? 'border-primary bg-primary text-black shadow-[0_0_18px_rgba(204,255,0,0.25)]'
-                                                    : 'border-primary/15 bg-black/35 text-on-surface-variant hover:border-primary/50 hover:text-primary'
+                                                    : 'border-primary/15 text-on-surface-variant hover:border-primary/50 hover:text-primary bg-black/35'
                                             }`}
                                         >
                                             {item.label}
@@ -233,7 +230,11 @@ export default function ImageCompressor() {
                             </div>
                         </div>
 
-                        {notice && <div className="rounded-2xl border border-yellow-300/20 bg-yellow-300/5 p-4 font-mono text-sm text-yellow-100">{notice}</div>}
+                        {notice && (
+                            <div className="rounded-2xl border border-yellow-300/20 bg-yellow-300/5 p-4 font-mono text-sm text-yellow-100">
+                                {notice}
+                            </div>
+                        )}
                         {error && <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 font-mono text-sm text-red-200">{error}</div>}
                     </aside>
 
@@ -261,8 +262,8 @@ export default function ImageCompressor() {
 function StatusTile({ label, value }: { label: string; value: string }) {
     return (
         <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
-            <div className="text-[9px] font-bold tracking-widest text-on-surface-variant/55 uppercase">{label}</div>
-            <div className="mt-2 font-display text-lg font-bold text-primary uppercase">{value}</div>
+            <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
+            <div className="font-display text-primary mt-2 text-lg font-bold uppercase">{value}</div>
         </div>
     );
 }
@@ -270,7 +271,7 @@ function StatusTile({ label, value }: { label: string; value: string }) {
 function ControlBlock({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div>
-            <div className="mb-2 flex items-center gap-2 text-[10px] font-bold tracking-widest text-primary uppercase">
+            <div className="text-primary mb-2 flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase">
                 <SlidersHorizontal size={13} />
                 {label}
             </div>
@@ -287,7 +288,7 @@ function NumberInput({ value, onChange }: { value: number; onChange: (value: num
             max="8000"
             value={value}
             onChange={(event) => onChange(Number(event.target.value))}
-            className="w-full rounded-xl border border-primary/15 bg-black/45 px-3 py-3 font-mono text-sm font-bold text-white outline-none transition-all focus:border-primary/60"
+            className="border-primary/15 focus:border-primary/60 w-full rounded-xl border bg-black/45 px-3 py-3 font-mono text-sm font-bold text-white transition-all outline-none"
         />
     );
 }
@@ -310,19 +311,19 @@ function PreviewPanel({
     }
 
     return (
-        <div className="rounded-2xl border border-primary/15 bg-black/45 p-5">
+        <div className="border-primary/15 rounded-2xl border bg-black/45 p-5">
             <div className="mb-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 text-xs font-bold tracking-widest text-primary uppercase">
+                <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                     {icon}
                     {title}
                 </div>
-                <div className="truncate text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">{meta}</div>
+                <div className="text-on-surface-variant truncate text-[10px] font-bold tracking-widest uppercase">{meta}</div>
             </div>
             <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/55">
                 {imageUrl ? (
                     <img src={imageUrl} alt={title} className="max-h-[520px] w-full object-contain" />
                 ) : (
-                    <div className="px-6 text-center text-[10px] font-bold tracking-widest text-on-surface-variant/50 uppercase">no image loaded</div>
+                    <div className="text-on-surface-variant/50 px-6 text-center text-[10px] font-bold tracking-widest uppercase">no image loaded</div>
                 )}
             </div>
         </div>

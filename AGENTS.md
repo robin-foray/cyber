@@ -10,7 +10,7 @@ composer install
 npm ci
 php artisan key:generate
 touch database/database.sqlite
-php artisan migrate
+php artisan foray:install
 composer run dev   # php artisan serve + queue + pail + vite
 ```
 
@@ -53,7 +53,19 @@ tests/Feature/          → PHPUnit feature tests
 1. **Client-only** (preferred): logic in `resources/js/lib/<name>.ts`, page in `resources/js/pages/dev-tools/<name>.tsx`, route closure in `web.php`, Vitest in `lib/<name>.test.ts`.
 2. **Server-backed** (when PHP is needed): add controller under `App\Http\Controllers\DevTools\`, JSON endpoints for API, Inertia page for UI. Example: `HashGeneratorController` (bcrypt).
 
-When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` → `devLinks` array.
+When adding a dev-tool, add a `NavigationItem` child under DEV_TOOLS in Filament (not hardcoded sidebar).
+
+## Adding new site features (mandatory checklist)
+
+Every new public function **must** include:
+
+1. **Filament admin** — model, migration, Resource (or extend existing CMS). See `.cursor/rules/filament-cms.mdc`
+2. **Tests** — PHPUnit (routes, CMS/ContentService, API); Vitest for client lib logic
+3. **ContentService** — if data appears on the frontend, expose via `cms` Inertia prop
+4. **CmsSeeder** — seed default content for new CMS models (idempotent `updateOrCreate`)
+5. **AdminUserSeeder** — default admin from `config/foray.php` / `FORAY_ADMIN_*` env vars
+
+A feature is **not complete** without Filament + tests.
 
 ## Auth & users
 
@@ -62,6 +74,30 @@ When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` 
 - Cyber identity fields: `role`, `title`, `avatar_seed`, `bio` (see `/profile`)
 - Settings profile (`/settings/profile`) handles email/name + account deletion
 - Shared Inertia prop: `auth.user` with `avatar_url`, `is_admin` appended
+- **Filament admin** at `/admin` — only `role: admin` users (`canAccessPanel`)
+
+## CMS (Filament)
+
+Content is database-driven and shared via Inertia `cms` prop (see `ContentService`).
+
+| Admin resource | Frontend usage |
+|----------------|----------------|
+| Menüpontok | Sidebar navigation + dev-tools submenu |
+| Social linkek | Sidebar footer icons |
+| Hero szekció | Welcome page hero |
+| Dev konzol preview | Welcome console section |
+| Integrity metrikák | Welcome skill bars |
+| Tech stack | Welcome stacks grid |
+| Ticker üzenetek | Topbar + footer tickers |
+| Deployment lépések | Deployments dev-tool page |
+| Dev-tool oldalak | Dev-tool fejlécek, címek, minta input |
+| Oldal szekciók | PROJECTS / SYSTEM_LOGS anchor szekciók |
+| Oldal beállítások | Page titles, copyright, topbar labels, stacks copy |
+
+Seed default content: `php artisan foray:install` (or `php artisan db:seed`)
+Default admin: `admin@foray.local` / `password` (override with `FORAY_ADMIN_*` in `.env`)
+
+Production: `php artisan foray:install --force` after `composer install --no-dev` and `npm run build`.
 
 ## Testing conventions
 
@@ -85,6 +121,7 @@ When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` 
 | Path | Purpose |
 |------|---------|
 | `.cursor/rules/` | Auto-applied coding rules per stack area |
+| `.cursor/rules/filament-cms.mdc` | Filament + CMS requirements for new features |
 | `.cursor/skills/` | Step-by-step workflows for common tasks |
 | `.cursor/mcp.json.example` | Recommended MCP servers (copy & configure locally) |
 
@@ -92,4 +129,4 @@ When adding a dev-tool, also update `resources/js/components/cyber/sidebar.tsx` 
 
 - `profile.update` route name exists in both `web.php` and `settings.php` — settings wins (loaded last)
 - `tests/Pest.php` exists but Pest is not a dependency — use PHPUnit
-- Deployments dev-tool is static UI only (no lib/backend)
+- Deployments dev-tool content is CMS-managed via `DeploymentStepResource`

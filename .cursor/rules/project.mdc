@@ -38,10 +38,13 @@ Use `@/` alias for `resources/js/*`. Named type imports: `import { type Foo } fr
 
 ## When adding features
 
+**Mandatory:** every new site function ships with a **Filament admin resource** (or extension of existing CMS) **and tests**.
+
 1. Read a similar existing feature first
-2. Add tests (PHPUnit for routes/controllers, Vitest for lib logic)
-3. Update sidebar `devLinks` if adding a dev-tool
-4. Run `./vendor/bin/phpunit` and `npm test` before finishing
+2. **Filament** — model, migration, Resource in `app/Filament/Resources/`; wire via `ContentService` if public-facing (see `.cursor/rules/filament-cms.mdc`)
+3. **Tests** — PHPUnit for routes/controllers/models; Vitest for `resources/js/lib/*` logic
+4. New dev-tool → add `NavigationItem` child in Filament (not hardcoded sidebar)
+5. Run `./vendor/bin/phpunit` and `npm test` before finishing
 
 ## Do not
 
@@ -49,3 +52,5 @@ Use `@/` alias for `resources/js/*`. Named type imports: `import { type Foo } fr
 - Create `tailwind.config.js` (theme lives in `resources/css/app.css`)
 - Use shadcn components inside cyber dev-tool pages (use cyber CSS classes)
 - Duplicate `profile.update` route names
+- Hardcode CMS-editable content in React when a Filament resource should own it
+- Ship a new public page/feature without Filament admin + tests

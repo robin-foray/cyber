@@ -25,6 +25,7 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    cms: CmsContent;
     [key: string]: unknown;
 }
 
@@ -43,4 +44,100 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
+}
+
+export interface CmsNavigationChild {
+    label: string;
+    href: string;
+}
+
+export interface CmsNavigationItem {
+    id: number;
+    label: string;
+    href: string | null;
+    icon: string | null;
+    requiresAuth: boolean;
+    isGroup: boolean;
+    children: CmsNavigationChild[];
+}
+
+export interface CmsHero {
+    badge: string;
+    titleLine: string;
+    titleAccent: string;
+    ctaLabel: string;
+    backgroundImage: string;
+}
+
+export interface CmsHomeConsole {
+    sectionLabel: string;
+    inputSample: string;
+    outputSample: string;
+}
+
+export interface CmsSkill {
+    label: string;
+    progress: number;
+}
+
+export interface CmsStack {
+    name: string;
+    signal: string;
+    summary: string;
+    bullets: string[];
+    docs: string;
+    icon: string;
+}
+
+export interface CmsTicker {
+    text: string;
+    isHighlighted: boolean;
+}
+
+export interface CmsSocialLink {
+    platform: string;
+    url: string | null;
+}
+
+export interface CmsContent {
+    navigation: CmsNavigationItem[];
+    hero: CmsHero;
+    homeConsole: CmsHomeConsole;
+    skills: CmsSkill[];
+    stacks: CmsStack[];
+    tickers: {
+        topbar: CmsTicker[];
+        footer: CmsTicker[];
+    };
+    socialLinks: CmsSocialLink[];
+    deploymentSteps: string[];
+    devToolPages: Record<string, CmsDevToolPage>;
+    pageSections: CmsPageSection[];
+    topbarLabels: CmsTopbarLabels;
+    settings: Record<string, string>;
+}
+
+export interface CmsDevToolPage {
+    headerLabel: string;
+    pageTitle: string;
+    headingPrefix: string | null;
+    headingAccent: string | null;
+    sampleInput: string | null;
+    icon: string | null;
+}
+
+export interface CmsPageSection {
+    slug: string;
+    sectionLabel: string;
+    title: string;
+    titleAccent: string | null;
+    body: string | null;
+}
+
+export interface CmsTopbarLabels {
+    terminal: string;
+    devTools: string;
+    accessGate: string;
+    nodeRegistration: string;
+    profile: string;
 }
