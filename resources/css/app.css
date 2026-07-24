@@ -266,6 +266,8 @@
     border: 1px solid rgba(204, 255, 0, 0.16);
     background: rgba(0, 0, 0, 0.48);
     padding: 0.75rem 0.9rem;
+    font-size: 16px;
+    line-height: 1.4;
     color: #e5e2e1;
     outline: none;
     transition:
