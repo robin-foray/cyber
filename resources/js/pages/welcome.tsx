@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import { Head } from '@inertiajs/react';
 import {
     Braces,
@@ -121,8 +120,7 @@ export default function Welcome() {
                 />
             </Head>
 
-            <CyberShell>
-                        <section
+            <section
                             className="glow-box group relative min-h-[430px] overflow-hidden rounded-3xl border border-primary/20 bg-surface-low p-8 transition-all duration-500 md:p-12"
                             style={{
                                 backgroundImage: "url('/assets/hero-cyber-archer.png')",
@@ -185,7 +183,6 @@ export default function Welcome() {
                         </div>
 
                         <StacksSection />
-            </CyberShell>
         </>
     );
 }

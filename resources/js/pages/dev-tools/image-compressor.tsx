@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { CyberPreviewPanelSkeleton } from '@/components/cyber/skeleton';
 import { formatBytes, getTargetSize } from '@/lib/image-compressor';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
@@ -143,7 +143,7 @@ export default function ImageCompressor() {
     }
 
     return (
-        <CyberShell>
+        <>
             <Head title="Image Compressor" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -249,11 +249,12 @@ export default function ImageCompressor() {
                             icon={<ScanSearch size={18} />}
                             imageUrl={compressed?.url ?? ''}
                             meta={compressed ? `${compressed.width}x${compressed.height} // ${formatBytes(compressed.blob.size)}` : 'run compression'}
+                            loading={processing}
                         />
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -291,7 +292,23 @@ function NumberInput({ value, onChange }: { value: number; onChange: (value: num
     );
 }
 
-function PreviewPanel({ title, icon, imageUrl, meta }: { title: string; icon: ReactNode; imageUrl: string; meta: string }) {
+function PreviewPanel({
+    title,
+    icon,
+    imageUrl,
+    meta,
+    loading = false,
+}: {
+    title: string;
+    icon: ReactNode;
+    imageUrl: string;
+    meta: string;
+    loading?: boolean;
+}) {
+    if (loading) {
+        return <CyberPreviewPanelSkeleton />;
+    }
+
     return (
         <div className="rounded-2xl border border-primary/15 bg-black/45 p-5">
             <div className="mb-4 flex items-center justify-between gap-4">

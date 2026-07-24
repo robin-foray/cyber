@@ -1,11 +1,10 @@
 import { type SharedData } from '@/types';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
+import CoolStuffMenu, { coolStuffStorageKey } from '@/components/cyber/cool-stuff-menu';
 import { Link } from '@inertiajs/react';
 import {
-    ChevronDown,
     ChevronLeft,
-    Check,
     Command,
-    Construction,
     Facebook,
     FileText,
     Github,
@@ -26,37 +25,32 @@ type CyberSidebarProps = {
     onOpen: () => void;
 };
 
-const devLinks = [
-    { label: 'CONSOLE', href: '/dev-tools/console' },
-    { label: 'RUNTIME', href: '/dev-tools/runtime' },
-    { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator' },
-    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator' },
-    { label: 'CRON_GURU', href: '/dev-tools/cron-guru' },
-    { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor' },
-    { label: 'DEPLOYMENTS', href: '/dev-tools/deployments' },
-];
-
-const devToolsStorageKey = 'foray.dev-tools.open';
-
 export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen }: CyberSidebarProps) {
-    const [isDevToolsOpen, setIsDevToolsOpen] = useState(() => {
+    const [isCoolStuffOpen, setIsCoolStuffOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return false;
         }
 
-        return window.localStorage.getItem(devToolsStorageKey) === 'true';
+        const storedValue = window.localStorage.getItem(coolStuffStorageKey);
+        const legacyValue = window.localStorage.getItem('foray.dev-tools.open');
+
+        if (storedValue !== null) {
+            return storedValue === 'true';
+        }
+
+        return legacyValue === 'true';
     });
 
     useEffect(() => {
-        window.localStorage.setItem(devToolsStorageKey, String(isDevToolsOpen));
-    }, [isDevToolsOpen]);
+        window.localStorage.setItem(coolStuffStorageKey, String(isCoolStuffOpen));
+    }, [isCoolStuffOpen]);
 
-    function setDevToolsOpen(open: boolean) {
+    function setCoolStuffOpen(open: boolean) {
         if (typeof window !== 'undefined') {
-            window.localStorage.setItem(devToolsStorageKey, String(open));
+            window.localStorage.setItem(coolStuffStorageKey, String(open));
         }
 
-        setIsDevToolsOpen(open);
+        setIsCoolStuffOpen(open);
     }
 
     return (
@@ -84,14 +78,14 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
                 <NavItem icon={<Terminal size={18} />} label="TERMINAL" href="/" active={isActiveHref(currentUrl, '/')} full={isOpen} />
-                <DevToolsMenu
+                <CoolStuffMenu
                     currentUrl={currentUrl}
-                    isOpen={isDevToolsOpen}
+                    isOpen={isCoolStuffOpen}
                     onCollapsedOpen={() => {
-                        setDevToolsOpen(true);
+                        setCoolStuffOpen(true);
                         onOpen();
                     }}
-                    onToggle={() => setDevToolsOpen(!isDevToolsOpen)}
+                    onToggle={() => setCoolStuffOpen(!isCoolStuffOpen)}
                     full={isOpen}
                 />
                 <NavItem icon={<Share2 size={18} />} label="PROJECTS" href="/#projects" full={isOpen} />
@@ -108,9 +102,17 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     const label = user?.name ?? 'GUEST_NODE';
     const role = user?.is_admin ? 'ADMIN' : (user?.role ?? 'VISITOR').toString().toUpperCase();
     const title = user?.title ?? 'SYSTEM: ONLINE';
+    const href = user ? '/profile' : '/login';
+    const handleClick = useInstantCyberClick(href);
 
     return (
-        <Link href={user ? '/profile' : '/login'} className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5">
+        <Link
+            href={href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
+            className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
+        >
             <p className="truncate text-[10px] tracking-widest text-primary uppercase opacity-70">Node_Identity</p>
             <div className="mt-2 flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary/10 text-primary">
@@ -131,9 +133,14 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
 }
 
 function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode; label: string; href: string; active?: boolean; full: boolean }) {
+    const handleClick = useInstantCyberClick(href);
+
     return (
         <Link
             href={href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
             aria-label={label}
             title={label}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${full ? '' : 'justify-center'} ${
@@ -143,79 +150,6 @@ function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode;
             {icon}
             {full && <span className="text-[11px] font-bold tracking-widest">{label}</span>}
         </Link>
-    );
-}
-
-function DevToolsMenu({
-    currentUrl,
-    isOpen,
-    onCollapsedOpen,
-    onToggle,
-    full,
-}: {
-    currentUrl: string;
-    isOpen: boolean;
-    onCollapsedOpen: () => void;
-    onToggle: () => void;
-    full: boolean;
-}) {
-    const isActive = currentUrl.startsWith('/dev-tools');
-
-    return (
-        <div className="space-y-1">
-            <button
-                type="button"
-                aria-label="DEV_TOOLS"
-                title="DEV_TOOLS"
-                onClick={() => {
-                    if (full) {
-                        onToggle();
-                        return;
-                    }
-
-                    onCollapsedOpen();
-                }}
-                className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all hover:bg-primary/5 hover:text-primary ${
-                    full ? '' : 'justify-center'
-                } ${
-                    isActive
-                        ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]'
-                        : 'text-on-surface-variant'
-                }`}
-            >
-                <Construction size={18} />
-                {full && (
-                    <>
-                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">DEV_TOOLS</span>
-                        <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                    </>
-                )}
-            </button>
-
-            {full && isOpen && (
-                <div className="ml-6 space-y-0.5 border-l border-primary/10 pl-3">
-                    {devLinks.map((tool) => {
-                        const isChecked = isActiveHref(currentUrl, tool.href);
-
-                        return (
-                            <Link
-                                key={tool.label}
-                                href={tool.href}
-                                aria-current={isChecked ? 'page' : undefined}
-                                className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
-                                    isChecked
-                                        ? 'border-primary/25 bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(204,255,0,0.12)]'
-                                        : 'border-transparent text-on-surface-variant/70'
-                                }`}
-                            >
-                                <span className="min-w-0 flex-1 truncate">{tool.label}</span>
-                                {isChecked && <Check size={12} className="shrink-0 drop-shadow-[0_0_5px_rgba(204,255,0,0.7)]" />}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
     );
 }
 

@@ -1,4 +1,3 @@
-import CyberShell from '@/components/cyber-shell';
 import InputError from '@/components/input-error';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { LoaderCircle, UserPlus } from 'lucide-react';
@@ -27,7 +26,7 @@ export default function Register() {
     };
 
     return (
-        <CyberShell>
+        <>
             <Head title="Register" />
             <section className="cyber-grid mx-auto max-w-4xl rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
@@ -122,7 +121,7 @@ export default function Register() {
                     </form>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
