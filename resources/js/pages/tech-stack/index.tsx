@@ -1,4 +1,3 @@
-import { cyberLayout } from '@/layouts/cyber-layout';
 import SpecularButton from '@/components/cyber/specular-button';
 import { Head, router } from '@inertiajs/react';
 import { Cpu, ExternalLink, Layers } from 'lucide-react';
@@ -249,5 +248,3 @@ export default function TechStackIndex({ categories, stacks, activeCategory }: P
         </>
     );
 }
-
-TechStackIndex.layout = cyberLayout;

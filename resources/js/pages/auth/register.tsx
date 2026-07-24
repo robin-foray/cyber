@@ -1,7 +1,7 @@
-import { cyberLayout } from '@/layouts/cyber-layout';
+import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { LoaderCircle, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
 
 interface RegisterForm {
@@ -28,7 +28,7 @@ export default function Register() {
 
     return (
         <>
-        <Head title="Register" />
+            <Head title="Register" />
             <section className="cyber-grid mx-auto max-w-4xl rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
                     <UserPlus size={18} />
@@ -45,7 +45,8 @@ export default function Register() {
                     </div>
 
                     <form className="rounded-2xl border border-primary/15 bg-black/50 p-6" onSubmit={submit}>
-                        <div className="grid gap-5">
+                        <CyberLoadingZone loading={processing} label="node_registration" fields={4}>
+                            <div className="grid gap-5">
                             <CyberField label="Operator_Name" error={errors.name}>
                                 <input
                                     id="name"
@@ -108,7 +109,6 @@ export default function Register() {
                                 disabled={processing}
                                 className="font-display mt-2 flex items-center justify-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-black uppercase transition-all hover:shadow-[0_0_18px_rgba(204,255,0,0.45)] disabled:opacity-60"
                             >
-                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Register_Core
                             </button>
 
@@ -118,7 +118,8 @@ export default function Register() {
                                     login_node
                                 </Link>
                             </div>
-                        </div>
+                            </div>
+                        </CyberLoadingZone>
                     </form>
                 </div>
             </section>
@@ -135,5 +136,3 @@ function CyberField({ label, error, children }: { label: string; error?: string;
         </label>
     );
 }
-
-Register.layout = cyberLayout;

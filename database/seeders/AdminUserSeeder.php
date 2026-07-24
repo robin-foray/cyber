@@ -4,19 +4,20 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
         User::query()->updateOrCreate(
-            ['email' => 'robin.foray@gmail.com'],
+            ['email' => config('foray.admin.email')],
             [
-                'name' => 'Robin',
-                'password' => 'Cursor2026!',
+                'name' => config('foray.admin.name'),
+                'password' => Hash::make(config('foray.admin.password')),
                 'role' => 'admin',
-                'title' => 'System Admin',
-                'email_verified_at' => now(),
+                'title' => config('foray.admin.title'),
+                'avatar_seed' => config('foray.admin.avatar_seed'),
             ],
         );
     }

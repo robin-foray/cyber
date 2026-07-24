@@ -10,7 +10,9 @@
 /.phpunit.cache
 /.vscode
 /.zed
+/.cursor/mcp.json
 /bootstrap/ssr
+/composer
 /node_modules
 /public/build
 /public/hot

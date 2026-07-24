@@ -13,7 +13,7 @@
 
         @routes
         @viteReactRefresh
-        @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
+        @vite(['resources/js/app.tsx'])
         @inertiaHead
     </head>
     <body class="bg-background font-sans antialiased" style="background-color: #131313; color: #e5e2e1">

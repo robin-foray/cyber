@@ -1,13 +1,16 @@
-import { cyberLayout } from '@/layouts/cyber-layout';
+import { CyberTextOutputSkeleton } from '@/components/cyber/skeleton';
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
+import { sha256 } from '@/lib/hash';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, LoaderCircle, ShieldCheck, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Eraser, Fingerprint, Hash, KeyRound, ShieldCheck, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 type HashMode = 'sha256' | 'bcrypt';
 
 export default function HashGenerator() {
+    const page = useDevToolPage('hash-generator');
     const [mode, setMode] = useState<HashMode>('sha256');
-    const [input, setInput] = useState('foray-admin-node');
+    const [input, setInput] = useState(page.sampleInput ?? '');
     const [rounds, setRounds] = useState(12);
     const [hash, setHash] = useState('');
     const [verifyHash, setVerifyHash] = useState('');
@@ -93,35 +96,28 @@ export default function HashGenerator() {
 
     return (
         <>
-        <Head title="Hash Generator" />
-            <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <Fingerprint size={18} />
-                            DEV_TOOL_03 // HASH_GENERATOR
+            <Head title={page.pageTitle} />
+            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+                <DevToolPageHeader
+                    slug="hash-generator"
+                    actions={
+                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                            <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
+                                <Hash size={15} />
+                                Generate
+                            </button>
+                            <button type="button" onClick={verify} className="cyber-tool-button" disabled={processing}>
+                                <ShieldCheck size={15} /> Verify
+                            </button>
+                            <button type="button" onClick={copyHash} className="cyber-tool-button">
+                                <Clipboard size={15} /> {copied ? 'Copied' : 'Copy'}
+                            </button>
+                            <button type="button" onClick={clearBuffers} className="cyber-tool-button">
+                                <Eraser size={15} /> Clear
+                            </button>
                         </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Hash <span className="glow-text text-primary">Generator</span>
-                        </h1>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 sm:flex">
-                        <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
-                            {processing ? <LoaderCircle size={15} className="animate-spin" /> : <Hash size={15} />}
-                            Generate
-                        </button>
-                        <button type="button" onClick={verify} className="cyber-tool-button" disabled={processing}>
-                            <ShieldCheck size={15} /> Verify
-                        </button>
-                        <button type="button" onClick={copyHash} className="cyber-tool-button">
-                            <Clipboard size={15} /> {copied ? 'Copied' : 'Copy'}
-                        </button>
-                        <button type="button" onClick={clearBuffers} className="cyber-tool-button">
-                            <Eraser size={15} /> Clear
-                        </button>
-                    </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-3">
                     <StatusTile label="Mode" value={telemetry.mode} />
@@ -137,17 +133,17 @@ export default function HashGenerator() {
                 <div className="grid gap-6 xl:grid-cols-2">
                     <div className="rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
                         <div className="mb-4 flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 text-xs font-bold tracking-widest text-primary uppercase">
+                            <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <KeyRound size={18} />
                                 plaintext_input
                             </div>
                             {mode === 'bcrypt' && (
-                                <label className="flex items-center gap-2 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+                                <label className="text-on-surface-variant flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase">
                                     rounds
                                     <select
                                         value={rounds}
                                         onChange={(event) => setRounds(Number(event.target.value))}
-                                        className="rounded-lg border border-primary/15 bg-black px-2 py-1 text-primary outline-none"
+                                        className="border-primary/15 text-primary rounded-lg border bg-black px-2 py-1 outline-none"
                                     >
                                         {[10, 11, 12, 13, 14].map((value) => (
                                             <option key={value} value={value}>
@@ -166,12 +162,12 @@ export default function HashGenerator() {
                                 setError('');
                             }}
                             spellCheck={false}
-                            className="min-h-[260px] w-full resize-y rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-on-surface-variant outline-none transition-all focus:border-primary/50 focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                            className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[260px] w-full resize-y rounded-2xl border bg-black/50 p-4 text-xs leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
                             placeholder="paste plaintext / password / token source..."
                         />
 
                         <div className="mt-5">
-                            <div className="mb-2 text-[10px] font-bold tracking-widest text-primary uppercase">verify_against_hash</div>
+                            <div className="text-primary mb-2 text-[10px] font-bold tracking-widest uppercase">verify_against_hash</div>
                             <textarea
                                 value={verifyHash}
                                 onChange={(event) => {
@@ -179,28 +175,40 @@ export default function HashGenerator() {
                                     setVerifyResult(null);
                                 }}
                                 spellCheck={false}
-                                className="min-h-28 w-full resize-y rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-on-surface-variant outline-none transition-all focus:border-primary/50 focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                                className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-28 w-full resize-y rounded-2xl border bg-black/50 p-4 text-xs leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
                                 placeholder="paste hash here to verify"
                             />
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-primary/20 bg-black/60 p-5 font-mono">
+                    <div className="border-primary/20 rounded-2xl border bg-black/60 p-5 font-mono">
                         <div className="mb-4 flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 text-xs font-bold tracking-widest text-primary uppercase">
+                            <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <Fingerprint size={18} />
                                 hash_output
                             </div>
-                            <div className={statusClass(error, verifyResult)}>
+                            <div className={statusClass(error, verifyResult, processing)}>
                                 {error ? <XCircle size={14} /> : verifyResult === true ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}
-                                {error ? 'hash_error' : verifyResult === null ? 'ready' : verifyResult ? 'match' : 'no_match'}
+                                {error
+                                    ? 'hash_error'
+                                    : processing
+                                      ? 'processing'
+                                      : verifyResult === null
+                                        ? 'ready'
+                                        : verifyResult
+                                          ? 'match'
+                                          : 'no_match'}
                             </div>
                         </div>
 
                         {error ? (
-                            <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">{error}</div>
+                            <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">
+                                {error}
+                            </div>
+                        ) : processing ? (
+                            <CyberTextOutputSkeleton label="hash_pipeline" />
                         ) : (
-                            <pre className="min-h-[430px] overflow-auto rounded-2xl border border-primary/10 bg-black/50 p-4 text-xs leading-6 text-primary">
+                            <pre className="border-primary/10 text-primary min-h-[430px] overflow-auto rounded-2xl border bg-black/50 p-4 text-xs leading-6">
                                 {hash || '// generate SHA-256 or Laravel bcrypt output'}
                             </pre>
                         )}
@@ -219,7 +227,7 @@ function ModeButton({ active, icon, label, onClick }: { active: boolean; icon: R
             className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3 text-[10px] font-bold tracking-widest uppercase transition-all ${
                 active
                     ? 'border-primary bg-primary text-black shadow-[0_0_18px_rgba(204,255,0,0.28)]'
-                    : 'border-primary/15 bg-black/35 text-on-surface-variant hover:border-primary/45 hover:text-primary'
+                    : 'border-primary/15 text-on-surface-variant hover:border-primary/45 hover:text-primary bg-black/35'
             }`}
         >
             {icon}
@@ -231,25 +239,16 @@ function ModeButton({ active, icon, label, onClick }: { active: boolean; icon: R
 function StatusTile({ label, value }: { label: string; value: string }) {
     return (
         <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
-            <div className="text-[9px] font-bold tracking-widest text-on-surface-variant/55 uppercase">{label}</div>
-            <div className="mt-2 font-display text-lg font-bold text-primary uppercase">{value}</div>
+            <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
+            <div className="font-display text-primary mt-2 text-lg font-bold uppercase">{value}</div>
         </div>
     );
 }
 
-function statusClass(error: string, verifyResult: boolean | null) {
-    const color = error ? 'text-red-300' : verifyResult === false ? 'text-red-300' : 'text-primary';
+function statusClass(error: string, verifyResult: boolean | null, processing = false) {
+    const color = error ? 'text-red-300' : processing ? 'text-on-surface-variant' : verifyResult === false ? 'text-red-300' : 'text-primary';
 
     return `flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${color}`;
-}
-
-async function sha256(value: string) {
-    const bytes = new TextEncoder().encode(value);
-    const digest = await crypto.subtle.digest('SHA-256', bytes);
-
-    return Array.from(new Uint8Array(digest))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('');
 }
 
 async function postJson(url: string, payload: Record<string, unknown>) {
@@ -267,11 +266,14 @@ async function postJson(url: string, payload: Record<string, unknown>) {
     const data = await response.json();
 
     if (!response.ok) {
-        const message = data?.message || Object.values(data?.errors ?? {}).flat().join(' ') || 'Request failed';
+        const message =
+            data?.message ||
+            Object.values(data?.errors ?? {})
+                .flat()
+                .join(' ') ||
+            'Request failed';
         throw new Error(message);
     }
 
     return data;
 }
-
-HashGenerator.layout = cyberLayout;

@@ -1,4 +1,3 @@
-import { cyberLayout } from '@/layouts/cyber-layout';
 import Masonry, { type MasonryItem } from '@/components/cyber/masonry';
 import SpecularButton from '@/components/cyber/specular-button';
 import { Head, router } from '@inertiajs/react';
@@ -176,5 +175,3 @@ export default function MachineGallery({ categories, machines, activeCategory }:
         </>
     );
 }
-
-MachineGallery.layout = cyberLayout;

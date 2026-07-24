@@ -1,0 +1,74 @@
+---
+description: Testing conventions for PHPUnit and Vitest in this project
+globs: "{tests/**/*.php,resources/js/**/*.test.ts}"
+alwaysApply: false
+---
+
+# Testing Rules
+
+## PHPUnit (backend)
+
+- Runner: `./vendor/bin/phpunit` (also in CI)
+- **Do not** add Pest — project uses class-based PHPUnit
+- DB: SQLite in-memory in tests (`phpunit.xml`)
+- `BCRYPT_ROUNDS=4` in test env for speed
+
+### Feature test patterns
+
+```php
+// Page access
+$this->get(route('dev-tools.console'))
+    ->assertOk()
+    ->assertInertia(fn (Assert $page) => $page->component('dev-tools/console'));
+
+// JSON API
+$this->postJson(route('dev-tools.hash-generator.bcrypt'), [...])
+    ->assertOk()
+    ->assertJsonStructure(['hash']);
+```
+
+### When to add tests (mandatory)
+
+| Change | Required tests |
+|--------|----------------|
+| New public route/page | PHPUnit feature test (`assertOk` + `assertInertia` component) |
+| New dev-tool | `DevToolsRoutesTest` data provider entry + Vitest for lib |
+| New Filament model/CMS | `tests/Feature/Cms/` test for `ContentService` payload |
+| New JSON API endpoint | PHPUnit: success, validation 422, edge cases |
+| New lib module | Vitest `*.test.ts` co-located with lib |
+
+**A new site feature is not done without tests.**
+
+## Vitest (frontend)
+
+- Config in `vite.config.js`, files: `resources/js/**/*.test.ts`
+- Run: `npm test` (not in CI — run locally)
+- Test pure lib functions only; no React component tests yet
+
+### Lib test pattern
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { myFunction } from './my-module';
+
+describe('myFunction', () => {
+    it('handles valid input', () => {
+        const result = myFunction('input');
+        expect(result.error).toBe('');
+        expect(result.output).toBe('expected');
+    });
+
+    it('returns error for invalid input', () => {
+        const result = myFunction('bad');
+        expect(result.output).toBe('');
+        expect(result.error).not.toBe('');
+    });
+});
+```
+
+## Before finishing a feature
+
+```bash
+npm test
+./vendor/bin/phpunit
+```

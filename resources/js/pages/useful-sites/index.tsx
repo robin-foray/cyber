@@ -1,4 +1,3 @@
-import { cyberLayout } from '@/layouts/cyber-layout';
 import SpecularButton from '@/components/cyber/specular-button';
 import { Head, router } from '@inertiajs/react';
 import {
@@ -209,5 +208,3 @@ export default function UsefulSitesIndex({ categories, sites, activeCategory }: 
         </>
     );
 }
-
-UsefulSitesIndex.layout = cyberLayout;

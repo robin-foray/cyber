@@ -1,16 +1,18 @@
 <?php
 
 use App\Http\Controllers\DevTools\HashGeneratorController;
+use App\Http\Controllers\DevTools\PhpSyntaxCheckerController;
 use App\Http\Controllers\FreeApiController;
 use App\Http\Controllers\MachineGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TechStackController;
 use App\Http\Controllers\UsefulSiteController;
-use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return Inertia::render('welcome');
+})->name('home');
 
 Route::get('machines', [MachineGalleryController::class, 'index'])->name('machines.index');
 Route::get('tech-stack', [TechStackController::class, 'index'])->name('tech-stack.index');
@@ -40,6 +42,20 @@ Route::get('dev-tools/deployments', function () {
 Route::get('dev-tools/hash-generator', [HashGeneratorController::class, 'show'])->name('dev-tools.hash-generator');
 Route::post('dev-tools/hash-generator/bcrypt', [HashGeneratorController::class, 'bcrypt'])->name('dev-tools.hash-generator.bcrypt');
 Route::post('dev-tools/hash-generator/verify', [HashGeneratorController::class, 'verify'])->name('dev-tools.hash-generator.verify');
+Route::get('dev-tools/qr-generator', function () {
+    return Inertia::render('dev-tools/qr-generator');
+})->name('dev-tools.qr-generator');
+Route::get('dev-tools/php-syntax-checker', [PhpSyntaxCheckerController::class, 'show'])->name('dev-tools.php-syntax-checker');
+Route::post('dev-tools/php-syntax-checker/lint', [PhpSyntaxCheckerController::class, 'lint'])->name('dev-tools.php-syntax-checker.lint');
+Route::get('dev-tools/html-syntax-checker', function () {
+    return Inertia::render('dev-tools/html-syntax-checker');
+})->name('dev-tools.html-syntax-checker');
+Route::get('dev-tools/color-converter', function () {
+    return Inertia::render('dev-tools/color-converter');
+})->name('dev-tools.color-converter');
+Route::get('dev-tools/regex-lab', function () {
+    return Inertia::render('dev-tools/regex-lab');
+})->name('dev-tools.regex-lab');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
