@@ -7,12 +7,11 @@ use App\Http\Controllers\MachineGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TechStackController;
 use App\Http\Controllers\UsefulSiteController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::get('machines', [MachineGalleryController::class, 'index'])->name('machines.index');
 Route::get('tech-stack', [TechStackController::class, 'index'])->name('tech-stack.index');

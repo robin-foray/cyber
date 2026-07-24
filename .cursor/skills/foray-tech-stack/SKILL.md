@@ -21,4 +21,6 @@ description: Foray tech stack registry. Use when editing tech categories/stacks,
 `php artisan migrate --seed` (vagy `db:seed`) feltölti a 26 stacket. Filamentből utána szerkeszthető.
 
 Cards: mobile `grid-cols-2` full-width; `sm+` flexible `minmax(9.5rem,1fr)`; `lg+` fixed `9.5rem`. Detail panel scrolls into view on select (`detailRef`).
+Shared icon helper: `resources/js/lib/stack-icon.tsx` (used by `/tech-stack` and Terminal welcome stacks).
 Frontend: SVG path → `<img>`, legacy Lucide key → Cpu fallback.
+Terminal `/` is served by `WelcomeController` and reuses the same card/detail UI as `/tech-stack`.

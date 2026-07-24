@@ -1,6 +1,7 @@
 import SpecularButton from '@/components/cyber/specular-button';
+import { StackIcon } from '@/lib/stack-icon';
 import { Head, router } from '@inertiajs/react';
-import { Cpu, ExternalLink, Layers } from 'lucide-react';
+import { ExternalLink, Layers } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -33,32 +34,6 @@ type Props = {
     stacks: StackItem[];
     activeCategory: string | null;
 };
-
-function stackIconSrc(icon: string): string | null {
-    if (!icon) {
-        return null;
-    }
-
-    if (icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/')) {
-        return icon;
-    }
-
-    if (icon.includes('/') || /\.(svg|png|webp|jpe?g)$/i.test(icon)) {
-        return `/${icon.replace(/^\/+/, '')}`;
-    }
-
-    return null;
-}
-
-function StackIcon({ icon, className = 'h-6 w-6' }: { icon: string; className?: string }) {
-    const src = stackIconSrc(icon);
-
-    if (src) {
-        return <img src={src} alt="" className={`${className} object-contain`} loading="lazy" />;
-    }
-
-    return <Cpu size={22} />;
-}
 
 export default function TechStackIndex({ categories, stacks, activeCategory }: Props) {
     const [selectedId, setSelectedId] = useState<number | null>(stacks[0]?.id ?? null);
