@@ -20,11 +20,11 @@ class CatalogSeederTest extends TestCase
     {
         $this->seed(AdminUserSeeder::class);
 
-        $admin = User::query()->where('email', 'robin.foray@gmail.com')->first();
+        $admin = User::query()->where('email', config('foray.admin.email'))->first();
 
         $this->assertNotNull($admin);
         $this->assertSame('admin', $admin->role);
-        $this->assertTrue(Hash::check('Cursor2026!', $admin->password));
+        $this->assertTrue(Hash::check((string) config('foray.admin.password'), $admin->password));
     }
 
     public function test_machine_seeder_loads_gallery_catalog(): void
