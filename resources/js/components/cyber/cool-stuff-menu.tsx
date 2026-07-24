@@ -17,10 +17,11 @@ type CoolStuffMenuProps = {
     isOpen: boolean;
     onCollapsedOpen: () => void;
     onToggle: () => void;
+    onNavigate?: () => void;
     full: boolean;
 };
 
-export default function CoolStuffMenu({ currentUrl, isOpen, onCollapsedOpen, onToggle, full }: CoolStuffMenuProps) {
+export default function CoolStuffMenu({ currentUrl, isOpen, onCollapsedOpen, onToggle, onNavigate, full }: CoolStuffMenuProps) {
     const isActive = isCoolStuffHref(currentUrl);
     const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(() => readCoolStuffCategoryState());
 
@@ -90,6 +91,7 @@ export default function CoolStuffMenu({ currentUrl, isOpen, onCollapsedOpen, onT
                             currentUrl={currentUrl}
                             isOpen={openCategories[category.id] ?? false}
                             onToggle={() => toggleCategory(category.id)}
+                            onNavigate={onNavigate}
                         />
                     ))}
                 </div>
@@ -105,11 +107,13 @@ function CoolStuffCategorySection({
     currentUrl,
     isOpen,
     onToggle,
+    onNavigate,
 }: {
     category: (typeof coolStuffMenu)[number];
     currentUrl: string;
     isOpen: boolean;
     onToggle: () => void;
+    onNavigate?: () => void;
 }) {
     const hasActiveItem = category.items.some((item) => isActiveHref(currentUrl, item.href));
 
@@ -131,7 +135,7 @@ function CoolStuffCategorySection({
             {isOpen && (
                 <div className="space-y-0.5 pl-2">
                     {category.items.map((item) => (
-                        <CoolStuffLinkItem key={item.page} currentUrl={currentUrl} item={item} />
+                        <CoolStuffLinkItem key={item.page} currentUrl={currentUrl} item={item} onNavigate={onNavigate} />
                     ))}
                 </div>
             )}
@@ -139,8 +143,16 @@ function CoolStuffCategorySection({
     );
 }
 
-function CoolStuffLinkItem({ currentUrl, item }: { currentUrl: string; item: CoolStuffLink }) {
-    const handleClick = useInstantCyberClick(item.href);
+function CoolStuffLinkItem({
+    currentUrl,
+    item,
+    onNavigate,
+}: {
+    currentUrl: string;
+    item: CoolStuffLink;
+    onNavigate?: () => void;
+}) {
+    const handleInstantClick = useInstantCyberClick(item.href);
     const isChecked = isActiveHref(currentUrl, item.href);
 
     return (
@@ -148,7 +160,10 @@ function CoolStuffLinkItem({ currentUrl, item }: { currentUrl: string; item: Coo
             href={item.href}
             prefetch="mount"
             cacheFor="5m"
-            onClick={handleClick}
+            onClick={(event) => {
+                handleInstantClick(event);
+                onNavigate?.();
+            }}
             aria-current={isChecked ? 'page' : undefined}
             className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
                 isChecked

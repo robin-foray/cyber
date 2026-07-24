@@ -55,6 +55,12 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
     const navigation = cms.navigation.filter((item) => !item.requiresAuth || user);
     let coolStuffRendered = false;
 
+    function closeSidebarOnMobileNavigate() {
+        if (isMobileSidebarViewport()) {
+            onClose();
+        }
+    }
+
     return (
         <aside
             className={`fixed top-0 left-0 z-50 flex h-full flex-col border-r border-primary/20 bg-surface-low/95 backdrop-blur-md transition-all duration-300 ${
@@ -75,7 +81,7 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
             <div className={`mb-3 flex shrink-0 flex-col px-3 pt-4 pb-3 ${!isOpen ? 'items-center' : ''}`}>
                 <ForayBrand isOpen={isOpen} onOpen={onOpen} />
 
-                {isOpen && <NodeIdentity user={user} />}
+                {isOpen && <NodeIdentity user={user} onNavigate={closeSidebarOnMobileNavigate} />}
             </div>
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
@@ -97,6 +103,7 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
                                     onOpen();
                                 }}
                                 onToggle={() => setCoolStuffOpen(!isCoolStuffOpen)}
+                                onNavigate={closeSidebarOnMobileNavigate}
                                 full={isOpen}
                             />
                         );
@@ -110,6 +117,7 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
                             href={item.href ?? '/'}
                             active={isActiveHref(currentUrl, item.href ?? '/')}
                             full={isOpen}
+                            onNavigate={closeSidebarOnMobileNavigate}
                         />
                     );
                 })}
@@ -120,19 +128,26 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
     );
 }
 
-function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
+function isMobileSidebarViewport() {
+    return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+}
+
+function NodeIdentity({ user, onNavigate }: { user: SharedData['auth']['user']; onNavigate?: () => void }) {
     const label = user?.name ?? 'GUEST_NODE';
     const role = user?.is_admin ? 'ADMIN' : (user?.role ?? 'VISITOR').toString().toUpperCase();
     const title = user?.title ?? 'SYSTEM: ONLINE';
     const href = user ? '/profile' : '/login';
-    const handleClick = useInstantCyberClick(href);
+    const handleInstantClick = useInstantCyberClick(href);
 
     return (
         <Link
             href={href}
             prefetch="mount"
             cacheFor="5m"
-            onClick={handleClick}
+            onClick={(event) => {
+                handleInstantClick(event);
+                onNavigate?.();
+            }}
             className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
         >
             <p className="truncate text-[10px] tracking-widest text-primary uppercase opacity-70">Node_Identity</p>
@@ -160,21 +175,26 @@ function NavItem({
     href,
     active = false,
     full,
+    onNavigate,
 }: {
     icon: React.ComponentType<{ size?: number }>;
     label: string;
     href: string;
     active?: boolean;
     full: boolean;
+    onNavigate?: () => void;
 }) {
-    const handleClick = useInstantCyberClick(href);
+    const handleInstantClick = useInstantCyberClick(href);
 
     return (
         <Link
             href={href}
             prefetch="mount"
             cacheFor="5m"
-            onClick={handleClick}
+            onClick={(event) => {
+                handleInstantClick(event);
+                onNavigate?.();
+            }}
             aria-label={label}
             title={label}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${full ? '' : 'justify-center'} ${

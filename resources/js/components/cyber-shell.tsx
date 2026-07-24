@@ -46,6 +46,15 @@ export default function CyberShell({ children }: CyberShellProps) {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
+            {isSidebarOpen && (
+                <button
+                    type="button"
+                    aria-label="Close sidebar"
+                    className="fixed inset-0 z-40 bg-black/55 md:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             <CyberSidebar
                 currentUrl={currentUrl}
                 isOpen={isSidebarOpen}
