@@ -7,6 +7,7 @@ import {
     Construction,
     Cpu,
     Database,
+    FileCode2,
     FileJson2,
     FileText,
     Fingerprint,
@@ -15,11 +16,14 @@ import {
     Instagram,
     Layers,
     Package,
+    Palette,
     QrCode,
+    Regex,
     Rocket,
     Server,
     Share2,
     ShieldCheck,
+    Sparkles,
     Terminal,
     Twitter,
     Zap,
@@ -51,6 +55,10 @@ const iconMap: Record<string, LucideIcon> = {
     CalendarClock,
     ImageDown,
     Rocket,
+    Sparkles,
+    Palette,
+    Regex,
+    FileCode2,
 };
 
 export function resolveCmsIcon(name?: string | null, fallback: LucideIcon = Terminal): LucideIcon {

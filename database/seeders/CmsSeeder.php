@@ -174,6 +174,10 @@ class CmsSeeder extends Seeder
             ['slug' => 'cron-guru', 'header_label' => 'DEV_TOOL_05 // CRON_GURU', 'page_title' => 'Cron Guru', 'heading_prefix' => 'Cron', 'heading_accent' => 'Guru', 'sample_input' => '*/15 9-17 * * 1-5', 'icon' => 'CalendarClock', 'sort_order' => 5],
             ['slug' => 'image-compressor', 'header_label' => 'DEV_TOOL_06 // IMAGE_COMPRESSOR', 'page_title' => 'Image Compressor', 'heading_prefix' => 'Image', 'heading_accent' => 'Compressor', 'sample_input' => null, 'icon' => 'ImageDown', 'sort_order' => 6],
             ['slug' => 'deployments', 'header_label' => 'DEPLOYMENT_PROTOCOL', 'page_title' => 'Deployments', 'heading_prefix' => null, 'heading_accent' => null, 'sample_input' => null, 'icon' => 'Rocket', 'sort_order' => 7],
+            ['slug' => 'php-syntax-checker', 'header_label' => 'DEV_TOOL_08 // PHP_SYNTAX', 'page_title' => 'PHP Syntax Checker', 'heading_prefix' => 'PHP', 'heading_accent' => 'Syntax', 'sample_input' => "<?php\n\ndeclare(strict_types=1);\n\nfunction greet(string \$name): string\n{\n    return \"Hello, {\$name}\";\n}", 'icon' => 'Braces', 'sort_order' => 8],
+            ['slug' => 'html-syntax-checker', 'header_label' => 'DEV_TOOL_09 // HTML_SYNTAX', 'page_title' => 'HTML Syntax Checker', 'heading_prefix' => 'HTML', 'heading_accent' => 'Syntax', 'sample_input' => null, 'icon' => 'Code2', 'sort_order' => 9],
+            ['slug' => 'color-converter', 'header_label' => 'DEV_TOOL_10 // COLOR_CONVERTER', 'page_title' => 'Color Converter', 'heading_prefix' => 'Color', 'heading_accent' => 'Converter', 'sample_input' => '#ccff00', 'icon' => 'Palette', 'sort_order' => 10],
+            ['slug' => 'regex-lab', 'header_label' => 'DEV_TOOL_11 // REGEX_LAB', 'page_title' => 'Regex Lab', 'heading_prefix' => 'Regex', 'heading_accent' => 'Lab', 'sample_input' => null, 'icon' => 'Regex', 'sort_order' => 11],
         ];
 
         foreach ($pages as $page) {
@@ -228,10 +232,10 @@ class CmsSeeder extends Seeder
         }
 
         $devTools = NavigationItem::query()->updateOrCreate(
-            ['label' => 'DEV_TOOLS', 'parent_id' => null],
+            ['label' => 'COOL_STUFF', 'parent_id' => null],
             [
                 'href' => null,
-                'icon' => 'Construction',
+                'icon' => 'Sparkles',
                 'sort_order' => 2,
                 'is_active' => true,
                 'is_group' => true,
@@ -247,6 +251,10 @@ class CmsSeeder extends Seeder
             ['label' => 'CRON_GURU', 'href' => '/dev-tools/cron-guru', 'sort_order' => 5],
             ['label' => 'IMAGE_COMPRESSOR', 'href' => '/dev-tools/image-compressor', 'sort_order' => 6],
             ['label' => 'DEPLOYMENTS', 'href' => '/dev-tools/deployments', 'sort_order' => 7],
+            ['label' => 'PHP_SYNTAX', 'href' => '/dev-tools/php-syntax-checker', 'sort_order' => 8],
+            ['label' => 'HTML_SYNTAX', 'href' => '/dev-tools/html-syntax-checker', 'sort_order' => 9],
+            ['label' => 'COLOR_CONVERTER', 'href' => '/dev-tools/color-converter', 'sort_order' => 10],
+            ['label' => 'REGEX_LAB', 'href' => '/dev-tools/regex-lab', 'sort_order' => 11],
         ] as $link) {
             NavigationItem::query()->updateOrCreate(
                 ['href' => $link['href']],

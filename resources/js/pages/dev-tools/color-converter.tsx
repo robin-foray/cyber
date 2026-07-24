@@ -1,10 +1,12 @@
+import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
 import { colorFormatOptions, colorPresets, convertColor, type ColorFormat } from '@/lib/color-converter';
 import { Head } from '@inertiajs/react';
-import { CheckCircle2, Clipboard, Droplets, Eraser, Palette, Pipette, XCircle } from 'lucide-react';
+import { CheckCircle2, Clipboard, Droplets, Eraser, Pipette, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function ColorConverter() {
-    const [input, setInput] = useState('#ccff00');
+    const page = useDevToolPage('color-converter');
+    const [input, setInput] = useState(page.sampleInput ?? '#ccff00');
     const [format, setFormat] = useState<ColorFormat>('hex');
     const [copiedKey, setCopiedKey] = useState('');
 
@@ -28,28 +30,21 @@ export default function ColorConverter() {
 
     return (
         <>
-            <Head title="Color Converter" />
+            <Head title={page.pageTitle} />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
-                <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                            <Palette size={18} />
-                            DEV_TOOL_10 // COLOR_CONVERTER
+                <DevToolPageHeader
+                    slug="color-converter"
+                    actions={
+                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                            <button type="button" onClick={() => copyValue('input', input)} className="cyber-tool-button">
+                                <Clipboard size={15} /> {copiedKey === 'input' ? 'Copied' : 'Copy Input'}
+                            </button>
+                            <button type="button" onClick={clearInput} className="cyber-tool-button">
+                                <Eraser size={15} /> Clear
+                            </button>
                         </div>
-                        <h1 className="font-display text-4xl font-bold text-white uppercase">
-                            Color <span className="glow-text text-primary">Converter</span>
-                        </h1>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 sm:flex">
-                        <button type="button" onClick={() => copyValue('input', input)} className="cyber-tool-button">
-                            <Clipboard size={15} /> {copiedKey === 'input' ? 'Copied' : 'Copy Input'}
-                        </button>
-                        <button type="button" onClick={clearInput} className="cyber-tool-button">
-                            <Eraser size={15} /> Clear
-                        </button>
-                    </div>
-                </div>
+                    }
+                />
 
                 <div className="mb-6 grid gap-3 md:grid-cols-4">
                     <StatusTile label="Parse_State" value={isValid ? 'VALID' : 'INVALID'} tone={isValid ? 'good' : 'bad'} />
