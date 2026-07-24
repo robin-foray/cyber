@@ -266,7 +266,7 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)]">
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,9.5rem))] justify-start gap-3">
+                    <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(9.5rem,9.5rem))] lg:justify-start">
                         {filtered.map((api, index) => {
                             const isActive = selected?.id === api.id;
 
@@ -281,7 +281,7 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => setSelectedId(api.id)}
                                     onDoubleClick={() => window.open(api.url, '_blank', 'noopener,noreferrer')}
-                                    className={`group relative flex h-40 w-[9.5rem] flex-col items-start justify-between overflow-hidden rounded-2xl border p-4 text-left transition-colors ${
+                                    className={`group relative flex h-40 w-full flex-col items-start justify-between overflow-hidden rounded-2xl border p-4 text-left transition-colors ${
                                         isActive
                                             ? 'border-primary bg-primary text-black shadow-[0_0_24px_rgba(204,255,0,0.28)]'
                                             : 'border-primary/15 bg-black/40 text-on-surface-variant hover:border-primary/45 hover:bg-primary/8 hover:text-primary'

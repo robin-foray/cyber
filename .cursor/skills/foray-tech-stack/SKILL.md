@@ -20,5 +20,5 @@ description: Foray tech stack registry. Use when editing tech categories/stacks,
 
 `php artisan migrate --seed` (vagy `db:seed`) feltölti a 26 stacket. Filamentből utána szerkeszthető.
 
-Cards: fixed `9.5rem` width. Detail panel scrolls into view on select (`detailRef`).
+Cards: mobile `grid-cols-2` full-width; `sm+` flexible `minmax(9.5rem,1fr)`; `lg+` fixed `9.5rem`. Detail panel scrolls into view on select (`detailRef`).
 Frontend: SVG path → `<img>`, legacy Lucide key → Cpu fallback.
