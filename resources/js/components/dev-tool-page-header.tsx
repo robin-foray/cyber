@@ -37,14 +37,14 @@ export function DevToolPageHeader({ slug, actions }: DevToolPageHeaderProps) {
     const Icon = resolveCmsIcon(page.icon);
 
     return (
-        <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <div className="mb-3 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                    <Icon size={18} />
-                    {page.headerLabel}
+        <div className="mb-8 flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
+                <div className="mb-3 flex min-w-0 items-center gap-3 text-sm font-bold tracking-widest text-primary">
+                    <Icon size={18} className="shrink-0" />
+                    <span className="min-w-0 break-words">{page.headerLabel}</span>
                 </div>
                 {page.headingPrefix && (
-                    <h1 className="font-display text-4xl font-bold text-white uppercase">
+                    <h1 className="font-display text-3xl font-bold break-words text-white uppercase sm:text-4xl">
                         {page.headingPrefix}{' '}
                         {page.headingAccent && <span className="glow-text text-primary">{page.headingAccent}</span>}
                     </h1>

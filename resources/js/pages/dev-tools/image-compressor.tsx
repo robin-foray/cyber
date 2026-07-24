@@ -147,34 +147,34 @@ export default function ImageCompressor() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="image-compressor"
                     actions={
-                        <div className="grid grid-cols-2 gap-2 sm:flex">
-                            <button type="button" onClick={compressImage} className="cyber-tool-button" disabled={processing}>
+                        <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
+                            <button type="button" onClick={compressImage} className="cyber-tool-button flex-1 sm:flex-none" disabled={processing}>
                                 <Gauge size={15} />
                                 Compress
                             </button>
-                            <button type="button" onClick={downloadImage} className="cyber-tool-button" disabled={!compressed}>
+                            <button type="button" onClick={downloadImage} className="cyber-tool-button flex-1 sm:flex-none" disabled={!compressed}>
                                 <Download size={15} /> Download
                             </button>
-                            <button type="button" onClick={resetTool} className="cyber-tool-button">
+                            <button type="button" onClick={resetTool} className="cyber-tool-button flex-1 sm:flex-none">
                                 <Eraser size={15} /> Clear
                             </button>
                         </div>
                     }
                 />
 
-                <div className="mb-6 grid gap-3 md:grid-cols-3">
+                <div className="mb-6 grid gap-3 sm:grid-cols-3">
                     <StatusTile label="Original" value={telemetry.original} />
                     <StatusTile label="Compressed" value={telemetry.compressed} />
                     <StatusTile label="Saved" value={telemetry.saved} />
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
-                    <aside className="border-primary/15 space-y-5 rounded-2xl border bg-black/45 p-5">
-                        <label className="border-primary/25 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-5 text-center transition-all">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+                    <aside className="border-primary/15 min-w-0 space-y-5 rounded-2xl border bg-black/45 p-4 sm:p-5">
+                        <label className="border-primary/25 bg-primary/5 hover:border-primary/60 hover:bg-primary/10 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-4 text-center transition-all sm:min-h-44 sm:px-5">
                             <UploadCloud className="text-primary mb-4" size={34} />
                             <span className="font-display text-lg font-bold text-white uppercase">Upload image</span>
                             <span className="text-on-surface-variant mt-2 text-[10px] font-bold tracking-widest uppercase">
@@ -208,7 +208,7 @@ export default function ImageCompressor() {
                                             key={item.value}
                                             type="button"
                                             onClick={() => setFormat(item.value)}
-                                            className={`rounded-xl border px-3 py-3 text-[10px] font-bold uppercase transition-all ${
+                                            className={`rounded-xl border px-2 py-3 text-[10px] font-bold uppercase transition-all sm:px-3 ${
                                                 format === item.value
                                                     ? 'border-primary bg-primary text-black shadow-[0_0_18px_rgba(204,255,0,0.25)]'
                                                     : 'border-primary/15 text-on-surface-variant hover:border-primary/50 hover:text-primary bg-black/35'
@@ -231,14 +231,16 @@ export default function ImageCompressor() {
                         </div>
 
                         {notice && (
-                            <div className="rounded-2xl border border-yellow-300/20 bg-yellow-300/5 p-4 font-mono text-sm text-yellow-100">
+                            <div className="rounded-2xl border border-yellow-300/20 bg-yellow-300/5 p-4 font-mono text-sm break-words text-yellow-100">
                                 {notice}
                             </div>
                         )}
-                        {error && <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 font-mono text-sm text-red-200">{error}</div>}
+                        {error && (
+                            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 font-mono text-sm break-words text-red-200">{error}</div>
+                        )}
                     </aside>
 
-                    <div className="grid gap-6 lg:grid-cols-2">
+                    <div className="grid min-w-0 gap-6 lg:grid-cols-2">
                         <PreviewPanel
                             title="source_frame"
                             icon={<FileImage size={18} />}
@@ -261,19 +263,19 @@ export default function ImageCompressor() {
 
 function StatusTile({ label, value }: { label: string; value: string }) {
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
-            <div className="font-display text-primary mt-2 text-lg font-bold uppercase">{value}</div>
+            <div className="font-display text-primary mt-2 text-base font-bold break-words uppercase sm:text-lg">{value}</div>
         </div>
     );
 }
 
 function ControlBlock({ label, children }: { label: string; children: ReactNode }) {
     return (
-        <div>
+        <div className="min-w-0">
             <div className="text-primary mb-2 flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase">
-                <SlidersHorizontal size={13} />
-                {label}
+                <SlidersHorizontal size={13} className="shrink-0" />
+                <span className="min-w-0 break-words">{label}</span>
             </div>
             {children}
         </div>
@@ -288,7 +290,7 @@ function NumberInput({ value, onChange }: { value: number; onChange: (value: num
             max="8000"
             value={value}
             onChange={(event) => onChange(Number(event.target.value))}
-            className="border-primary/15 focus:border-primary/60 w-full rounded-xl border bg-black/45 px-3 py-3 font-mono text-sm font-bold text-white transition-all outline-none"
+            className="border-primary/15 focus:border-primary/60 w-full min-w-0 rounded-xl border bg-black/45 px-3 py-3 font-mono text-base font-bold text-white transition-all outline-none"
         />
     );
 }
@@ -307,21 +309,23 @@ function PreviewPanel({
     loading?: boolean;
 }) {
     if (loading) {
-        return <CyberPreviewPanelSkeleton label="compress_pipeline" />;
+        return <CyberPreviewPanelSkeleton minHeight={240} label="compress_pipeline" />;
     }
 
     return (
-        <div className="border-primary/15 rounded-2xl border bg-black/45 p-5">
-            <div className="mb-4 flex items-center justify-between gap-4">
-                <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
+        <div className="border-primary/15 min-w-0 rounded-2xl border bg-black/45 p-4 sm:p-5">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="text-primary flex min-w-0 items-center gap-3 text-xs font-bold tracking-widest uppercase">
                     {icon}
-                    {title}
+                    <span className="truncate">{title}</span>
                 </div>
-                <div className="text-on-surface-variant truncate text-[10px] font-bold tracking-widest uppercase">{meta}</div>
+                <div className="text-on-surface-variant min-w-0 text-[10px] font-bold tracking-widest break-all uppercase sm:truncate sm:text-right">
+                    {meta}
+                </div>
             </div>
-            <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/55">
+            <div className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-2xl border border-white/5 bg-black/55 sm:min-h-[320px] md:min-h-[420px]">
                 {imageUrl ? (
-                    <img src={imageUrl} alt={title} className="max-h-[520px] w-full object-contain" />
+                    <img src={imageUrl} alt={title} className="max-h-[280px] w-full object-contain sm:max-h-[420px] md:max-h-[520px]" />
                 ) : (
                     <div className="text-on-surface-variant/50 px-6 text-center text-[10px] font-bold tracking-widest uppercase">no image loaded</div>
                 )}
