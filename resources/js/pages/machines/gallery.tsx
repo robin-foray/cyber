@@ -1,3 +1,4 @@
+import CategoryChip from '@/components/cyber/category-chip';
 import Masonry, { type MasonryItem } from '@/components/cyber/masonry';
 import SpecularButton from '@/components/cyber/specular-button';
 import { Head, router } from '@inertiajs/react';
@@ -85,32 +86,18 @@ export default function MachineGallery({ categories, machines, activeCategory }:
                         Category_Filter
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                        <div className="w-auto min-w-[7.5rem]">
-                            <SpecularButton
-                                type="button"
-                                size="sm"
-                                active={!activeCategory}
-                                autoAnimate={!activeCategory}
-                                onClick={() => selectCategory(null)}
-                                labelClassName="justify-center"
-                            >
-                                ALL
-                            </SpecularButton>
-                        </div>
+                    <div className="flex min-w-0 flex-wrap gap-2">
+                        <CategoryChip active={!activeCategory} onClick={() => selectCategory(null)}>
+                            ALL
+                        </CategoryChip>
                         {categories.map((category) => (
-                            <div key={category.id} className="w-auto min-w-[7.5rem]">
-                                <SpecularButton
-                                    type="button"
-                                    size="sm"
-                                    active={activeCategory === category.slug}
-                                    autoAnimate={activeCategory === category.slug}
-                                    onClick={() => selectCategory(category.slug)}
-                                    labelClassName="justify-center"
-                                >
-                                    {category.name.toUpperCase().replaceAll(' ', '_')}
-                                </SpecularButton>
-                            </div>
+                            <CategoryChip
+                                key={category.id}
+                                active={activeCategory === category.slug}
+                                onClick={() => selectCategory(category.slug)}
+                            >
+                                {category.name.toUpperCase().replaceAll(' ', '_')}
+                            </CategoryChip>
                         ))}
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import SpecularButton from '@/components/cyber/specular-button';
+import CategoryChip from '@/components/cyber/category-chip';
 import { Head, router } from '@inertiajs/react';
 import {
     BookOpen,
@@ -176,11 +176,11 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
             <Head title="Free APIs" />
 
             <section className="space-y-6">
-                <div className="cyber-grid rounded-3xl border border-primary/15 bg-surface/80 p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-8">
+                <div className="cyber-grid min-w-0 overflow-hidden rounded-3xl border border-primary/15 bg-surface/80 p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                     <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                        <div>
+                        <div className="min-w-0">
                             <div className="mb-2 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
-                                <Network size={18} />
+                                <Network size={18} className="shrink-0" />
                                 FREE_API_REGISTRY
                             </div>
                             <p className="max-w-2xl text-sm text-on-surface-variant">
@@ -201,21 +201,21 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
                         </div>
                     </div>
 
-                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <label className="relative flex-1">
+                    <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+                        <label className="relative min-w-0 flex-1">
                             <Search size={14} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-primary/70" />
                             <input
                                 type="search"
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
                                 placeholder="Search name, host, summary…"
-                                className="w-full rounded-xl border border-primary/20 bg-black/45 py-2.5 pr-3 pl-9 text-sm text-on-surface outline-none placeholder:text-on-surface-variant/40 focus:border-primary/50 focus:shadow-[0_0_16px_rgba(204,255,0,0.12)]"
+                                className="w-full min-w-0 rounded-xl border border-primary/20 bg-black/45 py-2.5 pr-3 pl-9 text-base text-on-surface outline-none placeholder:text-on-surface-variant/40 focus:border-primary/50 focus:shadow-[0_0_16px_rgba(204,255,0,0.12)] sm:text-sm"
                             />
                         </label>
                         <button
                             type="button"
                             onClick={() => setCorsOnly((value) => !value)}
-                            className={`rounded-xl border px-3 py-2.5 text-[10px] font-bold tracking-widest uppercase transition ${
+                            className={`shrink-0 rounded-xl border px-3 py-2.5 text-[10px] font-bold tracking-widest uppercase transition ${
                                 corsOnly
                                     ? 'border-primary bg-primary text-black'
                                     : 'border-primary/20 bg-black/40 text-primary hover:border-primary/45'
@@ -225,13 +225,13 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
                         </button>
                     </div>
 
-                    <div className="mb-4 flex flex-wrap gap-2">
+                    <div className="mb-4 flex min-w-0 flex-wrap gap-2">
                         {authFilters.map((filter) => (
                             <button
                                 key={filter.value}
                                 type="button"
                                 onClick={() => setAuthFilter(filter.value)}
-                                className={`rounded-lg border px-2.5 py-1.5 text-[9px] font-bold tracking-widest uppercase transition ${
+                                className={`max-w-full truncate rounded-lg border px-2.5 py-1.5 text-[9px] font-bold tracking-widest uppercase transition ${
                                     authFilter === filter.value
                                         ? 'border-primary bg-primary/15 text-primary'
                                         : 'border-white/10 bg-black/30 text-on-surface-variant hover:border-primary/35 hover:text-primary'
@@ -242,25 +242,18 @@ export default function FreeApisIndex({ categories, apis, activeCategory }: Prop
                         ))}
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                        <div className="min-w-[7.5rem]">
-                            <SpecularButton type="button" size="sm" active={!activeCategory} autoAnimate={!activeCategory} onClick={() => selectCategory(null)} labelClassName="justify-center">
-                                ALL_LAYERS
-                            </SpecularButton>
-                        </div>
+                    <div className="flex min-w-0 flex-wrap gap-2">
+                        <CategoryChip active={!activeCategory} onClick={() => selectCategory(null)}>
+                            ALL_LAYERS
+                        </CategoryChip>
                         {categories.map((category) => (
-                            <div key={category.id} className="min-w-[7.5rem]">
-                                <SpecularButton
-                                    type="button"
-                                    size="sm"
-                                    active={activeCategory === category.slug}
-                                    autoAnimate={activeCategory === category.slug}
-                                    onClick={() => selectCategory(category.slug)}
-                                    labelClassName="justify-center"
-                                >
-                                    {category.name.toUpperCase().replaceAll(' ', '_')}
-                                </SpecularButton>
-                            </div>
+                            <CategoryChip
+                                key={category.id}
+                                active={activeCategory === category.slug}
+                                onClick={() => selectCategory(category.slug)}
+                            >
+                                {category.name.toUpperCase().replaceAll(' ', '_')}
+                            </CategoryChip>
                         ))}
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import SpecularButton from '@/components/cyber/specular-button';
+import CategoryChip from '@/components/cyber/category-chip';
 import { StackIcon } from '@/lib/stack-icon';
 import { Head, router } from '@inertiajs/react';
 import { ExternalLink, Layers } from 'lucide-react';
@@ -83,25 +83,18 @@ export default function TechStackIndex({ categories, stacks, activeCategory }: P
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                        <div className="min-w-[7.5rem]">
-                            <SpecularButton type="button" size="sm" active={!activeCategory} autoAnimate={!activeCategory} onClick={() => selectCategory(null)} labelClassName="justify-center">
-                                ALL_LAYERS
-                            </SpecularButton>
-                        </div>
+                    <div className="flex min-w-0 flex-wrap gap-2">
+                        <CategoryChip active={!activeCategory} onClick={() => selectCategory(null)}>
+                            ALL_LAYERS
+                        </CategoryChip>
                         {categories.map((category) => (
-                            <div key={category.id} className="min-w-[7.5rem]">
-                                <SpecularButton
-                                    type="button"
-                                    size="sm"
-                                    active={activeCategory === category.slug}
-                                    autoAnimate={activeCategory === category.slug}
-                                    onClick={() => selectCategory(category.slug)}
-                                    labelClassName="justify-center"
-                                >
-                                    {category.name.toUpperCase().replaceAll(' ', '_')}
-                                </SpecularButton>
-                            </div>
+                            <CategoryChip
+                                key={category.id}
+                                active={activeCategory === category.slug}
+                                onClick={() => selectCategory(category.slug)}
+                            >
+                                {category.name.toUpperCase().replaceAll(' ', '_')}
+                            </CategoryChip>
                         ))}
                     </div>
                 </div>
