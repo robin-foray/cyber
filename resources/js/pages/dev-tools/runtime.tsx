@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import { Head } from '@inertiajs/react';
 import { Binary, Clipboard, Cpu, Eraser, FileKey2, Link2, ShieldAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -81,8 +81,8 @@ export default function Runtime() {
     }
 
     return (
-        <CyberShell>
-            <Head title="Runtime Codec" />
+        <>
+        <Head title="Runtime Codec" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -177,7 +177,7 @@ export default function Runtime() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -217,3 +217,5 @@ function decodeBase64Url(segment: string) {
 
     return decodeURIComponent(escape(atob(padded)));
 }
+
+Runtime.layout = cyberLayout;

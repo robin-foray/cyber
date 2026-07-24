@@ -1,0 +1,35 @@
+---
+description: Foray core — új fejlesztéshez skill + kötelező tesztek
+alwaysApply: true
+---
+
+# Foray alap szabályok
+
+## Új fejlesztés = skill is
+
+Minden új funkció, modul vagy jelentős UI/flow bevezetésekor:
+
+1. Hozz létre vagy frissíts project skillt: `.cursor/skills/<feature-name>/SKILL.md`
+2. A skill `description` mezője legyen triggerelhető (mikor használd)
+3. Tartalmazza: cél, fő route-ok/modellek, Filament resource ha van, how-to bővíteni
+4. Ne zárd le a feladatot skill nélkül
+
+Példa helyek: `machines`, `tech-stack`, `useful-sites`, `free-apis`, `dev-tools`.
+
+## Tesztek kötelezőek
+
+- Új endpoint / controller / Inertia page → Feature test
+- Új modell-kapcsolat / seeder logika → Unit vagy Feature assertion
+- Filament CRUD kritikus path → legalább list/create authorization smoke ha releváns
+- Módosítás után futtasd: `php artisan test`
+- Ne merge-elj / ne zárd „kész”-re failing vagy hiányzó teszttel az új feature-re
+
+Teszt hely: `tests/Feature/...` (Inertia: `assertInertia`, auth: `actingAs`)
+
+## Rendszer minőség
+
+- Sidebar / Filament / DB seed legyen szinkronban az új tartalommal
+- Cyber oldalak: persistent `cyberLayout` (ne nested `CyberShell` — sidebar flash elkerülése)
+- Nyilvános route-ok auth-szabályait tudatosan döntsd el
+- Duplikált route nevek (pl. `profile.update`) kerülendők
+- Mobile: részletpanelek scrollIntoView / látható feedback

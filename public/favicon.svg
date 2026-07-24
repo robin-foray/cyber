@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Foray">
+  <rect width="64" height="64" rx="14" fill="#0E0E0E"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" stroke="#CCFF00" stroke-opacity="0.35" stroke-width="1.5"/>
+  <!-- geometric F / forward mark -->
+  <path d="M18 16h28v7H26v7h16v7H26v11H18V16Z" fill="#CCFF00"/>
+  <path d="M42 37l10 7-10 7v-5.5H33v-3h9V37Z" fill="#CCFF00"/>
+  <circle cx="50" cy="18" r="2.2" fill="#CCFF00" opacity="0.85"/>
+</svg>

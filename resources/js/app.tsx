@@ -10,7 +10,7 @@ declare global {
     const route: typeof routeFn;
 }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Foray';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -21,7 +21,9 @@ createInertiaApp({
         root.render(<App {...props} />);
     },
     progress: {
-        color: '#4B5563',
+        color: '#ccff00',
+        includeCSS: true,
+        showSpinner: false,
     },
 });
 

@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import { Head } from '@inertiajs/react';
 import { Download, Eraser, FileImage, Gauge, ImageDown, LoaderCircle, ScanSearch, SlidersHorizontal, UploadCloud } from 'lucide-react';
 import { type ChangeEvent, type ReactNode, useMemo, useState } from 'react';
@@ -142,8 +142,8 @@ export default function ImageCompressor() {
     }
 
     return (
-        <CyberShell>
-            <Head title="Image Compressor" />
+        <>
+        <Head title="Image Compressor" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -252,7 +252,7 @@ export default function ImageCompressor() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -359,3 +359,5 @@ function formatBytes(bytes: number) {
 
     return `${value.toFixed(value >= 10 || exponent === 0 ? 0 : 1)} ${units[exponent]}`;
 }
+
+ImageCompressor.layout = cyberLayout;

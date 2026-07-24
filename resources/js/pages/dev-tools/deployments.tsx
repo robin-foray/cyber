@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import { Head } from '@inertiajs/react';
 import { Rocket } from 'lucide-react';
 
@@ -6,8 +6,8 @@ const deployments = ['archive_01 prepared', 'manifest synced', 'assets compiled'
 
 export default function Deployments() {
     return (
-        <CyberShell>
-            <Head title="Deployments" />
+        <>
+        <Head title="Deployments" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
                     <Rocket size={18} />
@@ -24,6 +24,8 @@ export default function Deployments() {
                     ))}
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
+
+Deployments.layout = cyberLayout;

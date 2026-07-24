@@ -45,6 +45,18 @@ return [
             'throw' => false,
         ],
 
+        /*
+         * Public web root — stack SVG ikonok a public/stacks alatt,
+         * Filament FileUpload és a frontend is innen szolgálja ki őket.
+         */
+        'public_web' => [
+            'driver' => 'local',
+            'root' => public_path(),
+            'url' => env('APP_URL'),
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

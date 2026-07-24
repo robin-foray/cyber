@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import InputError from '@/components/input-error';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { LoaderCircle, LogIn } from 'lucide-react';
@@ -30,8 +30,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <CyberShell>
-            <Head title="Login" />
+        <>
+        <Head title="Login" />
             <section className="cyber-grid mx-auto max-w-4xl rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
                     <LogIn size={18} />
@@ -114,7 +114,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                 {status && <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-3 text-center text-xs text-primary">{status}</div>}
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -127,3 +127,5 @@ function CyberField({ label, error, children }: { label: string; error?: string;
         </label>
     );
 }
+
+Login.layout = cyberLayout;

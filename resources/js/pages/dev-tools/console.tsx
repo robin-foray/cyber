@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Database, Eraser, FileJson2, Minimize2, Terminal, Wand2, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -52,8 +52,8 @@ export default function Console() {
     }
 
     return (
-        <CyberShell>
-            <Head title="JSON Formatter" />
+        <>
+        <Head title="JSON Formatter" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -146,7 +146,7 @@ export default function Console() {
                     </div>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -186,3 +186,5 @@ function walkJson(value: unknown, result: { keys: number; nodes: number }) {
         entries.forEach(([, item]) => walkJson(item, result));
     }
 }
+
+Console.layout = cyberLayout;

@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import InputError from '@/components/input-error';
 import { type SharedData } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
@@ -29,8 +29,8 @@ export default function Profile() {
     };
 
     return (
-        <CyberShell>
-            <Head title="Profile" />
+        <>
+        <Head title="Profile" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
                     <UserCog size={18} />
@@ -95,7 +95,7 @@ export default function Profile() {
                     </form>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -108,3 +108,5 @@ function CyberField({ label, error, children }: { label: string; error?: string;
         </label>
     );
 }
+
+Profile.layout = cyberLayout;

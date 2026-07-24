@@ -1,4 +1,4 @@
-import CyberShell from '@/components/cyber-shell';
+import { cyberLayout } from '@/layouts/cyber-layout';
 import { Head } from '@inertiajs/react';
 import { CalendarClock, CheckCircle2, Clipboard, Clock3, Eraser, Sparkles, Wand2, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -57,8 +57,8 @@ export default function CronGuru() {
     }
 
     return (
-        <CyberShell>
-            <Head title="Cron Guru" />
+        <>
+        <Head title="Cron Guru" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
                 <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div>
@@ -173,7 +173,7 @@ export default function CronGuru() {
                     </aside>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 
@@ -401,3 +401,5 @@ function formatRun(date: Date) {
         second: '2-digit',
     }).format(date);
 }
+
+CronGuru.layout = cyberLayout;

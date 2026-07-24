@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Foray">
+  <path d="M12 8h40v10H26v8h24v10H26v20H12V8Z" fill="currentColor"/>
+  <path d="M38 38l14 10-14 10v-7H28v-6h10v-7Z" fill="currentColor"/>
+  <circle cx="48" cy="14" r="3" fill="currentColor" opacity="0.9"/>
+</svg>
