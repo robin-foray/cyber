@@ -71,6 +71,14 @@ Prefix new keys with `foray.`.
 </CyberShell>
 ```
 
+## Mobile layout (dev-tools)
+
+- Outer section: `min-w-0 overflow-hidden p-4 sm:p-6 md:p-8`
+- Actions: `flex w-full flex-wrap gap-2 lg:w-auto` (never `grid-cols-2` for 3+ buttons)
+- Status tiles: `grid-cols-2` on phone, `min-w-0` + `break-words`
+- Editors: `min-h-[240px] sm:min-h-[360px] md:min-h-[430px]`, inputs `text-base` (iOS zoom)
+- Wide grids: use `minmax(0, …)` columns
+
 ## When NOT to use cyber UI
 
 Dashboard (`/dashboard`), settings (`/settings/*`) use shadcn `AppLayout` — keep admin UI consistent with Laravel starter kit patterns.

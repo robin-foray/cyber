@@ -32,11 +32,11 @@ export default function CronGuru() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="cron-guru"
                     actions={
-                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                        <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
                             <button type="button" onClick={copyExpression} className="cyber-tool-button">
                                 <Clipboard size={15} /> {copied ? 'Copied' : 'Copy'}
                             </button>
@@ -47,8 +47,8 @@ export default function CronGuru() {
                     }
                 />
 
-                <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-                    <div className="space-y-6">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+                    <div className="min-w-0 space-y-6">
                         <div className="rounded-2xl border border-white/5 bg-black/45 p-5">
                             <label
                                 htmlFor="cron-expression"
@@ -62,7 +62,7 @@ export default function CronGuru() {
                                 value={expression}
                                 onChange={(event) => setExpression(event.target.value)}
                                 spellCheck={false}
-                                className="border-primary/15 placeholder:text-on-surface-variant/40 focus:border-primary/60 w-full rounded-2xl border bg-black/55 px-4 py-4 font-mono text-xl font-bold tracking-wider text-white transition-all outline-none focus:shadow-[0_0_20px_rgba(204,255,0,0.14)]"
+                                className="border-primary/15 placeholder:text-on-surface-variant/40 focus:border-primary/60 w-full min-w-0 rounded-2xl border bg-black/55 px-4 py-4 font-mono text-base font-bold tracking-wider text-white transition-all outline-none focus:shadow-[0_0_20px_rgba(204,255,0,0.14)] sm:text-xl"
                                 placeholder="*/15 9-17 * * 1-5"
                             />
                             <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -80,14 +80,14 @@ export default function CronGuru() {
                             </div>
                         </div>
 
-                        <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+                        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
                             {fieldOrder.map((field) => (
                                 <FieldTile key={field} field={field} parsed={analysis.parsed?.[field]} />
                             ))}
                         </div>
 
                         <div className="border-primary/15 rounded-2xl border bg-black/45 p-5">
-                            <div className="mb-4 flex items-center justify-between gap-4">
+                            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                     <Sparkles size={18} />
                                     next_runtime_stream
@@ -119,7 +119,7 @@ export default function CronGuru() {
                         </div>
                     </div>
 
-                    <aside className="border-primary/20 rounded-2xl border bg-black/60 p-5">
+                    <aside className="min-w-0 rounded-2xl border border-primary/20 bg-black/60 p-5">
                         <div className="mb-5 flex items-center gap-3">
                             <div className="border-primary/25 bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-xl border">
                                 <Wand2 size={21} />
@@ -165,9 +165,9 @@ function FieldTile({ field, parsed }: { field: (typeof fieldOrder)[number]; pars
     };
 
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{labels[field]}</div>
-            <div className="text-primary mt-2 min-h-10 font-mono text-xs leading-5 font-bold">{parsed?.text ?? 'waiting'}</div>
+            <div className="text-primary mt-2 min-h-10 font-mono text-xs leading-5 font-bold break-words">{parsed?.text ?? 'waiting'}</div>
         </div>
     );
 }

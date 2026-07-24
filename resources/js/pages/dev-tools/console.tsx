@@ -46,11 +46,11 @@ export default function Console() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="console"
                     actions={
-                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                        <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
                             <button type="button" onClick={() => formatJsonBuffer('pretty')} className="cyber-tool-button">
                                 <Wand2 size={15} /> Pretty
                             </button>
@@ -67,7 +67,7 @@ export default function Console() {
                     }
                 />
 
-                <div className="mb-6 grid gap-3 lg:grid-cols-4">
+                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatusTile
                         label="Parse_State"
                         value={error ? 'INVALID' : isValid ? 'VALID' : 'IDLE'}
@@ -78,9 +78,9 @@ export default function Console() {
                     <StatusTile label="Nodes" value={String(stats.nodes)} />
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
-                        <div className="mb-4 flex items-center justify-between gap-4">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+                    <div className="min-w-0 rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
+                        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                             <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <Terminal size={18} />
                                 input_buffer
@@ -90,7 +90,7 @@ export default function Console() {
                                 <select
                                     value={indent}
                                     onChange={(event) => setIndent(Number(event.target.value))}
-                                    className="border-primary/15 text-primary rounded-lg border bg-black px-2 py-1 outline-none"
+                                    className="border-primary/15 text-primary min-w-0 w-full rounded-lg border bg-black px-2 py-1 text-base outline-none sm:w-auto"
                                 >
                                     <option value={2}>2</option>
                                     <option value={4}>4</option>
@@ -105,13 +105,13 @@ export default function Console() {
                                 setOutput('');
                             }}
                             spellCheck={false}
-                            className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[430px] w-full resize-y rounded-2xl border bg-black/50 p-4 text-xs leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                            className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[240px] w-full min-w-0 resize-y rounded-2xl border bg-black/50 p-4 text-base leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)] sm:min-h-[360px] sm:text-xs md:min-h-[430px]"
                             placeholder='{"status":"paste_json_here"}'
                         />
                     </div>
 
-                    <div className="border-primary/20 rounded-2xl border bg-black/60 p-5 font-mono">
-                        <div className="mb-4 flex items-center justify-between gap-4">
+                    <div className="min-w-0 rounded-2xl border border-primary/20 bg-black/60 p-5 font-mono">
+                        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                             <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <Database size={18} />
                                 output_stream
@@ -125,12 +125,12 @@ export default function Console() {
                         </div>
 
                         {error ? (
-                            <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">
+                            <div className="min-h-[240px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-base leading-6 text-red-200 sm:min-h-[360px] sm:text-xs md:min-h-[430px]">
                                 <div className="mb-3 font-bold tracking-widest uppercase">formatter rejected payload</div>
                                 {error}
                             </div>
                         ) : (
-                            <pre className="border-primary/10 text-primary min-h-[430px] overflow-auto rounded-2xl border bg-black/50 p-4 text-xs leading-6">
+                            <pre className="border-primary/10 text-primary min-h-[240px] overflow-auto rounded-2xl border bg-black/50 p-4 text-base leading-6 sm:min-h-[360px] sm:text-xs md:min-h-[430px]">
                                 {output || '// run pretty or minify to generate formatted output'}
                             </pre>
                         )}
@@ -145,9 +145,9 @@ function StatusTile({ label, value, tone = 'idle' }: { label: string; value: str
     const color = tone === 'bad' ? 'text-red-300' : tone === 'good' ? 'text-primary' : 'text-on-surface-variant';
 
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
-            <div className={`font-display mt-2 text-lg font-bold uppercase ${color}`}>{value}</div>
+            <div className={`font-display mt-2 text-base font-bold break-words uppercase sm:text-lg ${color}`}>{value}</div>
         </div>
     );
 }

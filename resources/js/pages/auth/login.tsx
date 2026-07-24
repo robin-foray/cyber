@@ -34,7 +34,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     return (
         <>
             <Head title="Login" />
-            <section className="cyber-grid mx-auto max-w-4xl rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
+            <section className="cyber-grid mx-auto max-w-4xl min-w-0 overflow-hidden rounded-3xl border border-primary/15 bg-surface p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
                     <LogIn size={18} />
                     ACCESS_GATE

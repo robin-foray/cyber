@@ -69,12 +69,12 @@ export default function RegexLab() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="regex-lab"
                     actions={
                         <>
-                            <div className="grid grid-cols-2 gap-2 sm:flex">
+                            <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
                                 <button type="button" onClick={() => copyValue('pattern', pattern)} className="cyber-tool-button">
                                     <Clipboard size={15} /> {copiedKey === 'pattern' ? 'Copied' : 'Copy Pattern'}
                                 </button>
@@ -86,15 +86,15 @@ export default function RegexLab() {
                     }
                 />
 
-                <div className="mb-6 grid gap-3 md:grid-cols-4">
+                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatusTile label="Pattern_State" value={isValid ? 'VALID' : 'INVALID'} tone={isValid ? 'good' : 'bad'} />
                     <StatusTile label="Matches" value={isValid ? String(result.matches.length) : '--'} />
                     <StatusTile label="Flags" value={result.flags || 'none'} />
                     <StatusTile label="Groups" value={isValid ? String(result.matches[0]?.groups.length ?? 0) : '--'} />
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-                    <div className="space-y-6">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
+                    <div className="min-w-0 space-y-6">
                         <div className="rounded-2xl border border-white/5 bg-black/45 p-5">
                             <label
                                 htmlFor="regex-pattern"
@@ -108,7 +108,7 @@ export default function RegexLab() {
                                 value={pattern}
                                 onChange={(event) => setPattern(event.target.value)}
                                 spellCheck={false}
-                                className="border-primary/15 placeholder:text-on-surface-variant/40 focus:border-primary/60 w-full rounded-2xl border bg-black/55 px-4 py-4 font-mono text-lg font-bold tracking-wide text-white transition-all outline-none focus:shadow-[0_0_20px_rgba(204,255,0,0.14)]"
+                                className="border-primary/15 placeholder:text-on-surface-variant/40 focus:border-primary/60 w-full min-w-0 rounded-2xl border bg-black/55 px-4 py-4 font-mono text-base font-bold tracking-wide text-white transition-all outline-none focus:shadow-[0_0_20px_rgba(204,255,0,0.14)]"
                                 placeholder="\\bforay-[a-z]+\\b"
                             />
 
@@ -147,7 +147,7 @@ export default function RegexLab() {
                                 value={haystack}
                                 onChange={(event) => setHaystack(event.target.value)}
                                 spellCheck={false}
-                                className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[180px] w-full resize-y rounded-2xl border bg-black/50 p-4 text-xs leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                                className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[160px] w-full min-w-0 resize-y rounded-2xl border bg-black/50 p-4 text-base leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)] sm:min-h-[180px] sm:text-xs"
                                 placeholder="paste sample text to test against"
                             />
 
@@ -163,13 +163,13 @@ export default function RegexLab() {
                                 value={replacement}
                                 onChange={(event) => setReplacement(event.target.value)}
                                 spellCheck={false}
-                                className="border-primary/10 text-on-surface-variant focus:border-primary/50 w-full rounded-2xl border bg-black/50 px-4 py-3 text-xs transition-all outline-none"
+                                className="border-primary/10 text-on-surface-variant focus:border-primary/50 w-full min-w-0 rounded-2xl border bg-black/50 px-4 py-3 text-base transition-all outline-none sm:text-xs"
                                 placeholder="$1-uppercase or FORAY"
                             />
                         </div>
 
-                        <div className="border-primary/20 rounded-2xl border bg-black/60 p-5 font-mono">
-                            <div className="mb-4 flex items-center justify-between gap-4">
+                        <div className="min-w-0 rounded-2xl border border-primary/20 bg-black/60 p-5 font-mono">
+                            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                     <ScanSearch size={18} />
                                     match_stream
@@ -215,7 +215,7 @@ export default function RegexLab() {
                         </div>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="min-w-0 space-y-6">
                         <div className="border-primary/15 rounded-2xl border bg-black/45 p-5">
                             <div className="text-primary mb-4 text-xs font-bold tracking-widest uppercase">pattern_builder</div>
                             <div className="grid gap-2 sm:grid-cols-2">
@@ -239,7 +239,7 @@ export default function RegexLab() {
                                     onChange={(event) => setLiteral(event.target.value)}
                                     spellCheck={false}
                                     placeholder="literal text"
-                                    className="border-primary/10 focus:border-primary/50 min-w-0 flex-1 rounded-xl border bg-black/50 px-3 py-2 font-mono text-xs text-white outline-none"
+                                    className="border-primary/10 focus:border-primary/50 min-w-0 flex-1 rounded-xl border bg-black/50 px-3 py-2 font-mono text-base text-white outline-none sm:text-xs"
                                 />
                                 <button type="button" onClick={appendLiteral} className="cyber-tool-button !min-h-10">
                                     Add
@@ -274,9 +274,9 @@ function StatusTile({ label, value, tone = 'idle' }: { label: string; value: str
     const toneClass = tone === 'good' ? 'text-primary' : tone === 'bad' ? 'text-red-300' : 'text-primary';
 
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
-            <div className={`font-display mt-2 text-lg font-bold uppercase ${toneClass}`}>{value}</div>
+            <div className={`font-display mt-2 text-base font-bold break-words uppercase sm:text-lg ${toneClass}`}>{value}</div>
         </div>
     );
 }

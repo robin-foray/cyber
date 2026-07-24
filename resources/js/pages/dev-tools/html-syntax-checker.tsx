@@ -64,12 +64,12 @@ export default function HtmlSyntaxChecker() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="html-syntax-checker"
                     actions={
                         <>
-                            <div className="grid grid-cols-2 gap-2 sm:flex">
+                            <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
                                 <button type="button" onClick={runCheck} className="cyber-tool-button">
                                     <ScanSearch size={15} /> Check
                                 </button>
@@ -84,7 +84,7 @@ export default function HtmlSyntaxChecker() {
                     }
                 />
 
-                <div className="mb-6 grid gap-3 md:grid-cols-3">
+                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
                     <StatusTile
                         label="Parse_State"
                         value={error ? 'INVALID' : isValid ? 'VALID' : 'IDLE'}
@@ -94,8 +94,8 @@ export default function HtmlSyntaxChecker() {
                     <StatusTile label="Tags" value={String(stats.tags)} />
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+                    <div className="min-w-0 rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
                         <div className="text-primary mb-4 flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                             <Code2 size={18} />
                             html_buffer
@@ -113,8 +113,8 @@ export default function HtmlSyntaxChecker() {
                         />
                     </div>
 
-                    <div className="border-primary/20 rounded-2xl border bg-black/60 p-5 font-mono">
-                        <div className="mb-4 flex items-center justify-between gap-4">
+                    <div className="min-w-0 rounded-2xl border border-primary/20 bg-black/60 p-5 font-mono">
+                        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                             <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <ScanSearch size={18} />
                                 lint_report
@@ -125,7 +125,7 @@ export default function HtmlSyntaxChecker() {
                             </div>
                         </div>
 
-                        <pre className="border-primary/10 text-primary min-h-[430px] overflow-auto rounded-2xl border bg-black/50 p-4 text-xs leading-6">
+                        <pre className="border-primary/10 text-primary min-h-[240px] overflow-auto rounded-2xl border bg-black/50 p-4 text-base leading-6 sm:min-h-[360px] sm:text-xs md:min-h-[430px]">
                             {report || '// run check to lint HTML structure'}
                         </pre>
                     </div>
@@ -139,9 +139,9 @@ function StatusTile({ label, value, tone = 'idle' }: { label: string; value: str
     const toneClass = tone === 'good' ? 'text-primary' : tone === 'bad' ? 'text-red-300' : 'text-primary';
 
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
-            <div className={`font-display mt-2 text-lg font-bold uppercase ${toneClass}`}>{value}</div>
+            <div className={`font-display mt-2 text-base font-bold break-words uppercase sm:text-lg ${toneClass}`}>{value}</div>
         </div>
     );
 }

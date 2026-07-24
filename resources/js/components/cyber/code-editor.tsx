@@ -12,7 +12,7 @@ export default function CyberCodeEditor({
     onChange,
     highlightedLines = [],
     className,
-    minHeight = 430,
+    minHeight,
     ...props
 }: CyberCodeEditorProps) {
     const gutterRef = useRef<HTMLDivElement>(null);
@@ -36,8 +36,11 @@ export default function CyberCodeEditor({
 
     return (
         <div
-            className="overflow-hidden rounded-2xl border border-primary/10 bg-black/50"
-            style={{ minHeight }}
+            className={cn(
+                'overflow-hidden rounded-2xl border border-primary/10 bg-black/50',
+                minHeight === undefined && 'min-h-[240px] sm:min-h-[360px] md:min-h-[430px]',
+            )}
+            style={minHeight !== undefined ? { minHeight } : undefined}
         >
             <div className="grid h-full grid-cols-[auto_1fr]">
                 <div
@@ -67,10 +70,10 @@ export default function CyberCodeEditor({
                     onScroll={syncScroll}
                     spellCheck={false}
                     className={cn(
-                        'min-h-full w-full resize-y bg-transparent px-4 py-4 font-mono text-xs leading-6 text-on-surface-variant outline-none transition-all focus:shadow-[inset_0_0_18px_rgba(204,255,0,0.12)]',
+                        'min-h-full w-full min-w-0 resize-y bg-transparent px-4 py-4 font-mono text-base leading-6 text-on-surface-variant outline-none transition-all focus:shadow-[inset_0_0_18px_rgba(204,255,0,0.12)] sm:text-xs',
                         className,
                     )}
-                    style={{ minHeight }}
+                    style={minHeight !== undefined ? { minHeight } : undefined}
                     {...props}
                 />
             </div>

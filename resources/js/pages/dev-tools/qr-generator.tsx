@@ -73,11 +73,11 @@ export default function QrGenerator() {
     return (
         <>
             <Head title={page.pageTitle} />
-            <section className="cyber-grid border-primary/15 bg-surface rounded-3xl border p-6 shadow-[0_0_22px_rgba(204,255,0,0.08)] md:p-8">
+            <section className="cyber-grid border-primary/15 bg-surface min-w-0 overflow-hidden rounded-3xl border p-4 shadow-[0_0_22px_rgba(204,255,0,0.08)] sm:p-6 md:p-8">
                 <DevToolPageHeader
                     slug="qr-generator"
                     actions={
-                        <div className="grid grid-cols-2 gap-2 sm:flex">
+                        <div className="flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
                             <button type="button" onClick={generate} className="cyber-tool-button" disabled={processing}>
                                 <QrCode size={15} />
                                 Generate
@@ -95,14 +95,14 @@ export default function QrGenerator() {
                     }
                 />
 
-                <div className="mb-6 grid gap-3 md:grid-cols-3">
+                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
                     <StatusTile label="Chars" value={String(telemetry.chars)} />
                     <StatusTile label="Size" value={telemetry.size} />
                     <StatusTile label="ECL" value={telemetry.ecl} />
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+                    <div className="min-w-0 rounded-2xl border border-white/5 bg-black/45 p-5 font-mono">
                         <div className="text-primary mb-4 flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                             <QrCode size={18} />
                             qr_payload
@@ -114,7 +114,7 @@ export default function QrGenerator() {
                                 setError('');
                             }}
                             spellCheck={false}
-                            className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[250px] w-full resize-y rounded-2xl border bg-black/50 p-4 text-xs leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)]"
+                            className="border-primary/10 text-on-surface-variant focus:border-primary/50 min-h-[200px] w-full min-w-0 resize-y rounded-2xl border bg-black/50 p-4 text-base leading-6 transition-all outline-none focus:shadow-[0_0_18px_rgba(204,255,0,0.12)] sm:min-h-[250px] sm:text-xs"
                             placeholder="url, text, json, or any payload..."
                         />
 
@@ -128,7 +128,7 @@ export default function QrGenerator() {
                                     step={1}
                                     value={size}
                                     onChange={(event) => setSize(Number(event.target.value) || 320)}
-                                    className="border-primary/15 text-primary mt-2 h-10 w-full rounded-lg border bg-black px-3 outline-none"
+                                    className="border-primary/15 text-primary mt-2 h-10 w-full min-w-0 rounded-lg border bg-black px-3 text-base outline-none"
                                 />
                             </label>
                             <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
@@ -140,7 +140,7 @@ export default function QrGenerator() {
                                     step={1}
                                     value={margin}
                                     onChange={(event) => setMargin(Number(event.target.value) || 0)}
-                                    className="border-primary/15 text-primary mt-2 h-10 w-full rounded-lg border bg-black px-3 outline-none"
+                                    className="border-primary/15 text-primary mt-2 h-10 w-full min-w-0 rounded-lg border bg-black px-3 text-base outline-none"
                                 />
                             </label>
                             <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase sm:col-span-2">
@@ -148,7 +148,7 @@ export default function QrGenerator() {
                                 <select
                                     value={errorCorrectionLevel}
                                     onChange={(event) => setErrorCorrectionLevel(event.target.value as QrErrorCorrectionLevel)}
-                                    className="border-primary/15 text-primary mt-2 h-10 w-full rounded-lg border bg-black px-3 outline-none"
+                                    className="border-primary/15 text-primary mt-2 h-10 w-full min-w-0 rounded-lg border bg-black px-3 text-base outline-none"
                                 >
                                     <option value="L">L (7%)</option>
                                     <option value="M">M (15%)</option>
@@ -159,8 +159,8 @@ export default function QrGenerator() {
                         </div>
                     </div>
 
-                    <div className="border-primary/20 rounded-2xl border bg-black/60 p-5 font-mono">
-                        <div className="mb-4 flex items-center justify-between gap-4">
+                    <div className="min-w-0 rounded-2xl border border-primary/20 bg-black/60 p-5 font-mono">
+                        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                             <div className="text-primary flex items-center gap-3 text-xs font-bold tracking-widest uppercase">
                                 <QrCode size={18} />
                                 qr_output
@@ -172,24 +172,24 @@ export default function QrGenerator() {
                         </div>
 
                         {error ? (
-                            <div className="min-h-[430px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-6 text-red-200">
+                            <div className="min-h-[240px] rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-base leading-6 text-red-200 sm:min-h-[360px] sm:text-xs md:min-h-[430px]">
                                 {error}
                             </div>
                         ) : processing ? (
                             <CyberImagePreviewSkeleton size={Math.min(size, 280)} label="qr_render" />
                         ) : dataUrl ? (
-                            <div className="border-primary/10 flex min-h-[430px] items-center justify-center rounded-2xl border bg-black/50 p-6">
+                            <div className="border-primary/10 flex min-h-[240px] items-center justify-center rounded-2xl border bg-black/50 p-6 sm:min-h-[360px] md:min-h-[430px]">
                                 <img
                                     src={dataUrl}
                                     alt="Generated QR code"
                                     width={size}
                                     height={size}
-                                    className="border-primary/20 rounded-xl border"
-                                    style={{ width: size, height: size }}
+                                    className="border-primary/20 max-h-[240px] max-w-full rounded-xl border sm:max-h-[360px] md:max-h-[400px]"
+                                    style={{ width: Math.min(size, 280), height: Math.min(size, 280) }}
                                 />
                             </div>
                         ) : (
-                            <div className="border-primary/10 text-on-surface-variant flex min-h-[430px] items-center justify-center rounded-2xl border bg-black/50 p-4 text-xs">
+                            <div className="border-primary/10 text-on-surface-variant flex min-h-[240px] items-center justify-center rounded-2xl border bg-black/50 p-4 text-base sm:min-h-[360px] sm:text-xs md:min-h-[430px]">
                                 // click generate to create QR code preview
                             </div>
                         )}
@@ -202,9 +202,9 @@ export default function QrGenerator() {
 
 function StatusTile({ label, value }: { label: string; value: string }) {
     return (
-        <div className="rounded-2xl border border-white/5 bg-black/40 p-4">
+        <div className="min-w-0 rounded-2xl border border-white/5 bg-black/40 p-4">
             <div className="text-on-surface-variant/55 text-[9px] font-bold tracking-widest uppercase">{label}</div>
-            <div className="font-display text-primary mt-2 text-lg font-bold uppercase">{value}</div>
+            <div className="font-display text-primary mt-2 text-base font-bold break-words uppercase sm:text-lg">{value}</div>
         </div>
     );
 }
