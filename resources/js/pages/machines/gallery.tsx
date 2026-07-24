@@ -137,7 +137,10 @@ export default function MachineGallery({ categories, machines, activeCategory }:
                 </div>
 
                 {selected && (
-                    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center" onClick={() => setSelected(null)}>
+                    <div
+                        className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/70 p-4 pt-5 backdrop-blur-sm sm:pt-8"
+                        onClick={() => setSelected(null)}
+                    >
                         <div
                             className="w-full max-w-lg overflow-hidden rounded-3xl border border-primary/25 bg-surface shadow-[0_0_40px_rgba(204,255,0,0.15)]"
                             onClick={(event) => event.stopPropagation()}
