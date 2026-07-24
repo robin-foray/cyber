@@ -19,7 +19,8 @@ description: Foray free public API registry. Use when editing free APIs, categor
 
 ## UI
 
-Cards: mobile 2-col full-width (same as tech-stack); detail scrollIntoView; copy sample; Try Sample / Open Docs.
+- Category filters: shared `CategoryChip` (`resources/js/components/cyber/category-chip.tsx`) — plain buttons with `flex-wrap`, not SpecularButton (WebGL inset overflow on mobile).
+- Cards: mobile 2-col full-width (same as tech-stack); detail scrollIntoView; copy sample; Try Sample / Open Docs.
 
 ## Deploy
 
