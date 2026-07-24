@@ -315,6 +315,75 @@
     box-shadow: 0 0 18px rgba(204, 255, 0, 0.3);
 }
 
+.cyber-skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(204, 255, 0, 0.1);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.62) 0%, rgba(204, 255, 0, 0.04) 48%, rgba(0, 0, 0, 0.58) 100%);
+    background-size: 220% 100%;
+    animation: cyber-skeleton-shimmer 1.45s ease-in-out infinite;
+}
+
+.cyber-skeleton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(204, 255, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(204, 255, 0, 0.04) 1px, transparent 1px);
+    background-size: 18px 18px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.cyber-skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(204, 255, 0, 0.14) 48%, transparent 100%);
+    transform: translateX(-120%);
+    animation: cyber-skeleton-scan 2.1s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.cyber-skeleton-zone {
+    position: relative;
+}
+
+.cyber-skeleton-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(204, 255, 0, 0.72);
+}
+
+@keyframes cyber-skeleton-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+@keyframes cyber-skeleton-scan {
+    0%,
+    18% {
+        transform: translateX(-120%);
+    }
+
+    55% {
+        transform: translateX(120%);
+    }
+
+    100% {
+        transform: translateX(120%);
+    }
+}
+
 .topbar-inverse-corner::before {
     content: '';
     position: absolute;

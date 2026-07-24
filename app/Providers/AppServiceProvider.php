@@ -2,6 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\DeploymentStep;
+use App\Models\DevToolPage;
+use App\Models\HeroContent;
+use App\Models\HomeConsoleContent;
+use App\Models\NavigationItem;
+use App\Models\PageSection;
+use App\Models\SiteSetting;
+use App\Models\SkillMetric;
+use App\Models\SocialLink;
+use App\Models\StackTechnology;
+use App\Models\TickerMessage;
+use App\Services\ContentService;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +32,27 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Vite::createAssetPathsUsing(
+            fn (string $path, ?bool $secure = null) => '/'.ltrim($path, '/'),
+        );
+
+        $flush = fn () => app(ContentService::class)->flush();
+
+        foreach ([
+            NavigationItem::class,
+            HeroContent::class,
+            HomeConsoleContent::class,
+            SkillMetric::class,
+            StackTechnology::class,
+            TickerMessage::class,
+            SocialLink::class,
+            DeploymentStep::class,
+            DevToolPage::class,
+            PageSection::class,
+            SiteSetting::class,
+        ] as $model) {
+            $model::saved($flush);
+            $model::deleted($flush);
+        }
     }
 }

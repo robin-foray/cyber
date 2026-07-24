@@ -69,9 +69,19 @@ const { data, setData, patch, processing, errors } = useForm({ ... });
 
 ### 6. Shared props
 
-If new data must be globally available, add to `app/Http/Middleware/HandleInertiaRequests.php` `share()` method. Update `resources/js/types/index.ts` accordingly.
+If new data must be globally available, add to `app/Http/Middleware/HandleInertiaRequests.php` `share()` method (prefer extending `ContentService` + `cms` prop for public content). Update `resources/js/types/index.ts` accordingly.
 
-### 7. Tests
+### 7. Filament admin (mandatory for public/editable content)
+
+- Model + migration for any user-editable data
+- Filament Resource in `app/Filament/Resources/`
+- Wire via `ContentService` → Inertia `cms` prop
+- Register cache flush in `AppServiceProvider`
+- Seed defaults in `CmsSeeder`
+
+See `.cursor/rules/filament-cms.mdc`.
+
+### 8. Tests (mandatory)
 
 ```php
 // tests/Feature/ExampleTest.php
@@ -90,7 +100,9 @@ public function test_authenticated_users_can_view(): void
 }
 ```
 
-### 8. Verify
+Add CMS tests in `tests/Feature/Cms/` when `ContentService` is extended.
+
+### 9. Verify
 
 ```bash
 ./vendor/bin/phpunit --filter Example

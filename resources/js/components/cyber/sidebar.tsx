@@ -1,22 +1,12 @@
+import CoolStuffMenu, { coolStuffStorageKey } from '@/components/cyber/cool-stuff-menu';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
+import { resolveCmsIcon } from '@/lib/cms-icons';
 import { type SharedData } from '@/types';
-import { Link } from '@inertiajs/react';
-import {
-    ChevronDown,
-    ChevronLeft,
-    Check,
-    Command,
-    Construction,
-    Facebook,
-    FileText,
-    Github,
-    Instagram,
-    Share2,
-    Terminal,
-    Twitter,
-    Zap,
-} from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Facebook, Github, Instagram, Twitter, Zap } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import ForayBrand from './foray-brand';
+import { ChevronLeft } from 'lucide-react';
 
 type CyberSidebarProps = {
     currentUrl: string;
@@ -26,38 +16,44 @@ type CyberSidebarProps = {
     onOpen: () => void;
 };
 
-const devLinks = [
-    { label: 'CONSOLE', href: '/dev-tools/console' },
-    { label: 'RUNTIME', href: '/dev-tools/runtime' },
-    { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator' },
-    { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator' },
-    { label: 'CRON_GURU', href: '/dev-tools/cron-guru' },
-    { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor' },
-    { label: 'DEPLOYMENTS', href: '/dev-tools/deployments' },
-];
-
-const devToolsStorageKey = 'foray.dev-tools.open';
+const socialIconMap = {
+    Github,
+    Twitter,
+    Instagram,
+    Facebook,
+} as const;
 
 export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen }: CyberSidebarProps) {
-    const [isDevToolsOpen, setIsDevToolsOpen] = useState(() => {
+    const { cms } = usePage<SharedData>().props;
+    const [isCoolStuffOpen, setIsCoolStuffOpen] = useState(() => {
         if (typeof window === 'undefined') {
             return false;
         }
 
-        return window.localStorage.getItem(devToolsStorageKey) === 'true';
+        const storedValue = window.localStorage.getItem(coolStuffStorageKey);
+        const legacyValue = window.localStorage.getItem('foray.dev-tools.open');
+
+        if (storedValue !== null) {
+            return storedValue === 'true';
+        }
+
+        return legacyValue === 'true';
     });
 
     useEffect(() => {
-        window.localStorage.setItem(devToolsStorageKey, String(isDevToolsOpen));
-    }, [isDevToolsOpen]);
+        window.localStorage.setItem(coolStuffStorageKey, String(isCoolStuffOpen));
+    }, [isCoolStuffOpen]);
 
-    function setDevToolsOpen(open: boolean) {
+    function setCoolStuffOpen(open: boolean) {
         if (typeof window !== 'undefined') {
-            window.localStorage.setItem(devToolsStorageKey, String(open));
+            window.localStorage.setItem(coolStuffStorageKey, String(open));
         }
 
-        setIsDevToolsOpen(open);
+        setIsCoolStuffOpen(open);
     }
+
+    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user);
+    let coolStuffRendered = false;
 
     return (
         <aside
@@ -83,23 +79,43 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
             </div>
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
-                <NavItem icon={<Terminal size={18} />} label="TERMINAL" href="/" active={isActiveHref(currentUrl, '/')} full={isOpen} />
-                <DevToolsMenu
-                    currentUrl={currentUrl}
-                    isOpen={isDevToolsOpen}
-                    onCollapsedOpen={() => {
-                        setDevToolsOpen(true);
-                        onOpen();
-                    }}
-                    onToggle={() => setDevToolsOpen(!isDevToolsOpen)}
-                    full={isOpen}
-                />
-                <NavItem icon={<Share2 size={18} />} label="PROJECTS" href="/#projects" full={isOpen} />
-                <NavItem icon={<FileText size={18} />} label="SYSTEM_LOGS" href="/#logs" full={isOpen} />
-                {user && <NavItem icon={<Command size={18} />} label="PROFILE" href="/profile" active={isActiveHref(currentUrl, '/profile')} full={isOpen} />}
+                {navigation.map((item) => {
+                    if (item.isGroup) {
+                        if (coolStuffRendered) {
+                            return null;
+                        }
+
+                        coolStuffRendered = true;
+
+                        return (
+                            <CoolStuffMenu
+                                key={item.id}
+                                currentUrl={currentUrl}
+                                isOpen={isCoolStuffOpen}
+                                onCollapsedOpen={() => {
+                                    setCoolStuffOpen(true);
+                                    onOpen();
+                                }}
+                                onToggle={() => setCoolStuffOpen(!isCoolStuffOpen)}
+                                full={isOpen}
+                            />
+                        );
+                    }
+
+                    return (
+                        <NavItem
+                            key={item.id}
+                            icon={resolveCmsIcon(item.icon)}
+                            label={item.label}
+                            href={item.href ?? '/'}
+                            active={isActiveHref(currentUrl, item.href ?? '/')}
+                            full={isOpen}
+                        />
+                    );
+                })}
             </nav>
 
-            <SocialLinks full={isOpen} />
+            <SocialLinks full={isOpen} links={cms.socialLinks} />
         </aside>
     );
 }
@@ -108,9 +124,17 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     const label = user?.name ?? 'GUEST_NODE';
     const role = user?.is_admin ? 'ADMIN' : (user?.role ?? 'VISITOR').toString().toUpperCase();
     const title = user?.title ?? 'SYSTEM: ONLINE';
+    const href = user ? '/profile' : '/login';
+    const handleClick = useInstantCyberClick(href);
 
     return (
-        <Link href={user ? '/profile' : '/login'} className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5">
+        <Link
+            href={href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
+            className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4 transition-all hover:border-primary/30 hover:bg-primary/5"
+        >
             <p className="truncate text-[10px] tracking-widest text-primary uppercase opacity-70">Node_Identity</p>
             <div className="mt-2 flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary/10 text-primary">
@@ -130,117 +154,58 @@ function NodeIdentity({ user }: { user: SharedData['auth']['user'] }) {
     );
 }
 
-function NavItem({ icon, label, href, active = false, full }: { icon: ReactNode; label: string; href: string; active?: boolean; full: boolean }) {
+function NavItem({
+    icon: Icon,
+    label,
+    href,
+    active = false,
+    full,
+}: {
+    icon: React.ComponentType<{ size?: number }>;
+    label: string;
+    href: string;
+    active?: boolean;
+    full: boolean;
+}) {
+    const handleClick = useInstantCyberClick(href);
+
     return (
         <Link
             href={href}
+            prefetch="mount"
+            cacheFor="5m"
+            onClick={handleClick}
             aria-label={label}
             title={label}
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${full ? '' : 'justify-center'} ${
                 active ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]' : 'text-on-surface-variant hover:bg-primary/5 hover:text-primary'
             }`}
         >
-            {icon}
+            <Icon size={18} />
             {full && <span className="text-[11px] font-bold tracking-widest">{label}</span>}
         </Link>
     );
 }
 
-function DevToolsMenu({
-    currentUrl,
-    isOpen,
-    onCollapsedOpen,
-    onToggle,
-    full,
-}: {
-    currentUrl: string;
-    isOpen: boolean;
-    onCollapsedOpen: () => void;
-    onToggle: () => void;
-    full: boolean;
-}) {
-    const isActive = currentUrl.startsWith('/dev-tools');
-
-    return (
-        <div className="space-y-1">
-            <button
-                type="button"
-                aria-label="DEV_TOOLS"
-                title="DEV_TOOLS"
-                onClick={() => {
-                    if (full) {
-                        onToggle();
-                        return;
-                    }
-
-                    onCollapsedOpen();
-                }}
-                className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all hover:bg-primary/5 hover:text-primary ${
-                    full ? '' : 'justify-center'
-                } ${
-                    isActive
-                        ? 'bg-primary text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.18)]'
-                        : 'text-on-surface-variant'
-                }`}
-            >
-                <Construction size={18} />
-                {full && (
-                    <>
-                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">DEV_TOOLS</span>
-                        <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                    </>
-                )}
-            </button>
-
-            {full && isOpen && (
-                <div className="ml-6 space-y-0.5 border-l border-primary/10 pl-3">
-                    {devLinks.map((tool) => {
-                        const isChecked = isActiveHref(currentUrl, tool.href);
-
-                        return (
-                            <Link
-                                key={tool.label}
-                                href={tool.href}
-                                aria-current={isChecked ? 'page' : undefined}
-                                className={`flex min-h-7 items-center gap-2 rounded-lg border px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase transition-all hover:bg-primary/5 hover:text-primary ${
-                                    isChecked
-                                        ? 'border-primary/25 bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(204,255,0,0.12)]'
-                                        : 'border-transparent text-on-surface-variant/70'
-                                }`}
-                            >
-                                <span className="min-w-0 flex-1 truncate">{tool.label}</span>
-                                {isChecked && <Check size={12} className="shrink-0 drop-shadow-[0_0_5px_rgba(204,255,0,0.7)]" />}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
-}
-
-function SocialLinks({ full }: { full: boolean }) {
-    const links = [
-        { label: 'Github', icon: <Github size={14} /> },
-        { label: 'Twitter', icon: <Twitter size={14} /> },
-        { label: 'Instagram', icon: <Instagram size={14} /> },
-        { label: 'Facebook', icon: <Facebook size={14} /> },
-    ];
-
+function SocialLinks({ full, links }: { full: boolean; links: SharedData['cms']['socialLinks'] }) {
     return (
         <div className={`shrink-0 border-t border-white/5 p-3 ${full ? '' : 'px-3'}`}>
             <div className={`grid gap-2 ${full ? 'grid-cols-4' : 'grid-cols-1'}`}>
-                {links.map((link) => (
-                    <a
-                        key={link.label}
-                        href="#"
-                        aria-label={link.label}
-                        title={link.label}
-                        className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
-                    >
-                        {link.icon}
-                    </a>
-                ))}
+                {links.map((link) => {
+                    const Icon = socialIconMap[link.platform as keyof typeof socialIconMap] ?? Github;
+
+                    return (
+                        <a
+                            key={link.platform}
+                            href={link.url ?? '#'}
+                            aria-label={link.platform}
+                            title={link.platform}
+                            className="flex min-h-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
+                        >
+                            <Icon size={14} />
+                        </a>
+                    );
+                })}
             </div>
         </div>
     );

@@ -1,8 +1,8 @@
-import CyberShell from '@/components/cyber-shell';
+import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
 import { type SharedData } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { LoaderCircle, ShieldCheck, UserCog } from 'lucide-react';
+import { ShieldCheck, UserCog } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
 
 type ProfileForm = {
@@ -29,7 +29,7 @@ export default function Profile() {
     };
 
     return (
-        <CyberShell>
+        <>
             <Head title="Profile" />
             <section className="cyber-grid rounded-3xl border border-primary/15 bg-surface p-8 shadow-[0_0_22px_rgba(204,255,0,0.08)]">
                 <div className="mb-8 flex items-center gap-3 text-sm font-bold tracking-widest text-primary">
@@ -53,49 +53,50 @@ export default function Profile() {
                     </aside>
 
                     <form className="rounded-2xl border border-primary/15 bg-black/50 p-6" onSubmit={submit}>
-                        <div className="grid gap-5">
-                            <CyberField label="Node_Name" error={errors.name}>
-                                <input value={data.name} onChange={(e) => setData('name', e.target.value)} className="cyber-input" />
-                            </CyberField>
-                            <CyberField label="Operator_Title" error={errors.title}>
-                                <input value={data.title} onChange={(e) => setData('title', e.target.value)} className="cyber-input" placeholder="Root Operator" />
-                            </CyberField>
-                            <CyberField label="Avatar_Seed" error={errors.avatar_seed}>
-                                <input
-                                    value={data.avatar_seed}
-                                    onChange={(e) => setData('avatar_seed', e.target.value)}
-                                    className="cyber-input"
-                                    placeholder="unique avatar signal"
-                                />
-                            </CyberField>
-                            <CyberField label="Bio_Signal" error={errors.bio}>
-                                <textarea
-                                    value={data.bio}
-                                    onChange={(e) => setData('bio', e.target.value)}
-                                    className="cyber-input min-h-32 resize-y"
-                                    placeholder="Describe this operator node..."
-                                />
-                            </CyberField>
+                        <CyberLoadingZone loading={processing} label="identity_sync" fields={4}>
+                            <div className="grid gap-5">
+                                <CyberField label="Node_Name" error={errors.name}>
+                                    <input value={data.name} onChange={(e) => setData('name', e.target.value)} className="cyber-input" />
+                                </CyberField>
+                                <CyberField label="Operator_Title" error={errors.title}>
+                                    <input value={data.title} onChange={(e) => setData('title', e.target.value)} className="cyber-input" placeholder="Root Operator" />
+                                </CyberField>
+                                <CyberField label="Avatar_Seed" error={errors.avatar_seed}>
+                                    <input
+                                        value={data.avatar_seed}
+                                        onChange={(e) => setData('avatar_seed', e.target.value)}
+                                        className="cyber-input"
+                                        placeholder="unique avatar signal"
+                                    />
+                                </CyberField>
+                                <CyberField label="Bio_Signal" error={errors.bio}>
+                                    <textarea
+                                        value={data.bio}
+                                        onChange={(e) => setData('bio', e.target.value)}
+                                        className="cyber-input min-h-32 resize-y"
+                                        placeholder="Describe this operator node..."
+                                    />
+                                </CyberField>
 
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="font-display mt-2 flex items-center justify-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-black uppercase transition-all hover:shadow-[0_0_18px_rgba(204,255,0,0.45)] disabled:opacity-60"
-                            >
-                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                                Save_Identity
-                            </button>
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="font-display mt-2 flex items-center justify-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-black uppercase transition-all hover:shadow-[0_0_18px_rgba(204,255,0,0.45)] disabled:opacity-60"
+                                >
+                                    Save_Identity
+                                </button>
 
-                            {recentlySuccessful && (
-                                <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center text-[10px] font-bold tracking-widest text-primary uppercase">
-                                    identity updated
-                                </div>
-                            )}
-                        </div>
+                                {recentlySuccessful && (
+                                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center text-[10px] font-bold tracking-widest text-primary uppercase">
+                                        identity updated
+                                    </div>
+                                )}
+                            </div>
+                        </CyberLoadingZone>
                     </form>
                 </div>
             </section>
-        </CyberShell>
+        </>
     );
 }
 

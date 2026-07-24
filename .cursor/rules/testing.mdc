@@ -27,11 +27,17 @@ $this->postJson(route('dev-tools.hash-generator.bcrypt'), [...])
     ->assertJsonStructure(['hash']);
 ```
 
-### When to add tests
+### When to add tests (mandatory)
 
-- New route → feature test for guest/auth access + Inertia component name
-- New JSON endpoint → success, validation failure, edge cases
-- Model behavior → unit test if non-trivial
+| Change | Required tests |
+|--------|----------------|
+| New public route/page | PHPUnit feature test (`assertOk` + `assertInertia` component) |
+| New dev-tool | `DevToolsRoutesTest` data provider entry + Vitest for lib |
+| New Filament model/CMS | `tests/Feature/Cms/` test for `ContentService` payload |
+| New JSON API endpoint | PHPUnit: success, validation 422, edge cases |
+| New lib module | Vitest `*.test.ts` co-located with lib |
+
+**A new site feature is not done without tests.**
 
 ## Vitest (frontend)
 
