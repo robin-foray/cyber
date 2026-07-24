@@ -19,7 +19,7 @@ description: Foray free public API registry. Use when editing free APIs, categor
 
 ## UI
 
-Cards `9.5rem`; detail scrollIntoView; copy sample; Try Sample / Open Docs.
+Cards: mobile 2-col full-width (same as tech-stack); detail scrollIntoView; copy sample; Try Sample / Open Docs.
 
 ## Deploy
 
