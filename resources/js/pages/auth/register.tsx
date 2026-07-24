@@ -1,5 +1,6 @@
 import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { UserPlus } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
@@ -18,6 +19,7 @@ export default function Register() {
         password: '',
         password_confirmation: '',
     });
+    const handleLoginClick = useInstantCyberClick('/login');
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -114,7 +116,7 @@ export default function Register() {
 
                             <div className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                                 identity exists?{' '}
-                                <Link href={route('login')} className="text-primary hover:underline">
+                                <Link href="/login" prefetch="mount" cacheFor="5m" onClick={handleLoginClick} className="text-primary hover:underline">
                                     login_node
                                 </Link>
                             </div>

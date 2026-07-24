@@ -14,6 +14,7 @@ use App\Models\SocialLink;
 use App\Models\StackTechnology;
 use App\Models\TickerMessage;
 use App\Services\ContentService;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,6 +33,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! $this->app->runningInConsole() && request()->secure()) {
+            URL::forceScheme('https');
+        } elseif (str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         Vite::createAssetPathsUsing(
             fn (string $path, ?bool $secure = null) => '/'.ltrim($path, '/'),
         );

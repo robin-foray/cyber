@@ -1,5 +1,6 @@
 import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
+import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { LogIn } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
@@ -21,6 +22,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         password: '',
         remember: false,
     });
+    const handleRegisterClick = useInstantCyberClick('/register');
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -88,7 +90,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     remember_node
                                 </label>
                                 {canResetPassword && (
-                                    <Link href={route('password.request')} className="text-primary hover:underline">
+                                    <Link href="/forgot-password" className="text-primary hover:underline">
                                         reset_key
                                     </Link>
                                 )}
@@ -104,7 +106,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                             <div className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                                 no identity?{' '}
-                                <Link href={route('register')} className="text-primary hover:underline">
+                                <Link href="/register" prefetch="mount" cacheFor="5m" onClick={handleRegisterClick} className="text-primary hover:underline">
                                     register_node
                                 </Link>
                             </div>

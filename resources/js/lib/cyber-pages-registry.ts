@@ -24,7 +24,17 @@ export const cyberShellPages = {
 export type CyberShellPageName = keyof typeof cyberShellPages;
 
 export function hrefToPageName(href: string) {
-    const path = href.split('?')[0]?.split('#')[0]?.replace(/^\//, '') ?? '';
+    let path = href.split('?')[0]?.split('#')[0] ?? '';
+
+    if (/^https?:\/\//i.test(path)) {
+        try {
+            path = new URL(path).pathname;
+        } catch {
+            // Keep the original path when URL parsing fails.
+        }
+    }
+
+    path = path.replace(/^\//, '');
 
     if (path === '') {
         return 'welcome';

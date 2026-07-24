@@ -11,8 +11,10 @@ describe('cyber-pages-registry', () => {
         expect(hrefToPageName('/profile')).toBe('profile');
         expect(hrefToPageName('/login')).toBe('auth/login');
         expect(hrefToPageName('/register')).toBe('auth/register');
+        expect(hrefToPageName('https://example.test/register')).toBe('auth/register');
         expect(isCyberShellPageName('auth/login')).toBe(true);
         expect(isInstantNavigationHref('/login')).toBe(true);
+        expect(isInstantNavigationHref('/register')).toBe(true);
         expect(isInstantNavigationHref('/profile')).toBe(true);
     });
 
