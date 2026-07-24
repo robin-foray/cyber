@@ -25,11 +25,9 @@ export default function Welcome() {
             </Head>
 
                 <section
-                    className="glow-box group relative min-h-[430px] overflow-hidden rounded-3xl border border-primary/20 bg-surface-low p-8 transition-all duration-500 md:p-12"
+                    className="glow-box group relative min-h-[430px] overflow-hidden rounded-3xl border border-primary/20 bg-surface-low bg-cover bg-center bg-no-repeat p-8 transition-all duration-500 md:p-12"
                     style={{
                         backgroundImage: `url('${cms.hero.backgroundImage}')`,
-                        backgroundPosition: '50% 50%',
-                        backgroundSize: '108%',
                     }}
                 >
                     <span className="hero-orbit-trace" aria-hidden="true" />
