@@ -46,6 +46,14 @@ export function hrefToPageName(href: string) {
         return 'free-apis/index';
     }
 
+    if (path === 'login') {
+        return 'auth/login';
+    }
+
+    if (path === 'register') {
+        return 'auth/register';
+    }
+
     return path;
 }
 

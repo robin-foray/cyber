@@ -9,7 +9,11 @@ describe('cyber-pages-registry', () => {
 
     it('supports profile and auth pages', () => {
         expect(hrefToPageName('/profile')).toBe('profile');
+        expect(hrefToPageName('/login')).toBe('auth/login');
+        expect(hrefToPageName('/register')).toBe('auth/register');
         expect(isCyberShellPageName('auth/login')).toBe(true);
+        expect(isInstantNavigationHref('/login')).toBe(true);
+        expect(isInstantNavigationHref('/profile')).toBe(true);
     });
 
     it('skips hash-only navigation', () => {
