@@ -11,6 +11,7 @@ import PhpSyntaxChecker from '@/pages/dev-tools/php-syntax-checker';
 import QrGenerator from '@/pages/dev-tools/qr-generator';
 import RegexLab from '@/pages/dev-tools/regex-lab';
 import Runtime from '@/pages/dev-tools/runtime';
+import SqlBuilder from '@/pages/dev-tools/sql-builder';
 import { hrefToPageName } from '@/lib/cyber-pages-registry';
 
 export const devToolLinks = coolStuffLinks;
@@ -28,6 +29,7 @@ export const devToolPages: Record<DevToolPageName, ComponentType> = {
     'dev-tools/html-syntax-checker': HtmlSyntaxChecker,
     'dev-tools/color-converter': ColorConverter,
     'dev-tools/regex-lab': RegexLab,
+    'dev-tools/sql-builder': SqlBuilder,
     'dev-tools/deployments': Deployments,
 };
 

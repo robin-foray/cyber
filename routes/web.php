@@ -56,6 +56,9 @@ Route::get('dev-tools/color-converter', function () {
 Route::get('dev-tools/regex-lab', function () {
     return Inertia::render('dev-tools/regex-lab');
 })->name('dev-tools.regex-lab');
+Route::get('dev-tools/sql-builder', function () {
+    return Inertia::render('dev-tools/sql-builder');
+})->name('dev-tools.sql-builder');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {

@@ -17,9 +17,9 @@ class ForayInstallTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseCount('navigation_items', 16);
+        $this->assertDatabaseCount('navigation_items', 17);
         $this->assertDatabaseCount('stack_technologies', 10);
-        $this->assertDatabaseCount('dev_tool_pages', 11);
+        $this->assertDatabaseCount('dev_tool_pages', 12);
         $this->assertDatabaseCount('page_sections', 2);
         $this->assertSame(1, User::query()->where('role', 'admin')->count());
     }
@@ -49,7 +49,7 @@ class ForayInstallTest extends TestCase
     {
         Artisan::call('foray:install');
 
-        $this->assertDatabaseCount('navigation_items', 16);
+        $this->assertDatabaseCount('navigation_items', 17);
         $this->assertDatabaseHas('users', [
             'email' => config('foray.admin.email'),
             'role' => 'admin',

@@ -20,6 +20,7 @@ import {
     Palette,
     QrCode,
     Regex,
+    Table2,
     Rocket,
     Server,
     Share2,
@@ -60,6 +61,7 @@ const iconMap: Record<string, LucideIcon> = {
     Sparkles,
     Palette,
     Regex,
+    Table2,
     FileCode2,
 };
 

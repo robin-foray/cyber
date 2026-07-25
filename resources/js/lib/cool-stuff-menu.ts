@@ -42,6 +42,11 @@ export const coolStuffMenu = [
         label: 'PATTERN',
         items: [{ label: 'REGEX_LAB', href: '/dev-tools/regex-lab', page: 'dev-tools/regex-lab' }],
     },
+    {
+        id: 'data',
+        label: 'DATA',
+        items: [{ label: 'SQL_BUILDER', href: '/dev-tools/sql-builder', page: 'dev-tools/sql-builder' }],
+    },
 ] as const satisfies readonly CoolStuffCategory[];
 
 export const coolStuffLinks = coolStuffMenu.flatMap((category) => category.items);

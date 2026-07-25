@@ -32,6 +32,7 @@ class DevToolsRoutesTest extends TestCase
             'html-syntax-checker' => ['dev-tools.html-syntax-checker', 'dev-tools/html-syntax-checker'],
             'color-converter' => ['dev-tools.color-converter', 'dev-tools/color-converter'],
             'regex-lab' => ['dev-tools.regex-lab', 'dev-tools/regex-lab'],
+            'sql-builder' => ['dev-tools.sql-builder', 'dev-tools/sql-builder'],
         ];
     }
 }
