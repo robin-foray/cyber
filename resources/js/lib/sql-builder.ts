@@ -22,20 +22,7 @@ export type SqlBuilderResult = {
     whereCount: number;
 };
 
-export const sqlWhereOperators: SqlWhereOperator[] = [
-    '=',
-    '!=',
-    '>',
-    '>=',
-    '<',
-    '<=',
-    'LIKE',
-    'NOT LIKE',
-    'IN',
-    'NOT IN',
-    'IS NULL',
-    'IS NOT NULL',
-];
+export const sqlWhereOperators: SqlWhereOperator[] = ['=', '!=', '>', '>=', '<', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL'];
 
 export const sqlBuilderPresets: Array<{
     label: string;
@@ -202,10 +189,7 @@ function formatSqlValue(raw: string): string {
         return trimmed;
     }
 
-    if (
-        (trimmed.startsWith("'") && trimmed.endsWith("'")) ||
-        (trimmed.startsWith('"') && trimmed.endsWith('"'))
-    ) {
+    if ((trimmed.startsWith("'") && trimmed.endsWith("'")) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
         const inner = trimmed.slice(1, -1);
         return `'${escapeSqlString(inner)}'`;
     }

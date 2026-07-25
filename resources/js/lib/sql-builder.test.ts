@@ -27,9 +27,7 @@ describe('buildSelectQuery', () => {
         });
 
         expect(result.error).toBe('');
-        expect(result.output).toBe(
-            "SELECT *\nFROM orders\nWHERE status = 'paid' AND total > 100 OR note LIKE '%o''s%';",
-        );
+        expect(result.output).toBe("SELECT *\nFROM orders\nWHERE status = 'paid' AND total > 100 OR note LIKE '%o''s%';");
         expect(result.whereCount).toBe(3);
     });
 
@@ -44,9 +42,7 @@ describe('buildSelectQuery', () => {
         });
 
         expect(result.error).toBe('');
-        expect(result.output).toBe(
-            'SELECT id\nFROM products\nWHERE deleted_at IS NULL AND category_id IN (1, 2, 3);',
-        );
+        expect(result.output).toBe('SELECT id\nFROM products\nWHERE deleted_at IS NULL AND category_id IN (1, 2, 3);');
     });
 
     it('skips blank where rows and rejects invalid identifiers', () => {

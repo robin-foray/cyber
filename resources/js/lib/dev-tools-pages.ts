@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react';
 import { coolStuffLinks } from '@/lib/cool-stuff-menu';
+import { hrefToPageName } from '@/lib/cyber-pages-registry';
 import ColorConverter from '@/pages/dev-tools/color-converter';
 import Console from '@/pages/dev-tools/console';
 import CronGuru from '@/pages/dev-tools/cron-guru';
@@ -12,7 +12,7 @@ import QrGenerator from '@/pages/dev-tools/qr-generator';
 import RegexLab from '@/pages/dev-tools/regex-lab';
 import Runtime from '@/pages/dev-tools/runtime';
 import SqlBuilder from '@/pages/dev-tools/sql-builder';
-import { hrefToPageName } from '@/lib/cyber-pages-registry';
+import type { ComponentType } from 'react';
 
 export const devToolLinks = coolStuffLinks;
 

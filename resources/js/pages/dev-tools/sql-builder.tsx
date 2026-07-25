@@ -96,7 +96,10 @@ export default function SqlBuilder() {
                 <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
                     <div className="space-y-6">
                         <div className="rounded-2xl border border-white/5 bg-black/45 p-5">
-                            <label htmlFor="sql-select" className="text-primary mb-3 flex items-center gap-2 text-xs font-bold tracking-widest uppercase">
+                            <label
+                                htmlFor="sql-select"
+                                className="text-primary mb-3 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
+                            >
                                 <Database size={16} />
                                 select_columns
                             </label>
@@ -114,7 +117,10 @@ export default function SqlBuilder() {
                         </div>
 
                         <div className="rounded-2xl border border-white/5 bg-black/45 p-5">
-                            <label htmlFor="sql-from" className="text-primary mb-3 flex items-center gap-2 text-xs font-bold tracking-widest uppercase">
+                            <label
+                                htmlFor="sql-from"
+                                className="text-primary mb-3 flex items-center gap-2 text-xs font-bold tracking-widest uppercase"
+                            >
                                 from_table
                             </label>
                             <input
@@ -223,7 +229,9 @@ export default function SqlBuilder() {
                                     <p className="text-primary text-[10px] font-bold tracking-widest uppercase">syntax-clean command</p>
                                 </div>
                             </div>
-                            <div className={`flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${isValid ? 'text-primary' : 'text-red-300'}`}>
+                            <div
+                                className={`flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase ${isValid ? 'text-primary' : 'text-red-300'}`}
+                            >
                                 {isValid ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
                                 {isValid ? 'ready' : 'blocked'}
                             </div>
