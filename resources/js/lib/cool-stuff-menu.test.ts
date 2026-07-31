@@ -9,13 +9,15 @@ describe('cool-stuff-menu', () => {
     });
 
     it('flattens all cool stuff links', () => {
-        expect(coolStuffLinks.length).toBe(11);
+        expect(coolStuffLinks.length).toBe(12);
         expect(coolStuffLinks.some((item) => item.page === 'dev-tools/regex-lab')).toBe(true);
+        expect(coolStuffLinks.some((item) => item.page === 'dev-tools/sql-builder')).toBe(true);
     });
 
     it('finds category for href', () => {
         expect(findCoolStuffCategoryIdForHref('/dev-tools/color-converter')).toBe('ui');
         expect(findCoolStuffCategoryIdForHref('/dev-tools/console')).toBe('dev-tools');
+        expect(findCoolStuffCategoryIdForHref('/dev-tools/sql-builder')).toBe('data');
     });
 
     it('detects cool stuff routes', () => {

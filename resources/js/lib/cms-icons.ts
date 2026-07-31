@@ -1,6 +1,6 @@
 import {
-    Braces,
     Binary,
+    Braces,
     CalendarClock,
     Code2,
     Command,
@@ -25,6 +25,7 @@ import {
     Share2,
     ShieldCheck,
     Sparkles,
+    Table2,
     Terminal,
     Twitter,
     Zap,
@@ -60,6 +61,7 @@ const iconMap: Record<string, LucideIcon> = {
     Sparkles,
     Palette,
     Regex,
+    Table2,
     FileCode2,
 };
 

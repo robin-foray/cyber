@@ -178,6 +178,7 @@ class CmsSeeder extends Seeder
             ['slug' => 'html-syntax-checker', 'header_label' => 'DEV_TOOL_09 // HTML_SYNTAX', 'page_title' => 'HTML Syntax Checker', 'heading_prefix' => 'HTML', 'heading_accent' => 'Syntax', 'sample_input' => null, 'icon' => 'Code2', 'sort_order' => 9],
             ['slug' => 'color-converter', 'header_label' => 'DEV_TOOL_10 // COLOR_CONVERTER', 'page_title' => 'Color Converter', 'heading_prefix' => 'Color', 'heading_accent' => 'Converter', 'sample_input' => '#ccff00', 'icon' => 'Palette', 'sort_order' => 10],
             ['slug' => 'regex-lab', 'header_label' => 'DEV_TOOL_11 // REGEX_LAB', 'page_title' => 'Regex Lab', 'heading_prefix' => 'Regex', 'heading_accent' => 'Lab', 'sample_input' => null, 'icon' => 'Regex', 'sort_order' => 11],
+            ['slug' => 'sql-builder', 'header_label' => 'DEV_TOOL_12 // SQL_BUILDER', 'page_title' => 'SQL Builder', 'heading_prefix' => 'SQL', 'heading_accent' => 'Builder', 'sample_input' => 'id, name, email', 'icon' => 'Table2', 'sort_order' => 12],
         ];
 
         foreach ($pages as $page) {
@@ -259,6 +260,7 @@ class CmsSeeder extends Seeder
             ['label' => 'HTML_SYNTAX', 'href' => '/dev-tools/html-syntax-checker', 'sort_order' => 9],
             ['label' => 'COLOR_CONVERTER', 'href' => '/dev-tools/color-converter', 'sort_order' => 10],
             ['label' => 'REGEX_LAB', 'href' => '/dev-tools/regex-lab', 'sort_order' => 11],
+            ['label' => 'SQL_BUILDER', 'href' => '/dev-tools/sql-builder', 'sort_order' => 12],
         ] as $link) {
             NavigationItem::query()->updateOrCreate(
                 ['href' => $link['href']],
