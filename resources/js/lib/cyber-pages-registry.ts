@@ -1,17 +1,15 @@
-import type { ComponentType } from 'react';
-import Login from '@/pages/auth/login';
+import { devToolPages } from '@/lib/dev-tools-pages';
 import FreeApisIndex from '@/pages/free-apis/index';
 import MachineGallery from '@/pages/machines/gallery';
 import Profile from '@/pages/profile';
 import TechStackIndex from '@/pages/tech-stack/index';
 import UsefulSitesIndex from '@/pages/useful-sites/index';
 import Welcome from '@/pages/welcome';
-import { devToolPages } from '@/lib/dev-tools-pages';
+import type { ComponentType } from 'react';
 
 export const cyberShellPages = {
     welcome: Welcome,
     profile: Profile,
-    'auth/login': Login,
     'machines/gallery': MachineGallery,
     'tech-stack/index': TechStackIndex,
     'useful-sites/index': UsefulSitesIndex,
@@ -52,10 +50,6 @@ export function hrefToPageName(href: string) {
 
     if (path === 'free-apis') {
         return 'free-apis/index';
-    }
-
-    if (path === 'login') {
-        return 'auth/login';
     }
 
     return path;

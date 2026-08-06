@@ -44,8 +44,8 @@ tests/Feature/          → PHPUnit feature tests
 
 | Area | Layout | Example routes |
 |------|--------|----------------|
-| Public / cyber (auth required) | `CyberShell` | `/`, `/dev-tools/*`, `/profile` |
-| Login gate (guests on `/`) | `CyberShell` | `/` when guest |
+| Auth-gated cyber pages | `CyberShell` | `/` (welcome), `/dev-tools/*`, `/profile` |
+| Login gate (guests) | Standalone full-screen (no shell) | `/` when guest |
 | Dashboard / settings | `AppLayout` (shadcn sidebar) | `/dashboard`, `/settings/*` |
 | Password reset / verify email | `AuthLayout` | `/forgot-password`, `/reset-password` |
 
