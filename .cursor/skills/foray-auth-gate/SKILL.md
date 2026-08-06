@@ -11,8 +11,8 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 
 | Actor | `/` (home) | Rest of site |
 |-------|------------|--------------|
-| Guest | `auth/login` | Redirect → `route('home')` |
-| Admin (authenticated) | `welcome` | Full access |
+| Guest | Standalone `auth/login` (no CyberShell) | Redirect → `route('home')` |
+| Admin (authenticated) | `welcome` inside CyberShell | Full access |
 | Non-admin credentials | Login rejected (`auth.failed`) | — |
 
 - Registration routes (`/register`) are **removed** (404).
@@ -29,7 +29,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Guest/user redirects | `bootstrap/app.php` (`redirectGuestsTo` / `redirectUsersTo` → home) |
 | Admin-only login | `app/Http/Requests/Auth/LoginRequest.php` |
 | Post-login / logout | `AuthenticatedSessionController` → `route('home')` |
-| Login UI | `resources/js/pages/auth/login.tsx` (no register link) |
+| Login UI | `resources/js/pages/auth/login.tsx` — full-screen gate, **not** wrapped in CyberShell |
 | Seed admin | `database/seeders/AdminUserSeeder.php` |
 
 ## How to extend

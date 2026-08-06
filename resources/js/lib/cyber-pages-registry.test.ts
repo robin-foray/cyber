@@ -7,13 +7,11 @@ describe('cyber-pages-registry', () => {
         expect(isCyberShellPageName('welcome')).toBe(true);
     });
 
-    it('supports profile and auth pages', () => {
+    it('keeps login outside the cyber shell registry', () => {
         expect(hrefToPageName('/profile')).toBe('profile');
-        expect(hrefToPageName('/login')).toBe('auth/login');
-        expect(isCyberShellPageName('auth/login')).toBe(true);
-        expect(isCyberShellPageName('auth/register')).toBe(false);
-        expect(isInstantNavigationHref('/login')).toBe(true);
-        expect(isInstantNavigationHref('/register')).toBe(false);
+        expect(hrefToPageName('/login')).toBe('login');
+        expect(isCyberShellPageName('auth/login')).toBe(false);
+        expect(isInstantNavigationHref('/login')).toBe(false);
         expect(isInstantNavigationHref('/profile')).toBe(true);
     });
 
