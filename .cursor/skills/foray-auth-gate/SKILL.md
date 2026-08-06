@@ -39,6 +39,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 2. Feature tests: guests `assertRedirect(route('home'))`; happy path `actingAs(User::factory()->admin()->create())`.
 3. Do **not** re-enable registration without an explicit product decision.
 4. Production: set strong `FORAY_ADMIN_PASSWORD` and run `php artisan foray:install` (or seed `AdminUserSeeder`).
+5. If every route 404s on Apache: DocumentRoot → `public/`, `a2enmod rewrite`, `AllowOverride All` (see `README.md` / `deploy/apache-vhost.conf.example`).
 
 ## Tests
 

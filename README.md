@@ -34,6 +34,27 @@ php artisan foray:install --force
 
 `foray:install` runs migrations, seeds all CMS content + admin user, and clears cache. Safe to re-run — seeders are idempotent.
 
+### Apache
+
+If **every** path (`/login`, `/forgot-password`, `/machines`, …) returns **404**, Apache is almost certainly not routing into Laravel.
+
+1. Enable rewrite: `sudo a2enmod rewrite && sudo systemctl reload apache2`
+2. Point **DocumentRoot** at the app **`public/`** directory (not the repo root)
+3. Allow `.htaccess` overrides:
+
+```apache
+<Directory /var/www/foray/public>
+    AllowOverride All
+    Require all granted
+</Directory>
+```
+
+Example vhost: [`deploy/apache-vhost.conf.example`](deploy/apache-vhost.conf.example)
+
+Shared hosting (DocumentRoot stuck on the project root): the repo-root [`.htaccess`](.htaccess) forwards into `public/`. Prefer fixing DocumentRoot when you can.
+
+Also set `APP_URL` in `.env` to the real public URL (e.g. `https://your-domain.com`).
+
 ## Dev tools
 
 | Tool | URL |
