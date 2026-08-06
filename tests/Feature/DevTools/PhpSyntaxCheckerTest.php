@@ -10,11 +10,11 @@ class PhpSyntaxCheckerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guests_are_redirected_from_lint_endpoint(): void
+    public function test_guests_are_denied_from_lint_endpoint(): void
     {
         $this->postJson(route('dev-tools.php-syntax-checker.lint'), [
             'code' => "<?php\n\nreturn ['status' => 'ok'];",
-        ])->assertRedirect(route('home'));
+        ])->assertUnauthorized();
     }
 
     public function test_lint_endpoint_accepts_valid_php(): void
