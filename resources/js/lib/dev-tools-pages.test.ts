@@ -15,7 +15,7 @@ describe('dev-tools-pages', () => {
     });
 
     it('lists every dev-tool route', () => {
-        expect(devToolLinks).toHaveLength(11);
+        expect(devToolLinks).toHaveLength(12);
         expect(devToolLinks.every((tool) => isDevToolPageName(tool.page))).toBe(true);
     });
 });

@@ -1,0 +1,46 @@
+---
+name: foray-auth-gate
+description: Foray private auth gate. Use when changing login-on-index, removing registration, protecting public routes behind auth, or admin-only access.
+---
+
+# Foray Auth Gate (private site)
+
+The site is **private**: guests only see the login gate; the full cyber shell requires an authenticated **admin** session. Public registration is disabled.
+
+## Behavior
+
+| Actor | `/` (home) | Rest of site |
+|-------|------------|--------------|
+| Guest | `auth/login` | Redirect → `route('home')` |
+| Admin (authenticated) | `welcome` | Full access |
+| Non-admin credentials | Login rejected (`auth.failed`) | — |
+
+- Registration routes (`/register`) are **removed** (404).
+- `/login` GET redirects to `/`.
+- POST `/login` remains for the form.
+- Single operator account: `AdminUserSeeder` + `config/foray.php` / `FORAY_ADMIN_*`.
+
+## Key files
+
+| Area | Path |
+|------|------|
+| Index dual render | `routes/web.php` (`/` → login or welcome) |
+| Auth routes | `routes/auth.php` (no register) |
+| Guest/user redirects | `bootstrap/app.php` (`redirectGuestsTo` / `redirectUsersTo` → home) |
+| Admin-only login | `app/Http/Requests/Auth/LoginRequest.php` |
+| Post-login / logout | `AuthenticatedSessionController` → `route('home')` |
+| Login UI | `resources/js/pages/auth/login.tsx` (no register link) |
+| Seed admin | `database/seeders/AdminUserSeeder.php` |
+
+## How to extend
+
+1. Keep new public pages inside `Route::middleware(['auth'])` in `web.php`.
+2. Feature tests: guests `assertRedirect(route('home'))`; happy path `actingAs(User::factory()->admin()->create())`.
+3. Do **not** re-enable registration without an explicit product decision.
+4. Production: set strong `FORAY_ADMIN_PASSWORD` and run `php artisan foray:install` (or seed `AdminUserSeeder`).
+
+## Tests
+
+- `tests/Feature/Auth/AuthenticationTest.php` — index login, admin auth, member reject
+- `tests/Feature/Auth/RegistrationTest.php` — register 404
+- Catalog / DevTools feature tests assert auth gate

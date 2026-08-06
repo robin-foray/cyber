@@ -13,9 +13,9 @@ type CyberTopbarProps = {
 
 export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSidebar }: CyberTopbarProps) {
     const { cms } = usePage<SharedData>().props;
-    const sectionLabel = getSectionLabel(currentUrl, cms.topbarLabels);
+    const sectionLabel = getSectionLabel(currentUrl, cms.topbarLabels, user);
     const tickerItems = [...cms.tickers.topbar, ...cms.tickers.topbar];
-    const authHref = user ? '/profile' : '/login';
+    const authHref = user ? '/profile' : '/';
     const handleAuthClick = useInstantCyberClick(authHref);
     const authLabel = user ? 'Open profile' : 'Login';
 
@@ -80,19 +80,19 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
     );
 }
 
-function getSectionLabel(currentUrl: string, labels: SharedData['cms']['topbarLabels']) {
+function getSectionLabel(
+    currentUrl: string,
+    labels: SharedData['cms']['topbarLabels'],
+    user: SharedData['auth']['user'],
+) {
     const path = currentUrl.split('?')[0].split('#')[0];
 
     if (path.startsWith('/dev-tools')) {
         return labels.devTools;
     }
 
-    if (path.startsWith('/login')) {
+    if ((path === '/' && !user) || path.startsWith('/login')) {
         return labels.accessGate;
-    }
-
-    if (path.startsWith('/register')) {
-        return labels.nodeRegistration;
     }
 
     if (path.startsWith('/profile')) {

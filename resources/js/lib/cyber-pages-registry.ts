@@ -1,6 +1,5 @@
 import type { ComponentType } from 'react';
 import Login from '@/pages/auth/login';
-import Register from '@/pages/auth/register';
 import FreeApisIndex from '@/pages/free-apis/index';
 import MachineGallery from '@/pages/machines/gallery';
 import Profile from '@/pages/profile';
@@ -13,7 +12,6 @@ export const cyberShellPages = {
     welcome: Welcome,
     profile: Profile,
     'auth/login': Login,
-    'auth/register': Register,
     'machines/gallery': MachineGallery,
     'tech-stack/index': TechStackIndex,
     'useful-sites/index': UsefulSitesIndex,
@@ -58,10 +56,6 @@ export function hrefToPageName(href: string) {
 
     if (path === 'login') {
         return 'auth/login';
-    }
-
-    if (path === 'register') {
-        return 'auth/register';
     }
 
     return path;

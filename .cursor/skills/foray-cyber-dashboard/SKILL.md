@@ -21,13 +21,15 @@ Laravel 12 + Inertia React + Tailwind cyber shell. Admin: Filament at `/admin`.
 
 ## Main public modules
 
-- `/` welcome + cyber shell
+- `/` welcome + cyber shell (auth required; guests see login gate)
 - `/machines` masonry gallery + categories
 - `/tech-stack` interactive stack registry
 - `/useful-sites` link cards
 - `/free-apis` curated free API registry
 - `/dev-tools/*` utilities
 - `/admin` Filament (role `admin` only)
+
+Private site: no public registration; only seeded admin (`FORAY_ADMIN_*`) can sign in.
 
 ## Conventions
 

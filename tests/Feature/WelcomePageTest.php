@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Database\Seeders\CmsSeeder;
 use Database\Seeders\TechStackSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,11 +13,19 @@ class WelcomePageTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guests_see_login_on_home(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('auth/login'));
+    }
+
     public function test_welcome_page_renders_cms_payload(): void
     {
         $this->seed(CmsSeeder::class);
 
-        $this->get(route('home'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('home'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('welcome')
@@ -31,7 +40,8 @@ class WelcomePageTest extends TestCase
     {
         $this->seed(CmsSeeder::class);
 
-        $this->get(route('home'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('home'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('welcome')
@@ -46,7 +56,8 @@ class WelcomePageTest extends TestCase
     {
         $this->seed([CmsSeeder::class, TechStackSeeder::class]);
 
-        $this->get(route('home'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('home'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('welcome')

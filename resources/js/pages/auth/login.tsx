@@ -1,6 +1,5 @@
 import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
-import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { LogIn } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
@@ -22,7 +21,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         password: '',
         remember: false,
     });
-    const handleRegisterClick = useInstantCyberClick('/register');
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -45,71 +43,65 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             Establish <span className="glow-text text-primary">Link</span>
                         </h1>
                         <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-                            Authenticate into the neural dev shell. The interface stays inside the same terminal-grade dashboard frame.
+                            Private operator access only. Authenticate with the seeded admin node to enter the neural
+                            shell — public registration is offline.
                         </p>
                     </div>
 
                     <form className="rounded-2xl border border-primary/15 bg-black/50 p-6" onSubmit={submit}>
                         <CyberLoadingZone loading={processing} label="auth_handshake" fields={2}>
                             <div className="grid gap-5">
-                            <CyberField label="Email_Address" error={errors.email}>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    autoFocus
-                                    autoComplete="email"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    className="cyber-input"
-                                    placeholder="operator@foray.dev"
-                                />
-                            </CyberField>
-
-                            <CyberField label="Password" error={errors.password}>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    autoComplete="current-password"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    className="cyber-input"
-                                    placeholder="access token"
-                                />
-                            </CyberField>
-
-                            <div className="flex items-center justify-between gap-4 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                                <label className="flex items-center gap-2">
+                                <CyberField label="Email_Address" error={errors.email}>
                                     <input
-                                        type="checkbox"
-                                        checked={data.remember}
-                                        onChange={(e) => setData('remember', e.target.checked)}
-                                        className="h-4 w-4 accent-primary"
+                                        id="email"
+                                        type="email"
+                                        required
+                                        autoFocus
+                                        autoComplete="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="cyber-input"
+                                        placeholder="operator@foray.dev"
                                     />
-                                    remember_node
-                                </label>
-                                {canResetPassword && (
-                                    <Link href="/forgot-password" className="text-primary hover:underline">
-                                        reset_key
-                                    </Link>
-                                )}
-                            </div>
+                                </CyberField>
 
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="font-display mt-2 flex items-center justify-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-black uppercase transition-all hover:shadow-[0_0_18px_rgba(204,255,0,0.45)] disabled:opacity-60"
-                            >
-                                Login_Core
-                            </button>
+                                <CyberField label="Password" error={errors.password}>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        required
+                                        autoComplete="current-password"
+                                        value={data.password}
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        className="cyber-input"
+                                        placeholder="access token"
+                                    />
+                                </CyberField>
 
-                            <div className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                                no identity?{' '}
-                                <Link href="/register" prefetch="mount" cacheFor="5m" onClick={handleRegisterClick} className="text-primary hover:underline">
-                                    register_node
-                                </Link>
-                            </div>
+                                <div className="flex items-center justify-between gap-4 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={data.remember}
+                                            onChange={(e) => setData('remember', e.target.checked)}
+                                            className="h-4 w-4 accent-primary"
+                                        />
+                                        remember_node
+                                    </label>
+                                    {canResetPassword && (
+                                        <Link href="/forgot-password" className="text-primary hover:underline">
+                                            reset_key
+                                        </Link>
+                                    )}
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="font-display mt-2 flex items-center justify-center gap-3 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-black uppercase transition-all hover:shadow-[0_0_18px_rgba(204,255,0,0.45)] disabled:opacity-60"
+                                >
+                                    Login_Core
+                                </button>
                             </div>
                         </CyberLoadingZone>
                     </form>

@@ -136,7 +136,7 @@ function NodeIdentity({ user, onNavigate }: { user: SharedData['auth']['user']; 
     const label = user?.name ?? 'GUEST_NODE';
     const role = user?.is_admin ? 'ADMIN' : (user?.role ?? 'VISITOR').toString().toUpperCase();
     const title = user?.title ?? 'SYSTEM: ONLINE';
-    const href = user ? '/profile' : '/login';
+    const href = user ? '/profile' : '/';
     const handleInstantClick = useInstantCyberClick(href);
 
     return (

@@ -6,7 +6,7 @@ describe('usesCyberShellLayout', () => {
         expect(usesCyberShellLayout('welcome')).toBe(true);
         expect(usesCyberShellLayout('profile')).toBe(true);
         expect(usesCyberShellLayout('auth/login')).toBe(true);
-        expect(usesCyberShellLayout('auth/register')).toBe(true);
+        expect(usesCyberShellLayout('auth/register')).toBe(false);
         expect(usesCyberShellLayout('dev-tools/console')).toBe(true);
         expect(usesCyberShellLayout('dev-tools/hash-generator')).toBe(true);
         expect(usesCyberShellLayout('machines/gallery')).toBe(true);
