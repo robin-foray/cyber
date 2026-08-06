@@ -13,7 +13,7 @@ class CyberProfileTest extends TestCase
 
     public function test_guests_are_redirected_from_profile(): void
     {
-        $this->get(route('profile.show'))->assertRedirect(route('login'));
+        $this->get(route('profile.show'))->assertRedirect(route('home'));
     }
 
     public function test_authenticated_users_can_view_profile(): void

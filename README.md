@@ -69,15 +69,19 @@ This repo includes agent infrastructure for Cursor:
 
 Copy `.cursor/mcp.json.example` to `.cursor/mcp.json` and add your tokens in Cursor Desktop settings.
 
-## Admin (Filament CMS)
+## Access (private site)
 
-Content is editable at `/admin` (admin users only).
+The index (`/`) is the login gate. There is **no public registration** — only the seeded admin can sign in. Catalogs, dev-tools, and the rest of the shell require auth.
 
 ```bash
 php artisan foray:install
 ```
 
-Default admin (override via `FORAY_ADMIN_*` in `.env`): `admin@foray.local` / `password`
+Default admin (override via `FORAY_ADMIN_*` in `.env`): `robin.foray@gmail.com` / `Cursor2026!`
+
+## Admin (Filament CMS)
+
+Content is editable at `/admin` (admin users only).
 
 Manage navigation, hero, stacks, tickers, social links, and deployment steps from the admin panel.
 

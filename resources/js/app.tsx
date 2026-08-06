@@ -21,7 +21,6 @@ const eagerCyberPages = import.meta.glob(
         './pages/welcome.tsx',
         './pages/profile.tsx',
         './pages/auth/login.tsx',
-        './pages/auth/register.tsx',
         './pages/machines/gallery.tsx',
         './pages/tech-stack/index.tsx',
         './pages/useful-sites/index.tsx',

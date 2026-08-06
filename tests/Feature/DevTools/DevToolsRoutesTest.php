@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\DevTools;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -10,10 +11,20 @@ use Tests\TestCase;
 
 class DevToolsRoutesTest extends TestCase
 {
+    use RefreshDatabase;
+
     #[DataProvider('devToolRoutesProvider')]
-    public function test_guests_can_visit_dev_tool_pages(string $routeName, string $component): void
+    public function test_guests_are_redirected_from_dev_tool_pages(string $routeName, string $component): void
     {
         $this->get(route($routeName))
+            ->assertRedirect(route('home'));
+    }
+
+    #[DataProvider('devToolRoutesProvider')]
+    public function test_authenticated_users_can_visit_dev_tool_pages(string $routeName, string $component): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route($routeName))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component($component));
     }
@@ -41,12 +52,21 @@ class HashGeneratorTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_bcrypt_endpoint_generates_laravel_compatible_hash(): void
+    public function test_guests_are_redirected_from_bcrypt_endpoint(): void
     {
-        $response = $this->postJson(route('dev-tools.hash-generator.bcrypt'), [
+        $this->postJson(route('dev-tools.hash-generator.bcrypt'), [
             'value' => 'secret-password',
             'rounds' => 10,
-        ]);
+        ])->assertRedirect(route('home'));
+    }
+
+    public function test_bcrypt_endpoint_generates_laravel_compatible_hash(): void
+    {
+        $response = $this->actingAs(User::factory()->admin()->create())
+            ->postJson(route('dev-tools.hash-generator.bcrypt'), [
+                'value' => 'secret-password',
+                'rounds' => 10,
+            ]);
 
         $response->assertOk()->assertJsonStructure(['hash']);
 
@@ -62,10 +82,11 @@ class HashGeneratorTest extends TestCase
     {
         $hash = Hash::make('secret-password', ['rounds' => 4]);
 
-        $this->postJson(route('dev-tools.hash-generator.verify'), [
-            'value' => 'secret-password',
-            'hash' => $hash,
-        ])
+        $this->actingAs(User::factory()->admin()->create())
+            ->postJson(route('dev-tools.hash-generator.verify'), [
+                'value' => 'secret-password',
+                'hash' => $hash,
+            ])
             ->assertOk()
             ->assertJson(['matches' => true]);
     }
@@ -74,27 +95,30 @@ class HashGeneratorTest extends TestCase
     {
         $hash = Hash::make('secret-password', ['rounds' => 4]);
 
-        $this->postJson(route('dev-tools.hash-generator.verify'), [
-            'value' => 'wrong-password',
-            'hash' => $hash,
-        ])
+        $this->actingAs(User::factory()->admin()->create())
+            ->postJson(route('dev-tools.hash-generator.verify'), [
+                'value' => 'wrong-password',
+                'hash' => $hash,
+            ])
             ->assertOk()
             ->assertJson(['matches' => false]);
     }
 
     public function test_verify_endpoint_rejects_invalid_hash_format(): void
     {
-        $this->postJson(route('dev-tools.hash-generator.verify'), [
-            'value' => 'secret-password',
-            'hash' => 'not-a-bcrypt-hash',
-        ])->assertStatus(422);
+        $this->actingAs(User::factory()->admin()->create())
+            ->postJson(route('dev-tools.hash-generator.verify'), [
+                'value' => 'secret-password',
+                'hash' => 'not-a-bcrypt-hash',
+            ])->assertStatus(422);
     }
 
     public function test_bcrypt_endpoint_validates_rounds(): void
     {
-        $this->postJson(route('dev-tools.hash-generator.bcrypt'), [
-            'value' => 'secret-password',
-            'rounds' => 99,
-        ])->assertStatus(422);
+        $this->actingAs(User::factory()->admin()->create())
+            ->postJson(route('dev-tools.hash-generator.bcrypt'), [
+                'value' => 'secret-password',
+                'rounds' => 99,
+            ])->assertStatus(422);
     }
 }

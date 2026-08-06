@@ -27,8 +27,8 @@ Single commands:
 ## Architecture
 
 ```
-routes/web.php          → public pages + dev-tools + auth-gated dashboard/profile
-routes/auth.php         → login, register, password reset
+routes/web.php          → auth-gated pages + cyber shell (guests see login on `/`)
+routes/auth.php         → login (no register), password reset
 routes/settings.php     → settings (auth required)
 
 resources/js/pages/     → Inertia pages (path mirrors render name)
@@ -44,7 +44,8 @@ tests/Feature/          → PHPUnit feature tests
 
 | Area | Layout | Example routes |
 |------|--------|----------------|
-| Public / dev-tools / cyber profile | `CyberShell` | `/`, `/dev-tools/*`, `/profile`, `/login` |
+| Public / cyber (auth required) | `CyberShell` | `/`, `/dev-tools/*`, `/profile` |
+| Login gate (guests on `/`) | `CyberShell` | `/` when guest |
 | Dashboard / settings | `AppLayout` (shadcn sidebar) | `/dashboard`, `/settings/*` |
 | Password reset / verify email | `AuthLayout` | `/forgot-password`, `/reset-password` |
 
@@ -69,8 +70,9 @@ A feature is **not complete** without Filament + tests.
 
 ## Auth & users
 
-- First registered user → `role: admin`, `title: Root Operator`
-- Subsequent users → `role: member`, `title: Neural Operator`
+- Site is **private**: guests only see login on `/`; full site requires auth
+- **No public registration** — only the seeded admin can sign in (`LoginRequest` rejects non-admin)
+- Default admin from `config/foray.php` / `FORAY_ADMIN_*` via `AdminUserSeeder`
 - Cyber identity fields: `role`, `title`, `avatar_seed`, `bio` (see `/profile`)
 - Settings profile (`/settings/profile`) handles email/name + account deletion
 - Shared Inertia prop: `auth.user` with `avatar_url`, `is_admin` appended

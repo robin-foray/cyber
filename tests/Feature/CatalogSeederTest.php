@@ -32,7 +32,9 @@ class CatalogSeederTest extends TestCase
         $this->seed(MachineSeeder::class);
 
         $this->assertGreaterThanOrEqual(1, Machine::query()->count());
-        $this->get(route('machines.index'))->assertOk();
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('machines.index'))
+            ->assertOk();
     }
 
     public function test_useful_site_seeder_loads_link_catalog(): void
@@ -40,6 +42,8 @@ class CatalogSeederTest extends TestCase
         $this->seed(UsefulSiteSeeder::class);
 
         $this->assertGreaterThanOrEqual(1, UsefulSite::query()->where('is_active', true)->count());
-        $this->get(route('useful-sites.index'))->assertOk();
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('useful-sites.index'))
+            ->assertOk();
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature\FreeApis;
 
 use App\Models\FreeApi;
 use App\Models\FreeApiCategory;
+use App\Models\User;
 use Database\Seeders\FreeApiSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -12,6 +13,12 @@ use Tests\TestCase;
 class FreeApisPageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_guests_are_redirected_from_free_apis_page(): void
+    {
+        $this->get(route('free-apis.index'))
+            ->assertRedirect(route('home'));
+    }
 
     public function test_free_apis_page_renders_endpoints(): void
     {
@@ -39,7 +46,8 @@ class FreeApisPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('free-apis.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('free-apis.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('free-apis/index')
@@ -69,7 +77,8 @@ class FreeApisPageTest extends TestCase
             'is_active' => false,
         ]);
 
-        $this->get(route('free-apis.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('free-apis.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('free-apis/index')
@@ -101,7 +110,8 @@ class FreeApisPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('free-apis.index', ['category' => 'development']))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('free-apis.index', ['category' => 'development']))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->has('apis', 1)
@@ -122,7 +132,8 @@ class FreeApisPageTest extends TestCase
             'cors' => true,
         ]);
 
-        $this->get(route('free-apis.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('free-apis.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('free-apis/index')

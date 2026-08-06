@@ -3,6 +3,7 @@
 namespace Tests\Feature\TechStack;
 
 use App\Models\TechStack;
+use App\Models\User;
 use Database\Seeders\TechStackSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -26,7 +27,8 @@ class TechStackSeederTest extends TestCase
         $this->assertFileExists(public_path($laravel->icon));
         $this->assertStringContainsString('PHP-s', (string) $laravel->summary);
 
-        $this->get(route('tech-stack.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('tech-stack.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('tech-stack/index')
