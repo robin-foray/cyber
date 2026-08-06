@@ -4,6 +4,7 @@ namespace Tests\Feature\Machines;
 
 use App\Models\Machine;
 use App\Models\MachineCategory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -11,6 +12,12 @@ use Tests\TestCase;
 class MachineGalleryTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_guests_are_redirected_from_machines_page(): void
+    {
+        $this->get(route('machines.index'))
+            ->assertRedirect(route('home'));
+    }
 
     public function test_machines_page_renders_with_categories_and_machines(): void
     {
@@ -31,7 +38,8 @@ class MachineGalleryTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->get(route('machines.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('machines.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('machines/gallery')
@@ -72,7 +80,8 @@ class MachineGalleryTest extends TestCase
             'sort_order' => 1,
         ]);
 
-        $this->get(route('machines.index', ['category' => 'beta']))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('machines.index', ['category' => 'beta']))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('machines/gallery')

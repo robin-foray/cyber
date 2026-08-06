@@ -4,6 +4,7 @@ namespace Tests\Feature\UsefulSites;
 
 use App\Models\UsefulSite;
 use App\Models\UsefulSiteCategory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -11,6 +12,12 @@ use Tests\TestCase;
 class UsefulSitesPageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_guests_are_redirected_from_useful_sites_page(): void
+    {
+        $this->get(route('useful-sites.index'))
+            ->assertRedirect(route('home'));
+    }
 
     public function test_useful_sites_page_renders_links(): void
     {
@@ -32,7 +39,8 @@ class UsefulSitesPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('useful-sites.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('useful-sites.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('useful-sites/index')
@@ -65,7 +73,8 @@ class UsefulSitesPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('useful-sites.index', ['category' => 'design']))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('useful-sites.index', ['category' => 'design']))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->has('sites', 1)
@@ -91,7 +100,8 @@ class UsefulSitesPageTest extends TestCase
             'is_active' => false,
         ]);
 
-        $this->get(route('useful-sites.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('useful-sites.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('useful-sites/index')

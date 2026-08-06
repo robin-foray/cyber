@@ -4,6 +4,7 @@ namespace Tests\Feature\TechStack;
 
 use App\Models\TechCategory;
 use App\Models\TechStack;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -11,6 +12,12 @@ use Tests\TestCase;
 class TechStackPageTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_guests_are_redirected_from_tech_stack_page(): void
+    {
+        $this->get(route('tech-stack.index'))
+            ->assertRedirect(route('home'));
+    }
 
     public function test_tech_stack_page_renders_modules(): void
     {
@@ -36,7 +43,8 @@ class TechStackPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('tech-stack.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('tech-stack.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('tech-stack/index')
@@ -64,7 +72,8 @@ class TechStackPageTest extends TestCase
             'is_active' => false,
         ]);
 
-        $this->get(route('tech-stack.index'))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('tech-stack.index'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('tech-stack/index')
@@ -94,7 +103,8 @@ class TechStackPageTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->get(route('tech-stack.index', ['category' => 'frontend']))
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('tech-stack.index', ['category' => 'frontend']))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->has('stacks', 1)
