@@ -3,7 +3,7 @@ import GlitchText from '@/components/cyber/glitch-text';
 import LetterGlitchBackground from '@/components/cyber/letter-glitch-background';
 import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { LogIn } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
 
@@ -15,10 +15,9 @@ interface LoginForm {
 
 interface LoginProps {
     status?: string;
-    canResetPassword: boolean;
 }
 
-export default function Login({ status, canResetPassword }: LoginProps) {
+export default function Login({ status }: LoginProps) {
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
@@ -27,7 +26,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('login'), {
+        post('/login', {
             onFinish: () => reset('password'),
         });
     };
@@ -88,22 +87,15 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         />
                                     </CyberField>
 
-                                    <div className="text-on-surface-variant flex items-center justify-between gap-4 text-[10px] font-bold tracking-widest uppercase">
-                                        <label className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={data.remember}
-                                                onChange={(e) => setData('remember', e.target.checked)}
-                                                className="accent-primary h-4 w-4"
-                                            />
-                                            remember_node
-                                        </label>
-                                        {canResetPassword && (
-                                            <Link href="/forgot-password" className="text-primary hover:underline">
-                                                reset_key
-                                            </Link>
-                                        )}
-                                    </div>
+                                    <label className="text-on-surface-variant flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase">
+                                        <input
+                                            type="checkbox"
+                                            checked={data.remember}
+                                            onChange={(e) => setData('remember', e.target.checked)}
+                                            className="accent-primary h-4 w-4"
+                                        />
+                                        remember_node
+                                    </label>
 
                                     <button
                                         type="submit"

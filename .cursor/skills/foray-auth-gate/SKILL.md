@@ -16,8 +16,9 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Non-admin credentials | Login rejected (`auth.failed`) | — |
 
 - Registration routes (`/register`) are **removed** (404).
+- Password reset routes (`/forgot-password`, `/reset-password`) are **removed** (404).
 - `/login` GET redirects to `/`.
-- POST `/login` remains for the form.
+- POST `/login` (`login.store`) remains for the form.
 - Single operator account: `AdminUserSeeder` + `config/foray.php` / `FORAY_ADMIN_*`.
 
 ## Key files
@@ -29,7 +30,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Guest/user redirects | `bootstrap/app.php` (`redirectGuestsTo` / `redirectUsersTo` → home) |
 | Admin-only login | `app/Http/Requests/Auth/LoginRequest.php` |
 | Post-login / logout | `AuthenticatedSessionController` → `route('home')` |
-| Login UI | `resources/js/pages/auth/login.tsx` — full-screen gate, **not** wrapped in CyberShell |
+| Login UI | `resources/js/pages/auth/login.tsx` — full-screen gate, **not** wrapped in CyberShell; no reset link |
 | Seed admin | `database/seeders/AdminUserSeeder.php` |
 
 ## How to extend
