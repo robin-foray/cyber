@@ -11,7 +11,7 @@ description: Build or modify cyber-themed UI components, pages, and styling. Use
 |-----------|------|------|
 | CyberShell | `components/cyber-shell.tsx` | Root layout, sidebar state |
 | CyberSidebar | `components/cyber/sidebar.tsx` | Nav, dev-tools menu, identity card |
-| CyberTopbar | `components/cyber/topbar.tsx` | Section label from URL; mobile auth = profile icon → `/login` or `/profile` |
+| CyberTopbar | `components/cyber/topbar.tsx` | Section label from URL; mobile auth = profile icon → `/profile`; logout = `Disconnect` → POST `/logout` |
 | CyberExpandablePanel | `components/cyber/expandable-panel.tsx` | Collapsible cyber panels (welcome console / integrity) |
 | CyberFooter | `components/cyber/footer.tsx` | Footer links |
 | ForayBrand | `components/cyber/foray-brand.tsx` | Logo / brand mark |

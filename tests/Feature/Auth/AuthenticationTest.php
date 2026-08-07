@@ -76,9 +76,20 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->admin()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->actingAs($user)->post(route('logout'));
 
         $this->assertGuest();
         $response->assertRedirect(route('home'));
+    }
+
+    public function test_logout_returns_guests_to_the_login_gate(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        $this->actingAs($user)->post(route('logout'));
+
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('auth/login'));
     }
 }

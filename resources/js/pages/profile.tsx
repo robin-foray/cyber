@@ -1,8 +1,8 @@
 import { CyberLoadingZone } from '@/components/cyber/skeleton';
 import InputError from '@/components/input-error';
 import { type SharedData } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { ShieldCheck, UserCog } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { LogOut, ShieldCheck, UserCog } from 'lucide-react';
 import { FormEventHandler, type ReactNode } from 'react';
 
 type ProfileForm = {
@@ -50,6 +50,16 @@ export default function Profile() {
                             </div>
                             <p className="mt-5 text-sm leading-7 text-on-surface-variant">{user?.bio || 'No bio signal configured yet.'}</p>
                         </div>
+
+                        <Link
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-[11px] font-bold tracking-widest text-primary uppercase transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)]"
+                        >
+                            <LogOut size={14} />
+                            Disconnect_Session
+                        </Link>
                     </aside>
 
                     <form className="rounded-2xl border border-primary/15 bg-black/50 p-6" onSubmit={submit}>

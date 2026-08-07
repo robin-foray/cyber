@@ -31,6 +31,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Admin-only login | `app/Http/Requests/Auth/LoginRequest.php` |
 | Post-login / logout | `AuthenticatedSessionController` → `route('home')` |
 | Login UI | `resources/js/pages/auth/login.tsx` — full-screen gate, **not** wrapped in CyberShell; no reset link |
+| Logout UI | Cyber sidebar `DISCONNECT`, topbar `Disconnect`, profile `Disconnect_Session` → POST `route('logout')` |
 | Seed admin | `database/seeders/AdminUserSeeder.php` |
 
 ## How to extend

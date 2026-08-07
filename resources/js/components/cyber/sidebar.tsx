@@ -3,10 +3,9 @@ import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { resolveCmsIcon } from '@/lib/cms-icons';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Facebook, Github, Instagram, Twitter, Zap } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { ChevronLeft, Facebook, Github, Instagram, LogOut, Twitter, Zap } from 'lucide-react';
+import { useEffect, useState, type ComponentType } from 'react';
 import ForayBrand from './foray-brand';
-import { ChevronLeft } from 'lucide-react';
 
 type CyberSidebarProps = {
     currentUrl: string;
@@ -78,10 +77,17 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
                 </button>
             )}
 
-            <div className={`mb-3 flex shrink-0 flex-col px-3 pt-4 pb-3 ${!isOpen ? 'items-center' : ''}`}>
+            <div className={`mb-3 flex shrink-0 flex-col gap-2 px-3 pt-4 pb-3 ${!isOpen ? 'items-center' : ''}`}>
                 <ForayBrand isOpen={isOpen} onOpen={onOpen} />
 
                 {isOpen && <NodeIdentity user={user} onNavigate={closeSidebarOnMobileNavigate} />}
+
+                {user && (
+                    <LogoutControl
+                        full={isOpen}
+                        onNavigate={closeSidebarOnMobileNavigate}
+                    />
+                )}
             </div>
 
             <nav className="min-h-0 flex-grow space-y-1.5 overflow-y-auto px-3 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(204,255,0,0.35)_transparent]">
@@ -169,6 +175,25 @@ function NodeIdentity({ user, onNavigate }: { user: SharedData['auth']['user']; 
     );
 }
 
+function LogoutControl({ full, onNavigate }: { full: boolean; onNavigate?: () => void }) {
+    return (
+        <Link
+            href={route('logout')}
+            method="post"
+            as="button"
+            onClick={() => onNavigate?.()}
+            aria-label="Disconnect session"
+            title="Disconnect"
+            className={`flex min-h-11 w-full items-center gap-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-2.5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)] ${
+                full ? '' : 'justify-center'
+            }`}
+        >
+            <LogOut size={18} />
+            {full && <span className="text-[11px] font-bold tracking-widest">DISCONNECT</span>}
+        </Link>
+    );
+}
+
 function NavItem({
     icon: Icon,
     label,
@@ -177,7 +202,7 @@ function NavItem({
     full,
     onNavigate,
 }: {
-    icon: React.ComponentType<{ size?: number }>;
+    icon: ComponentType<{ size?: number }>;
     label: string;
     href: string;
     active?: boolean;
