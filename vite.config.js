@@ -34,4 +34,8 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    build: {
+        // Cyber shell pages are eager-loaded for snappy Inertia navigation.
+        chunkSizeWarningLimit: 1000,
+    },
 });
