@@ -54,7 +54,7 @@ class CyberProfileTest extends TestCase
 
     public function test_authenticated_users_can_upload_a_profile_avatar(): void
     {
-        Storage::fake('public');
+        Storage::fake('public_web');
 
         $user = User::factory()->create([
             'avatar_seed' => 'seed-before',
@@ -76,15 +76,16 @@ class CyberProfileTest extends TestCase
 
         $this->assertNotNull($user->avatar_path);
         $this->assertTrue($user->has_custom_avatar);
-        Storage::disk('public')->assertExists($user->avatar_path);
-        $this->assertStringContainsString('/storage/', $user->avatar_url);
+        Storage::disk('public_web')->assertExists($user->avatar_path);
+        $this->assertStringStartsWith('/avatars/', $user->avatar_url);
+        $this->assertStringNotContainsString('/storage/', $user->avatar_url);
     }
 
     public function test_authenticated_users_can_remove_a_custom_profile_avatar(): void
     {
-        Storage::fake('public');
+        Storage::fake('public_web');
 
-        $path = UploadedFile::fake()->image('old.png')->store('avatars', 'public');
+        $path = UploadedFile::fake()->image('old.png')->store('avatars', 'public_web');
 
         $user = User::factory()->create([
             'avatar_path' => $path,
@@ -105,8 +106,21 @@ class CyberProfileTest extends TestCase
 
         $this->assertNull($user->avatar_path);
         $this->assertFalse($user->has_custom_avatar);
-        Storage::disk('public')->assertMissing($path);
+        Storage::disk('public_web')->assertMissing($path);
         $this->assertStringContainsString('dicebear.com', $user->avatar_url);
         $this->assertStringContainsString('fallback-seed', $user->avatar_url);
+    }
+
+    public function test_legacy_storage_disk_avatars_still_resolve(): void
+    {
+        Storage::fake('public');
+
+        $path = UploadedFile::fake()->image('legacy.png')->store('avatars', 'public');
+
+        $user = User::factory()->create([
+            'avatar_path' => $path,
+        ]);
+
+        $this->assertSame('/storage/'.$path, $user->avatar_url);
     }
 }
