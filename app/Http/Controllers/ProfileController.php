@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProfileController extends Controller
 {
@@ -16,6 +19,27 @@ class ProfileController extends Controller
     public function show(Request $request): Response
     {
         return Inertia::render('profile');
+    }
+
+    /**
+     * Stream a user's avatar from storage (or legacy public/avatars).
+     *
+     * Avoids depending on the public/storage symlink.
+     */
+    public function avatar(Request $request): BinaryFileResponse|StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user && filled($user->avatar_path), 404);
+
+        $path = ltrim($user->avatar_path, '/');
+
+        if (is_file(public_path($path))) {
+            return response()->file(public_path($path));
+        }
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        return Storage::disk('public')->response($path);
     }
 
     /**
@@ -33,19 +57,29 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        $uploading = $request->hasFile('avatar');
+        $removing = $request->boolean('remove_avatar') && ! $uploading;
 
-        if ($request->boolean('remove_avatar') && $user->avatar_path) {
+        if ($removing && $user->avatar_path) {
             $this->deleteAvatarFile($user->avatar_path);
             $user->avatar_path = null;
         }
 
-        if ($request->hasFile('avatar')) {
+        if ($uploading) {
             if ($user->avatar_path) {
                 $this->deleteAvatarFile($user->avatar_path);
             }
 
-            // Store under public/avatars so the file is web-reachable without storage:link.
-            $user->avatar_path = $request->file('avatar')->store('avatars', 'public_web');
+            // Writable storage disk (www-data); served via profile.avatar route.
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            if ($path === false) {
+                throw ValidationException::withMessages([
+                    'avatar' => 'Avatar upload failed. Ensure storage/app/public is writable.',
+                ]);
+            }
+
+            $user->avatar_path = $path;
         }
 
         $user->fill([
@@ -59,11 +93,11 @@ class ProfileController extends Controller
     }
 
     /**
-     * Remove an avatar from the public web root, with a legacy public-disk fallback.
+     * Remove an avatar from storage and the legacy public web root.
      */
     private function deleteAvatarFile(string $path): void
     {
-        Storage::disk('public_web')->delete($path);
         Storage::disk('public')->delete($path);
+        Storage::disk('public_web')->delete($path);
     }
 }
