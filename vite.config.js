@@ -6,6 +6,7 @@ import {
 } from 'vite';
 import tailwindcss from "@tailwindcss/vite";
 
+
 export default defineConfig({
     server: {
         host: '0.0.0.0',
@@ -35,7 +36,30 @@ export default defineConfig({
         jsx: 'automatic',
     },
     build: {
-        // Cyber shell pages are eager-loaded for snappy Inertia navigation.
-        chunkSizeWarningLimit: 1000,
+        // Cyber shell pages stay eager for instant Inertia nav; split vendors so
+        // no single chunk trips Vite's default 500 kB warning.
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (!id.includes('node_modules')) {
+                        return;
+                    }
+
+                    if (id.includes('react-dom') || id.includes('/react/') || id.includes('\\react\\') || id.includes('scheduler')) {
+                        return 'vendor-react';
+                    }
+
+                    if (id.includes('@inertiajs')) {
+                        return 'vendor-inertia';
+                    }
+
+                    if (id.includes('lucide-react')) {
+                        return 'vendor-icons';
+                    }
+
+                    return 'vendor';
+                },
+            },
+        },
     },
 });
