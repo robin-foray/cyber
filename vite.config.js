@@ -36,30 +36,9 @@ export default defineConfig({
         jsx: 'automatic',
     },
     build: {
-        // Cyber shell pages stay eager for instant Inertia nav; split vendors so
-        // no single chunk trips Vite's default 500 kB warning.
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (!id.includes('node_modules')) {
-                        return;
-                    }
-
-                    if (id.includes('react-dom') || id.includes('/react/') || id.includes('\\react\\') || id.includes('scheduler')) {
-                        return 'vendor-react';
-                    }
-
-                    if (id.includes('@inertiajs')) {
-                        return 'vendor-inertia';
-                    }
-
-                    if (id.includes('lucide-react')) {
-                        return 'vendor-icons';
-                    }
-
-                    return 'vendor';
-                },
-            },
-        },
+        // Cyber shell pages are intentionally eager for instant Inertia navigation,
+        // so the main app chunk is large. Do not use manualChunks here — splitting
+        // React/Inertia vendors caused a blank gray screen after login.
+        chunkSizeWarningLimit: 1000,
     },
 });
