@@ -57,7 +57,7 @@ const iconMap: Record<string, ReactNode> = {
     link: <Link2 size={22} />,
 };
 
-export default function UsefulSitesIndex({ categories, sites, activeCategory }: Props) {
+export default function UsefulSitesIndex({ categories = [], sites = [], activeCategory = null }: Props) {
     const [selectedId, setSelectedId] = useState<number | null>(sites[0]?.id ?? null);
     const selected = useMemo(() => sites.find((site) => site.id === selectedId) ?? sites[0] ?? null, [selectedId, sites]);
     const detailRef = useRef<HTMLElement | null>(null);
