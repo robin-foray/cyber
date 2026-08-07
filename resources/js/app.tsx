@@ -15,7 +15,17 @@ declare global {
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-const lazyPages = import.meta.glob('./pages/**/*.tsx');
+const lazyPages = import.meta.glob([
+    './pages/**/*.tsx',
+    '!./pages/welcome.tsx',
+    '!./pages/profile.tsx',
+    '!./pages/auth/login.tsx',
+    '!./pages/machines/gallery.tsx',
+    '!./pages/tech-stack/index.tsx',
+    '!./pages/useful-sites/index.tsx',
+    '!./pages/free-apis/index.tsx',
+    '!./pages/dev-tools/*.tsx',
+]);
 const eagerCyberPages = import.meta.glob(
     [
         './pages/welcome.tsx',

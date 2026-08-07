@@ -15,11 +15,12 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Admin (authenticated) | `welcome` inside CyberShell | Full access |
 | Non-admin credentials | Login rejected (`auth.failed`) | — |
 
-- Registration routes (`/register`) are **removed** (404).
-- Password reset routes (`/forgot-password`, `/reset-password`) are **removed** (404).
+- Registration routes (`/register`) are **removed** (404). Dead page/controller files are deleted so Vite does not emit `register-*.js`.
+- Password reset routes (`/forgot-password`, `/reset-password`) are **removed** (404). Dead page/controller files are deleted so Vite does not emit `forgot-password-*.js` / `reset-password-*.js`.
 - `/login` GET redirects to `/`.
 - POST `/login` (`login.store`) remains for the form.
 - Single operator account: `AdminUserSeeder` + `config/foray.php` / `FORAY_ADMIN_*`.
+- Auth pages kept: `auth/login`, `auth/confirm-password`, `auth/verify-email`.
 
 ## Key files
 
