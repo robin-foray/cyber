@@ -35,16 +35,17 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($request->boolean('remove_avatar') && $user->avatar_path) {
-            Storage::disk('public')->delete($user->avatar_path);
+            $this->deleteAvatarFile($user->avatar_path);
             $user->avatar_path = null;
         }
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar_path) {
-                Storage::disk('public')->delete($user->avatar_path);
+                $this->deleteAvatarFile($user->avatar_path);
             }
 
-            $user->avatar_path = $request->file('avatar')->store('avatars', 'public');
+            // Store under public/avatars so the file is web-reachable without storage:link.
+            $user->avatar_path = $request->file('avatar')->store('avatars', 'public_web');
         }
 
         $user->fill([
@@ -55,5 +56,14 @@ class ProfileController extends Controller
         ])->save();
 
         return to_route('profile.show')->with('status', 'identity-updated');
+    }
+
+    /**
+     * Remove an avatar from the public web root, with a legacy public-disk fallback.
+     */
+    private function deleteAvatarFile(string $path): void
+    {
+        Storage::disk('public_web')->delete($path);
+        Storage::disk('public')->delete($path);
     }
 }
