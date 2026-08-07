@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # If the vhost DocumentRoot points at the project root (not /public),
+    # forward every request into the Laravel public front controller.
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

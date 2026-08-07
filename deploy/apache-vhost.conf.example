@@ -1,0 +1,39 @@
+# Example Apache vhost for Foray (Laravel)
+#
+# Requirements:
+#   sudo a2enmod rewrite
+#   DocumentRoot MUST end at .../public
+#   AllowOverride All (so public/.htaccess can rewrite to index.php)
+
+<VirtualHost *:80>
+    ServerName foray.example.com
+    # ServerAlias www.foray.example.com
+
+    DocumentRoot /var/www/foray/public
+
+    <Directory /var/www/foray/public>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/foray-error.log
+    CustomLog ${APACHE_LOG_DIR}/foray-access.log combined
+</VirtualHost>
+
+# HTTPS (after certbot / your TLS certs):
+#
+# <VirtualHost *:443>
+#     ServerName foray.example.com
+#     DocumentRoot /var/www/foray/public
+#
+#     <Directory /var/www/foray/public>
+#         Options FollowSymLinks
+#         AllowOverride All
+#         Require all granted
+#     </Directory>
+#
+#     SSLEngine on
+#     SSLCertificateFile /path/to/fullchain.pem
+#     SSLCertificateKeyFile /path/to/privkey.pem
+# </VirtualHost>
