@@ -102,7 +102,7 @@ function authLabel(auth: string): string {
     }
 }
 
-export default function FreeApisIndex({ categories, apis, activeCategory }: Props) {
+export default function FreeApisIndex({ categories = [], apis = [], activeCategory = null }: Props) {
     const [query, setQuery] = useState('');
     const [authFilter, setAuthFilter] = useState<(typeof authFilters)[number]['value']>('all');
     const [corsOnly, setCorsOnly] = useState(false);

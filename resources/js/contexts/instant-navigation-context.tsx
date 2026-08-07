@@ -1,8 +1,9 @@
-import { hrefToPageName, isCyberShellPageName, isInstantNavigationHref } from '@/lib/cyber-pages-registry';
+import { isInstantNavigationHref } from '@/lib/cyber-pages-registry';
 import { router } from '@inertiajs/react';
 import { createContext, type MouseEvent, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 type InstantNavigationContextValue = {
+    /** @deprecated Kept for compatibility; always null. Do not use for page swaps. */
     optimisticPage: string | null;
     optimisticHref: string | null;
     instantVisit: (href: string) => void;
@@ -15,28 +16,25 @@ function shouldOpenInNewTab(event: MouseEvent) {
 }
 
 export function InstantNavigationProvider({ children }: { children: ReactNode }) {
-    const [optimisticPage, setOptimisticPage] = useState<string | null>(null);
     const [optimisticHref, setOptimisticHref] = useState<string | null>(null);
 
-    const clearOptimistic = useCallback((pageName: string) => {
-        setOptimisticPage((current) => (current === pageName ? null : current));
-        setOptimisticHref((current) => (current && hrefToPageName(current) === pageName ? null : current));
+    const clearOptimistic = useCallback((href: string) => {
+        setOptimisticHref((current) => (current === href ? null : current));
     }, []);
 
     const instantVisit = useCallback(
         (href: string) => {
-            const pageName = hrefToPageName(href);
-
+            // Only highlight the destination in the shell — never swap the React
+            // page component before Inertia delivers matching props.
             if (isInstantNavigationHref(href)) {
-                setOptimisticPage(pageName);
                 setOptimisticHref(href);
             }
 
             router.visit(href, {
                 preserveScroll: true,
-                onFinish: () => clearOptimistic(pageName),
-                onCancel: () => clearOptimistic(pageName),
-                onError: () => clearOptimistic(pageName),
+                onFinish: () => clearOptimistic(href),
+                onCancel: () => clearOptimistic(href),
+                onError: () => clearOptimistic(href),
             });
         },
         [clearOptimistic],
@@ -44,11 +42,11 @@ export function InstantNavigationProvider({ children }: { children: ReactNode })
 
     const value = useMemo(
         () => ({
-            optimisticPage,
+            optimisticPage: null,
             optimisticHref,
             instantVisit,
         }),
-        [instantVisit, optimisticHref, optimisticPage],
+        [instantVisit, optimisticHref],
     );
 
     return <InstantNavigationContext.Provider value={value}>{children}</InstantNavigationContext.Provider>;

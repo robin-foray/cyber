@@ -35,7 +35,7 @@ type Props = {
     activeCategory: string | null;
 };
 
-export default function TechStackIndex({ categories, stacks, activeCategory }: Props) {
+export default function TechStackIndex({ categories = [], stacks = [], activeCategory = null }: Props) {
     const [selectedId, setSelectedId] = useState<number | null>(stacks[0]?.id ?? null);
     const selected = useMemo(() => stacks.find((stack) => stack.id === selectedId) ?? stacks[0] ?? null, [selectedId, stacks]);
     const detailRef = useRef<HTMLElement | null>(null);

@@ -10,6 +10,7 @@ description: Build or modify cyber-themed UI components, pages, and styling. Use
 | Component | Path | Role |
 |-----------|------|------|
 | CyberShell | `components/cyber-shell.tsx` | Root layout, sidebar state |
+| CyberShellGate | `components/cyber-shell-gate.tsx` | Persistent shell; **never** swaps page on optimistic nav |
 | CyberSidebar | `components/cyber/sidebar.tsx` | Nav, dev-tools menu, identity card |
 | CyberTopbar | `components/cyber/topbar.tsx` | Section label from URL; mobile auth = profile icon → `/profile`; logout = `Disconnect` → POST `/logout` |
 | Profile page | `pages/profile.tsx` | Identity edit + avatar upload/reseed/clear |
@@ -89,3 +90,10 @@ Dashboard (`/dashboard`), settings (`/settings/*`) use shadcn `AppLayout` — ke
 User avatars via uploaded file (`users.avatar_path` on the `public` disk, streamed at `/media/avatar`) or DiceBear identicon fallback from `avatar_seed` — see `User::getAvatarUrlAttribute()`.
 Change on `/profile`: Upload / Reseed / Clear. Brand colors stay in the DiceBear URL params.
 Uploads use POST + `_method=patch` FormData so PHP receives the file; the media route avoids needing `storage:link`.
+
+## Instant navigation
+
+`InstantNavigationProvider` may set `optimisticHref` for sidebar/topbar highlight only.
+**Never** swap the Inertia page component before the visit finishes — catalog pages
+(`machines`, `tech-stack`, …) crash when rendered with the previous page's props and
+leave a blank gray screen.

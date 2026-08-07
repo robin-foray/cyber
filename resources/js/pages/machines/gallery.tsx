@@ -30,7 +30,7 @@ type GalleryProps = {
     activeCategory: string | null;
 };
 
-export default function MachineGallery({ categories, machines, activeCategory }: GalleryProps) {
+export default function MachineGallery({ categories = [], machines = [], activeCategory = null }: GalleryProps) {
     const [selected, setSelected] = useState<MachineCard | null>(null);
 
     const items = useMemo<MasonryItem[]>(
