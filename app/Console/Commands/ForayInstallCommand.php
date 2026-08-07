@@ -32,6 +32,9 @@ class ForayInstallCommand extends Command
             return self::FAILURE;
         }
 
+        $this->components->info('Linking public storage...');
+        $this->callSilently('storage:link');
+
         $this->components->info('Clearing application cache...');
         $this->callSilently('cache:clear');
 

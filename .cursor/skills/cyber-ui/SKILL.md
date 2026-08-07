@@ -12,6 +12,7 @@ description: Build or modify cyber-themed UI components, pages, and styling. Use
 | CyberShell | `components/cyber-shell.tsx` | Root layout, sidebar state |
 | CyberSidebar | `components/cyber/sidebar.tsx` | Nav, dev-tools menu, identity card |
 | CyberTopbar | `components/cyber/topbar.tsx` | Section label from URL; mobile auth = profile icon → `/profile`; logout = `Disconnect` → POST `/logout` |
+| Profile page | `pages/profile.tsx` | Identity edit + avatar upload/reseed/clear |
 | CyberExpandablePanel | `components/cyber/expandable-panel.tsx` | Collapsible cyber panels (welcome console / integrity) |
 | CyberFooter | `components/cyber/footer.tsx` | Footer links |
 | ForayBrand | `components/cyber/foray-brand.tsx` | Logo / brand mark |
@@ -85,4 +86,6 @@ Dashboard (`/dashboard`), settings (`/settings/*`) use shadcn `AppLayout` — ke
 
 ## Avatars
 
-User avatars via DiceBear identicon API — see `User::getAvatarUrlAttribute()`. Brand colors in the URL params.
+User avatars via uploaded file (`users.avatar_path` on the `public` disk) or DiceBear identicon fallback from `avatar_seed` — see `User::getAvatarUrlAttribute()`.
+Change on `/profile`: Upload / Reseed / Clear. Brand colors stay in the DiceBear URL params.
+`php artisan foray:install` runs `storage:link` so `/storage/avatars/*` is reachable.

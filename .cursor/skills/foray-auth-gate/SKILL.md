@@ -32,6 +32,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 | Post-login / logout | `AuthenticatedSessionController` → `route('home')` |
 | Login UI | `resources/js/pages/auth/login.tsx` — full-screen gate, **not** wrapped in CyberShell; no reset link |
 | Logout UI | Cyber sidebar `DISCONNECT`, topbar `Disconnect`, profile `Disconnect_Session` → POST `route('logout')` |
+| Profile avatar | `/profile` — upload custom image (`avatar_path` on `public` disk) or DiceBear `avatar_seed`; `Reseed` / `Clear`; live preview |
 | Seed admin | `database/seeders/AdminUserSeeder.php` |
 
 ## How to extend

@@ -35,10 +35,12 @@ export interface User {
     email: string;
     avatar?: string;
     avatar_url?: string;
+    has_custom_avatar?: boolean;
     role?: 'admin' | 'member' | string;
     title?: string | null;
     bio?: string | null;
     avatar_seed?: string | null;
+    avatar_path?: string | null;
     is_admin?: boolean;
     email_verified_at: string | null;
     created_at: string;
