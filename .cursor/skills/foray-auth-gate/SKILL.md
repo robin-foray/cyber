@@ -21,6 +21,7 @@ The site is **private**: guests only see the login gate; the full cyber shell re
 - POST `/login` (`login.store`) remains for the form.
 - Single operator account: `AdminUserSeeder` + `config/foray.php` / `FORAY_ADMIN_*`.
 - Auth pages kept: `auth/login`, `auth/confirm-password`, `auth/verify-email`.
+- Vite: do **not** add `build.rollupOptions.output.manualChunks` for React/Inertia — it caused a blank gray screen after login. Use `chunkSizeWarningLimit` instead for the eager cyber bundle.
 
 ## Key files
 
