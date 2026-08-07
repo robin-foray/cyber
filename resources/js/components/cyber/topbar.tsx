@@ -2,7 +2,7 @@ import DevTicker from '@/components/cyber/dev-ticker';
 import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Activity, Menu, UserRound } from 'lucide-react';
+import { Activity, LogOut, Menu, UserRound } from 'lucide-react';
 
 type CyberTopbarProps = {
     currentUrl: string;
@@ -66,15 +66,44 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
                     )}
                 </Link>
 
-                <Link
-                    href={authHref}
-                    prefetch="mount"
-                    cacheFor="5m"
-                    onClick={handleAuthClick}
-                    className="bg-primary hidden shrink-0 rounded-lg px-6 py-2 text-[10px] font-bold text-black uppercase transition-all hover:shadow-[0_0_15px_#ccff00] md:inline-flex"
-                >
-                    {user ? 'Node_Profile' : 'Establish_Link'}
-                </Link>
+                {user && (
+                    <Link
+                        href={route('logout')}
+                        method="post"
+                        as="button"
+                        aria-label="Disconnect session"
+                        title="Disconnect"
+                        className="border-primary/30 bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all hover:bg-primary hover:text-black hover:shadow-[0_0_15px_#ccff00] md:hidden"
+                    >
+                        <LogOut size={16} />
+                    </Link>
+                )}
+
+                <div className="hidden shrink-0 items-center gap-2 md:inline-flex">
+                    <Link
+                        href={authHref}
+                        prefetch="mount"
+                        cacheFor="5m"
+                        onClick={handleAuthClick}
+                        className="bg-primary rounded-lg px-6 py-2 text-[10px] font-bold text-black uppercase transition-all hover:shadow-[0_0_15px_#ccff00]"
+                    >
+                        {user ? 'Node_Profile' : 'Establish_Link'}
+                    </Link>
+
+                    {user && (
+                        <Link
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            aria-label="Disconnect session"
+                            title="Disconnect"
+                            className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-[10px] font-bold uppercase transition-all hover:bg-primary hover:text-black hover:shadow-[0_0_15px_#ccff00]"
+                        >
+                            <LogOut size={14} />
+                            Disconnect
+                        </Link>
+                    )}
+                </div>
             </div>
         </header>
     );
