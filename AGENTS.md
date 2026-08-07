@@ -73,9 +73,10 @@ A feature is **not complete** without Filament + tests.
 - Site is **private**: guests only see login on `/`; full site requires auth
 - **No public registration** — only the seeded admin can sign in (`LoginRequest` rejects non-admin)
 - Default admin from `config/foray.php` / `FORAY_ADMIN_*` via `AdminUserSeeder`
-- Cyber identity fields: `role`, `title`, `avatar_seed`, `bio` (see `/profile`)
+- Cyber identity fields: `role`, `title`, `avatar_seed`, `avatar_path`, `bio` (see `/profile`)
 - Settings profile (`/settings/profile`) handles email/name + account deletion
-- Shared Inertia prop: `auth.user` with `avatar_url`, `is_admin` appended
+- Shared Inertia prop: `auth.user` with `avatar_url`, `has_custom_avatar`, `is_admin` appended
+- Profile avatar: upload to `storage/app/public/avatars` (DiceBear seed fallback); `foray:install` links storage
 - **Filament admin** at `/admin` — only `role: admin` users (`canAccessPanel`)
 
 ## CMS (Filament)
