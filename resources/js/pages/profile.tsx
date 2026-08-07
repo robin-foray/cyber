@@ -20,13 +20,31 @@ export default function Profile() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-    const { data, setData, patch, processing, errors, recentlySuccessful } = useForm<ProfileForm>({
+    const { data, setData, post, processing, errors, recentlySuccessful, transform } = useForm<ProfileForm>({
         name: user?.name ?? '',
         title: user?.title ?? '',
         avatar_seed: user?.avatar_seed ?? user?.name ?? '',
         bio: user?.bio ?? '',
         avatar: null,
         remove_avatar: false,
+    });
+
+    transform((form) => {
+        const payload: Record<string, unknown> = {
+            name: form.name,
+            title: form.title,
+            avatar_seed: form.avatar_seed,
+            bio: form.bio,
+            remove_avatar: form.remove_avatar ? 1 : 0,
+            _method: 'patch',
+        };
+
+        // Only send the file when present — empty avatar fields break image validation.
+        if (form.avatar) {
+            payload.avatar = form.avatar;
+        }
+
+        return payload as typeof form;
     });
 
     useEffect(() => {
@@ -57,7 +75,8 @@ export default function Profile() {
 
     const submit: FormEventHandler = (event) => {
         event.preventDefault();
-        patch(route('profile.update'), {
+        // POST + _method=patch so multipart file uploads reach PHP reliably.
+        post(route('profile.update'), {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {

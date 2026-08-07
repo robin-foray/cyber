@@ -86,6 +86,6 @@ Dashboard (`/dashboard`), settings (`/settings/*`) use shadcn `AppLayout` — ke
 
 ## Avatars
 
-User avatars via uploaded file (`users.avatar_path` under `public/avatars`, `public_web` disk) or DiceBear identicon fallback from `avatar_seed` — see `User::getAvatarUrlAttribute()`.
+User avatars via uploaded file (`users.avatar_path` on the `public` disk, streamed at `/media/avatar`) or DiceBear identicon fallback from `avatar_seed` — see `User::getAvatarUrlAttribute()`.
 Change on `/profile`: Upload / Reseed / Clear. Brand colors stay in the DiceBear URL params.
-New uploads are root-relative (`/avatars/...`) and do not need `storage:link`. Legacy `/storage/avatars/...` paths still resolve if the symlink exists.
+Uploads use POST + `_method=patch` FormData so PHP receives the file; the media route avoids needing `storage:link`.

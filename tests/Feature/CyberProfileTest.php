@@ -54,7 +54,7 @@ class CyberProfileTest extends TestCase
 
     public function test_authenticated_users_can_upload_a_profile_avatar(): void
     {
-        Storage::fake('public_web');
+        Storage::fake('public');
 
         $user = User::factory()->create([
             'avatar_seed' => 'seed-before',
@@ -63,12 +63,14 @@ class CyberProfileTest extends TestCase
         $file = UploadedFile::fake()->image('operator.png', 120, 120);
 
         $this->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->post(route('profile.update'), [
                 'name' => $user->name,
                 'title' => $user->title,
                 'avatar_seed' => $user->avatar_seed,
                 'bio' => $user->bio,
                 'avatar' => $file,
+                'remove_avatar' => 0,
+                '_method' => 'patch',
             ])
             ->assertRedirect(route('profile.show'));
 
@@ -76,16 +78,39 @@ class CyberProfileTest extends TestCase
 
         $this->assertNotNull($user->avatar_path);
         $this->assertTrue($user->has_custom_avatar);
-        Storage::disk('public_web')->assertExists($user->avatar_path);
-        $this->assertStringStartsWith('/avatars/', $user->avatar_url);
-        $this->assertStringNotContainsString('/storage/', $user->avatar_url);
+        Storage::disk('public')->assertExists($user->avatar_path);
+        $this->assertStringStartsWith('/media/avatar', $user->avatar_url);
+        $this->assertStringNotContainsString('dicebear.com', $user->avatar_url);
+    }
+
+    public function test_uploaded_avatar_is_served_via_media_route(): void
+    {
+        Storage::fake('public');
+
+        $path = UploadedFile::fake()->image('served.png', 64, 64)->store('avatars', 'public');
+
+        $user = User::factory()->create([
+            'avatar_path' => $path,
+            'avatar_seed' => 'should-not-win',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('profile.avatar'))
+            ->assertOk();
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('auth.user.has_custom_avatar', true)
+                ->where('auth.user.avatar_url', fn ($url) => str_starts_with($url, '/media/avatar')));
     }
 
     public function test_authenticated_users_can_remove_a_custom_profile_avatar(): void
     {
-        Storage::fake('public_web');
+        Storage::fake('public');
 
-        $path = UploadedFile::fake()->image('old.png')->store('avatars', 'public_web');
+        $path = UploadedFile::fake()->image('old.png')->store('avatars', 'public');
 
         $user = User::factory()->create([
             'avatar_path' => $path,
@@ -93,12 +118,13 @@ class CyberProfileTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->post(route('profile.update'), [
                 'name' => $user->name,
                 'title' => $user->title,
                 'avatar_seed' => 'fallback-seed',
                 'bio' => $user->bio,
-                'remove_avatar' => true,
+                'remove_avatar' => 1,
+                '_method' => 'patch',
             ])
             ->assertRedirect(route('profile.show'));
 
@@ -106,21 +132,42 @@ class CyberProfileTest extends TestCase
 
         $this->assertNull($user->avatar_path);
         $this->assertFalse($user->has_custom_avatar);
-        Storage::disk('public_web')->assertMissing($path);
+        Storage::disk('public')->assertMissing($path);
         $this->assertStringContainsString('dicebear.com', $user->avatar_url);
         $this->assertStringContainsString('fallback-seed', $user->avatar_url);
     }
 
-    public function test_legacy_storage_disk_avatars_still_resolve(): void
+    public function test_upload_wins_over_remove_avatar_flag(): void
     {
         Storage::fake('public');
 
-        $path = UploadedFile::fake()->image('legacy.png')->store('avatars', 'public');
+        $old = UploadedFile::fake()->image('old.png')->store('avatars', 'public');
 
         $user = User::factory()->create([
-            'avatar_path' => $path,
+            'avatar_path' => $old,
+            'avatar_seed' => 'seed',
         ]);
 
-        $this->assertSame('/storage/'.$path, $user->avatar_url);
+        $file = UploadedFile::fake()->image('new.png', 80, 80);
+
+        $this->actingAs($user)
+            ->post(route('profile.update'), [
+                'name' => $user->name,
+                'title' => $user->title,
+                'avatar_seed' => 'seed',
+                'bio' => $user->bio,
+                'avatar' => $file,
+                'remove_avatar' => 1,
+                '_method' => 'patch',
+            ])
+            ->assertRedirect(route('profile.show'));
+
+        $user->refresh();
+
+        $this->assertNotNull($user->avatar_path);
+        $this->assertNotSame($old, $user->avatar_path);
+        Storage::disk('public')->assertExists($user->avatar_path);
+        Storage::disk('public')->assertMissing($old);
+        $this->assertTrue($user->has_custom_avatar);
     }
 }

@@ -73,7 +73,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['patch', 'post'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('media/avatar', [ProfileController::class, 'avatar'])->name('profile.avatar');
 });
 
 require __DIR__.'/settings.php';

@@ -9,7 +9,6 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -57,22 +56,11 @@ class User extends Authenticatable implements FilamentUser
 
     public function getAvatarUrlAttribute(): string
     {
-        if ($this->avatar_path) {
-            $path = ltrim($this->avatar_path, '/');
+        if (filled($this->avatar_path)) {
+            // Root-relative media route — works without storage:link and without APP_URL.
+            $version = optional($this->updated_at)->timestamp ?? time();
 
-            // Prefer files in public/avatars (no symlink required).
-            if (is_file(public_path($path))) {
-                return '/'.$path;
-            }
-
-            // Legacy uploads stored on the public disk (needs public/storage link).
-            if (Storage::disk('public')->exists($path)) {
-                return '/storage/'.$path;
-            }
-
-            // Fall through to a stable relative URL for newly saved paths before the
-            // request finishes writing, or when the web root is temporarily unavailable.
-            return '/'.$path;
+            return '/media/avatar?v='.$version;
         }
 
         $seed = urlencode($this->avatar_seed ?: $this->name ?: $this->email);
