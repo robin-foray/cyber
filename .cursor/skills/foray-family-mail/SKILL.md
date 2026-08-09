@@ -42,3 +42,9 @@ Email address = `local_part@domain` (accessor `email`). Unique on `(local_part, 
 5. Re-run `php artisan foray:install` (or seed) on production
 
 This module is an **inventory / ops panel**, not a live Postfix provisioner. Actual mailbox creation happens on the mail server; keep Filament in sync manually.
+
+## Mail server setup (ops)
+
+Step-by-step for installing mail on the live host (DNS, Mailcow or Postfix+Dovecot, webmail, Filament sync):
+
+→ [`deploy/mail-server.md`](../../../deploy/mail-server.md)
