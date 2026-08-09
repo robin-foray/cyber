@@ -127,6 +127,8 @@ Production: `php artisan foray:install --force` after `composer install --no-dev
 | `.cursor/rules/filament-cms.mdc` | Filament + CMS requirements for new features |
 | `.cursor/skills/` | Step-by-step workflows for common tasks |
 | `.cursor/mcp.json.example` | Recommended MCP servers (copy & configure locally) |
+| `deploy/mail-server.md` | How to install family mail on foray.hu (DNS, Mailcow/Postfix) |
+| `deploy/apache-vhost.conf.example` | Apache vhost for the Laravel webapp |
 
 ## Known quirks
 
