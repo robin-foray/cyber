@@ -17,14 +17,16 @@ class FilamentPackagesTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
+        // Widget copy is Livewire-deferred; assert the dashboard mounts our widget classes.
         $this->actingAs($admin)
             ->get('/admin')
             ->assertOk()
-            ->assertSee('Machines', false)
-            ->assertSee('Useful sites', false)
-            ->assertSee('Free APIs', false)
-            ->assertSee('Tech stacks', false)
-            ->assertSee('Content inventory', false);
+            ->assertSee('App\\Filament\\Widgets\\MachinesMetricWidget', false)
+            ->assertSee('App\\Filament\\Widgets\\UsefulSitesMetricWidget', false)
+            ->assertSee('App\\Filament\\Widgets\\FreeApisMetricWidget', false)
+            ->assertSee('App\\Filament\\Widgets\\TechStacksMetricWidget', false)
+            ->assertSee('App\\Filament\\Widgets\\ContentInventoryBreakdownWidget', false)
+            ->assertSee('App\\Filament\\Widgets\\RecentMachinesWidget', false);
     }
 
     public function test_admin_can_open_activity_logs_resource(): void
