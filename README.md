@@ -55,6 +55,10 @@ Shared hosting (DocumentRoot stuck on the project root): the repo-root [`.htacce
 
 Also set `APP_URL` in `.env` to the real public URL (e.g. `https://your-domain.com`).
 
+### Family mail server (foray.hu)
+
+A Filament `/admin` → **Levelezés** menü a családi postafiókok nyilvántartása. A tényleges levelezőszerver telepítése (DNS, Mailcow/Postfix, webmail): [`deploy/mail-server.md`](deploy/mail-server.md).
+
 ## Dev tools
 
 | Tool | URL |
