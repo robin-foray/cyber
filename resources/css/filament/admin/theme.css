@@ -1,0 +1,8 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../../../../vendor/awcodes/filament-sticky-header/resources/css/plugin.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../vendor/awcodes/filament-sticky-header/resources/**/*';
+@source '../../../../vendor/laboiteacode/filament-dashboard-widgets/resources/**/*';
+@source '../../../../vendor/alizharb/filament-activity-log/resources/**/*';

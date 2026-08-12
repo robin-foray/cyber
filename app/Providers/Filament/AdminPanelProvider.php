@@ -2,6 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Filament\Widgets\ContentInventoryBreakdownWidget;
+use App\Filament\Widgets\FreeApisMetricWidget;
+use App\Filament\Widgets\MachinesMetricWidget;
+use App\Filament\Widgets\RecentMachinesWidget;
+use App\Filament\Widgets\TechStacksMetricWidget;
+use App\Filament\Widgets\UsefulSitesMetricWidget;
+use Awcodes\StickyHeader\StickyHeaderPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -16,6 +24,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use LaBoiteACode\FilamentDashboardWidgets\FilamentDashboardWidgetsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -25,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->brandName('Foray Admin')
             ->brandLogo(asset('logo.svg'))
@@ -32,6 +42,15 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('favicon.svg'))
             ->colors([
                 'primary' => '#ccff00',
+            ])
+            ->plugins([
+                FilamentDashboardWidgetsPlugin::make(),
+                StickyHeaderPlugin::make()->floating()->colored(),
+                ActivityLogPlugin::make()
+                    ->label('Log')
+                    ->pluralLabel('Activity logs')
+                    ->navigationGroup('Rendszer')
+                    ->navigationSort(90),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -41,6 +60,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 AccountWidget::class,
+                MachinesMetricWidget::class,
+                UsefulSitesMetricWidget::class,
+                FreeApisMetricWidget::class,
+                TechStacksMetricWidget::class,
+                ContentInventoryBreakdownWidget::class,
+                RecentMachinesWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
