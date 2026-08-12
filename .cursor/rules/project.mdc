@@ -11,7 +11,7 @@ Minimize diffs. Match existing patterns. Do not refactor unrelated code.
 
 ## Stack
 
-Laravel 12 + Inertia 2 + React 19 + TypeScript + Tailwind v4. SQLite by default.
+Laravel 13 + Inertia 2 + React 19 + TypeScript + Tailwind v4. SQLite by default.
 
 ## File naming
 

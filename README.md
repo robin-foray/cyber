@@ -4,9 +4,9 @@ Laravel + Inertia + React developer toolkit with a cyberpunk UI. Public dev-tool
 
 ## Stack
 
-- **Backend:** PHP 8.2+, Laravel 12, Inertia Laravel 2, Ziggy
+- **Backend:** PHP 8.3+, Laravel 13, Inertia Laravel 2, Ziggy
 - **Frontend:** React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Lucide icons
-- **Tests:** PHPUnit 11, Vitest 3
+- **Tests:** PHPUnit 12, Vitest 3
 
 ## Setup
 

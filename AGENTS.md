@@ -1,6 +1,6 @@
 # Foray (Cyber) — Agent Guide
 
-Laravel 12 + Inertia 2 + React 19 monolith with a dual UI: cyberpunk public shell (`CyberShell`) and shadcn admin shell (`AppLayout`).
+Laravel 13 + Inertia 2 + React 19 monolith with a dual UI: cyberpunk public shell (`CyberShell`) and shadcn admin shell (`AppLayout`).
 
 ## Quick start
 

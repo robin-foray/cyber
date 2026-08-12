@@ -5,7 +5,7 @@ description: Foray cyber Laravel+Inertia dashboard. Use when working in cyber-da
 
 # Foray Cyber Dashboard
 
-Laravel 12 + Inertia React + Tailwind cyber shell. Admin: Filament at `/admin`.
+Laravel 13 + Inertia React + Tailwind cyber shell. Admin: Filament at `/admin`.
 
 ## Stack map
 
