@@ -2,31 +2,32 @@
 
 namespace App\Filament\Resources\Machines;
 
-use Filament\Schemas\Schema;
+use App\Filament\Resources\Machines\Pages\CreateMachine;
+use App\Filament\Resources\Machines\Pages\EditMachine;
+use App\Filament\Resources\Machines\Pages\ListMachines;
+use App\Models\Machine;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Machines\Pages\ListMachines;
-use App\Filament\Resources\Machines\Pages\CreateMachine;
-use App\Filament\Resources\Machines\Pages\EditMachine;
-use App\Models\Machine;
-use Filament\Resources\Resource;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 
 class MachineResource extends Resource
 {
     protected static ?string $model = Machine::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cpu-chip';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cpu-chip';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Machines';
+    protected static string|\UnitEnum|null $navigationGroup = 'Machines';
 
     protected static ?int $navigationSort = 2;
 
@@ -70,6 +71,7 @@ class MachineResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

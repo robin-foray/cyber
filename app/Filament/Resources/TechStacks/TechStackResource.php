@@ -2,36 +2,37 @@
 
 namespace App\Filament\Resources\TechStacks;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\TechStacks\Pages\ListTechStacks;
 use App\Filament\Resources\TechStacks\Pages\CreateTechStack;
 use App\Filament\Resources\TechStacks\Pages\EditTechStack;
+use App\Filament\Resources\TechStacks\Pages\ListTechStacks;
 use App\Models\TechStack;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 
 class TechStackResource extends Resource
 {
     protected static ?string $model = TechStack::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-code-bracket';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-code-bracket';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Tech Stack';
+    protected static string|\UnitEnum|null $navigationGroup = 'Tech Stack';
 
     protected static ?int $navigationSort = 2;
 
@@ -93,6 +94,7 @@ class TechStackResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

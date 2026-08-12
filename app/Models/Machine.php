@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsCmsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Machine extends Model
 {
+    use LogsCmsActivity;
+
     protected $fillable = [
         'machine_category_id',
         'name',
