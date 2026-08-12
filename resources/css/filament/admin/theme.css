@@ -6,3 +6,5 @@
 @source '../../../../vendor/awcodes/filament-sticky-header/resources/**/*';
 @source '../../../../vendor/laboiteacode/filament-dashboard-widgets/resources/**/*';
 @source '../../../../vendor/alizharb/filament-activity-log/resources/**/*';
+@source '../../../../vendor/bezhansalleh/filament-google-analytics/resources/views/**/*';
+@source '../../../../vendor/bezhansalleh/filament-google-analytics/src/{Widgets,Support}/*';

@@ -1,6 +1,6 @@
 ---
 name: foray-admin-packages
-description: Foray Filament admin packages — dashboard metric widgets, Spatie activity log UI, Excel exports, sticky header. Use when editing admin dashboard widgets, activity logging on CMS models, ExportBulkAction, or AdminPanelProvider plugins.
+description: Foray Filament admin packages — dashboard metric widgets, Spatie activity log UI, Excel exports, sticky header, Google Analytics. Use when editing admin dashboard widgets, activity logging on CMS models, ExportBulkAction, GA stats, or AdminPanelProvider plugins.
 ---
 
 # Foray Admin Packages
@@ -13,14 +13,23 @@ description: Foray Filament admin packages — dashboard metric widgets, Spatie 
 | `alizharb/filament-activity-log` | Filament UI over `spatie/laravel-activitylog` |
 | `pxlrbt/filament-excel` | Table `ExportBulkAction` (xlsx) |
 | `awcodes/filament-sticky-header` | Sticky floating admin topbar |
+| `bezhansalleh/filament-google-analytics` | GA4 stats dashboard + widgets (`spatie/laravel-analytics`) |
 
 ## Panel wiring
 
 `app/Providers/Filament/AdminPanelProvider.php`:
 
-- Plugins: `FilamentDashboardWidgetsPlugin`, `StickyHeaderPlugin` (floating+colored), `ActivityLogPlugin` (nav group `Rendszer`)
+- Plugins: `FilamentDashboardWidgetsPlugin`, `StickyHeaderPlugin` (floating+colored), `GoogleAnalyticsPlugin`, `ActivityLogPlugin` (nav group `Rendszer`)
 - Theme: `resources/css/filament/admin/theme.css` via `viteTheme()` (Vite input in `vite.config.js`)
 - Dashboard widgets: `MachinesMetricWidget`, `UsefulSitesMetricWidget`, `FreeApisMetricWidget`, `TechStacksMetricWidget`, `ContentInventoryBreakdownWidget`, `RecentMachinesWidget`
+
+## Google Analytics
+
+- Page: `App\Filament\Pages\AnalyticsDashboard` (nav group **Statisztika**) → `/admin/analytics-dashboard`
+- Config: `config/google-analytics.php` (`dedicated_dashboard` = false — custom page owns nav), `config/analytics.php`
+- Env: `ANALYTICS_PROPERTY_ID`
+- Credentials: `storage/app/analytics/service-account-credentials.json` (gitignored; see Spatie laravel-analytics docs)
+- Theme `@source` includes the GA package views/widgets
 
 ## Activity logging
 
@@ -41,7 +50,8 @@ description: Foray Filament admin packages — dashboard metric widgets, Spatie 
 1. New metric → widget under `app/Filament/Widgets/` extending `MetricWidget` / `BreakdownWidget` / `RecentItemsWidget`, register in `AdminPanelProvider::widgets()`
 2. New logged model → `use LogsCmsActivity` on the Eloquent model
 3. New exportable table → add `use pxlrbt\FilamentExcel\Actions\ExportBulkAction` to `toolbarActions`
+4. GA widgets → enable `filament_dashboard` / `global` flags in `config/google-analytics.php`
 
 ## Tests
 
-`tests/Feature/Admin/FilamentPackagesTest.php` — dashboard widgets, activity-logs route, CMS create → activity row, catalog list pages.
+`tests/Feature/Admin/FilamentPackagesTest.php` — dashboard widgets, activity-logs route, CMS create → activity row, catalog list pages, analytics dashboard.

@@ -10,6 +10,7 @@ use App\Filament\Widgets\RecentMachinesWidget;
 use App\Filament\Widgets\TechStacksMetricWidget;
 use App\Filament\Widgets\UsefulSitesMetricWidget;
 use Awcodes\StickyHeader\StickyHeaderPlugin;
+use BezhanSalleh\GoogleAnalytics\GoogleAnalyticsPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -46,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentDashboardWidgetsPlugin::make(),
                 StickyHeaderPlugin::make()->floating()->colored(),
+                GoogleAnalyticsPlugin::make(),
                 ActivityLogPlugin::make()
                     ->label('Log')
                     ->pluralLabel('Activity logs')

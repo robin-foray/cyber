@@ -89,4 +89,14 @@ class FilamentPackagesTest extends TestCase
             ->get('/admin/tech-stacks')
             ->assertOk();
     }
+
+    public function test_admin_can_open_google_analytics_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get('/admin/analytics-dashboard')
+            ->assertOk()
+            ->assertSee('App\\Filament\\Pages\\AnalyticsDashboard', false);
+    }
 }
