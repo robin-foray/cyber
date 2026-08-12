@@ -1,3 +1,4 @@
+import { Facebook, Github, Instagram, Twitter } from '@/lib/brand-icons';
 import {
     Binary,
     Braces,
@@ -11,10 +12,8 @@ import {
     FileJson2,
     FileText,
     Fingerprint,
-    Github,
     Globe,
     ImageDown,
-    Instagram,
     Layers,
     Package,
     Palette,
@@ -27,12 +26,13 @@ import {
     Sparkles,
     Table2,
     Terminal,
-    Twitter,
     Zap,
     type LucideIcon,
 } from 'lucide-react';
 
-const iconMap: Record<string, LucideIcon> = {
+type CmsIcon = LucideIcon | typeof Github;
+
+const iconMap: Record<string, CmsIcon> = {
     Terminal,
     Construction,
     Share2,
@@ -52,6 +52,7 @@ const iconMap: Record<string, LucideIcon> = {
     Globe,
     Twitter,
     Instagram,
+    Facebook,
     FileJson2,
     Fingerprint,
     QrCode,
@@ -65,7 +66,7 @@ const iconMap: Record<string, LucideIcon> = {
     FileCode2,
 };
 
-export function resolveCmsIcon(name?: string | null, fallback: LucideIcon = Terminal): LucideIcon {
+export function resolveCmsIcon(name?: string | null, fallback: CmsIcon = Terminal): CmsIcon {
     if (!name) {
         return fallback;
     }

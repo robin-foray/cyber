@@ -1,9 +1,10 @@
 import CoolStuffMenu, { coolStuffStorageKey } from '@/components/cyber/cool-stuff-menu';
 import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
+import { Facebook, Github, Instagram, Twitter } from '@/lib/brand-icons';
 import { resolveCmsIcon } from '@/lib/cms-icons';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronLeft, Facebook, Github, Instagram, LogOut, Twitter, Zap } from 'lucide-react';
+import { ChevronLeft, LogOut, Zap } from 'lucide-react';
 import { useEffect, useState, type ComponentType } from 'react';
 import ForayBrand from './foray-brand';
 
