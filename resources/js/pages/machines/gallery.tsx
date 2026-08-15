@@ -1,6 +1,6 @@
 import CategoryChip from '@/components/cyber/category-chip';
+import MachineLightbox from '@/components/cyber/machine-lightbox';
 import Masonry, { type MasonryItem } from '@/components/cyber/masonry';
-import SpecularButton from '@/components/cyber/specular-button';
 import { Head, router } from '@inertiajs/react';
 import { Cpu, Layers3 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -123,44 +123,7 @@ export default function MachineGallery({ categories = [], machines = [], activeC
                     )}
                 </div>
 
-                {selected && (
-                    <div
-                        className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/70 p-4 pt-5 backdrop-blur-sm sm:pt-8"
-                        onClick={() => setSelected(null)}
-                    >
-                        <div
-                            className="w-full max-w-lg overflow-hidden rounded-3xl border border-primary/25 bg-surface shadow-[0_0_40px_rgba(204,255,0,0.15)]"
-                            onClick={(event) => event.stopPropagation()}
-                        >
-                            <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url(${selected.img})` }} />
-                            <div className="space-y-3 p-6">
-                                <p className="text-[10px] font-bold tracking-widest text-primary uppercase">{selected.category}</p>
-                                <h2 className="font-display text-2xl font-bold tracking-wide">{selected.name}</h2>
-                                <p className="text-sm text-on-surface-variant">{selected.description}</p>
-                                <div className="flex gap-2 pt-2">
-                                    <div className="min-w-[8rem] flex-1">
-                                        <SpecularButton type="button" size="sm" active onClick={() => setSelected(null)} labelClassName="justify-center">
-                                            CLOSE
-                                        </SpecularButton>
-                                    </div>
-                                    {selected.url && (
-                                        <div className="min-w-[8rem] flex-1">
-                                            <SpecularButton
-                                                as="a"
-                                                href={selected.url}
-                                                size="sm"
-                                                labelClassName="justify-center"
-                                                onClick={() => window.open(selected.url!, '_blank', 'noopener')}
-                                            >
-                                                OPEN_LINK
-                                            </SpecularButton>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {selected && <MachineLightbox machine={selected} onClose={() => setSelected(null)} />}
             </section>
         </>
     );
