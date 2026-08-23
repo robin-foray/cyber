@@ -25,8 +25,21 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    guestPass: GuestPassIdentity | null;
     cms: CmsContent;
     [key: string]: unknown;
+}
+
+export interface GuestPassIdentity {
+    id: number;
+    display_name: string;
+    title?: string | null;
+    bio?: string | null;
+    avatar_url: string;
+    has_custom_avatar?: boolean;
+    expires_at: string;
+    expires_label: string;
+    label: string;
 }
 
 export interface User {

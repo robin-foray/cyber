@@ -2,7 +2,7 @@ import CoolStuffMenu, { coolStuffStorageKey } from '@/components/cyber/cool-stuf
 import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
 import { Facebook, Github, Instagram, Twitter } from '@/lib/brand-icons';
 import { resolveCmsIcon } from '@/lib/cms-icons';
-import { type SharedData } from '@/types';
+import { type GuestPassIdentity, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronLeft, LogOut, Zap } from 'lucide-react';
 import { useEffect, useState, type ComponentType } from 'react';
@@ -12,6 +12,7 @@ type CyberSidebarProps = {
     currentUrl: string;
     isOpen: boolean;
     user: SharedData['auth']['user'];
+    guestPass: GuestPassIdentity | null;
     onClose: () => void;
     onOpen: () => void;
 };
@@ -23,7 +24,7 @@ const socialIconMap = {
     Facebook,
 } as const;
 
-export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen }: CyberSidebarProps) {
+export default function CyberSidebar({ currentUrl, isOpen, user, guestPass, onClose, onOpen }: CyberSidebarProps) {
     const { cms } = usePage<SharedData>().props;
     const [isCoolStuffOpen, setIsCoolStuffOpen] = useState(() => {
         if (typeof window === 'undefined') {
@@ -52,7 +53,7 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
         setIsCoolStuffOpen(open);
     }
 
-    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user);
+    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user || guestPass);
     let coolStuffRendered = false;
 
     function closeSidebarOnMobileNavigate() {
@@ -81,13 +82,17 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
             <div className={`mb-3 flex shrink-0 flex-col gap-2 px-3 pt-4 pb-3 ${!isOpen ? 'items-center' : ''}`}>
                 <ForayBrand isOpen={isOpen} onOpen={onOpen} />
 
-                {isOpen && <NodeIdentity user={user} onNavigate={closeSidebarOnMobileNavigate} />}
+                {isOpen && (user ? <NodeIdentity user={user} onNavigate={closeSidebarOnMobileNavigate} /> : guestPass ? <GuestNodeIdentity guestPass={guestPass} /> : null)}
 
                 {user && (
                     <LogoutControl
                         full={isOpen}
                         onNavigate={closeSidebarOnMobileNavigate}
                     />
+                )}
+
+                {!user && guestPass && (
+                    <GuestLogoutControl full={isOpen} onNavigate={closeSidebarOnMobileNavigate} />
                 )}
             </div>
 
@@ -137,6 +142,47 @@ export default function CyberSidebar({ currentUrl, isOpen, user, onClose, onOpen
 
 function isMobileSidebarViewport() {
     return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+}
+
+function GuestNodeIdentity({ guestPass }: { guestPass: GuestPassIdentity }) {
+    return (
+        <div className="block w-full overflow-hidden rounded-xl border border-primary/10 bg-surface/50 p-4">
+            <p className="truncate text-[10px] tracking-widest text-primary uppercase opacity-70">Guest_Pass</p>
+            <div className="mt-2 flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary/10 text-primary">
+                    <img src={guestPass.avatar_url} alt={guestPass.display_name} className="h-full w-full object-cover" />
+                </div>
+                <div className="min-w-0">
+                    <h2 className="font-display truncate text-base font-bold">{guestPass.display_name}</h2>
+                    <div className="mt-1 flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#ccff00]" />
+                        <span className="truncate text-[10px] opacity-60">
+                            GUEST // {guestPass.title || guestPass.label}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function GuestLogoutControl({ full, onNavigate }: { full: boolean; onNavigate?: () => void }) {
+    return (
+        <Link
+            href={route('guest-pass.logout')}
+            method="post"
+            as="button"
+            onClick={() => onNavigate?.()}
+            aria-label="End guest session"
+            title="End guest session"
+            className={`flex min-h-11 w-full items-center gap-3 rounded-xl border border-primary/15 bg-primary/5 px-3 py-2.5 text-on-surface-variant transition-all hover:border-primary/50 hover:bg-primary hover:text-black hover:shadow-[0_0_14px_rgba(204,255,0,0.45)] ${
+                full ? '' : 'justify-center'
+            }`}
+        >
+            <LogOut size={18} />
+            {full && <span className="text-[11px] font-bold tracking-widest">END_GUEST</span>}
+        </Link>
+    );
 }
 
 function NodeIdentity({ user, onNavigate }: { user: SharedData['auth']['user']; onNavigate?: () => void }) {

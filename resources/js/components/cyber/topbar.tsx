@@ -1,6 +1,6 @@
 import DevTicker from '@/components/cyber/dev-ticker';
 import { useInstantCyberClick } from '@/contexts/instant-navigation-context';
-import { type SharedData } from '@/types';
+import { type GuestPassIdentity, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { Activity, LogOut, Menu, UserRound } from 'lucide-react';
 
@@ -8,16 +8,18 @@ type CyberTopbarProps = {
     currentUrl: string;
     isSidebarOpen: boolean;
     user: SharedData['auth']['user'];
+    guestPass: GuestPassIdentity | null;
     onOpenSidebar: () => void;
 };
 
-export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSidebar }: CyberTopbarProps) {
+export default function CyberTopbar({ currentUrl, isSidebarOpen, user, guestPass, onOpenSidebar }: CyberTopbarProps) {
     const { cms } = usePage<SharedData>().props;
-    const sectionLabel = getSectionLabel(currentUrl, cms.topbarLabels, user);
+    const sectionLabel = getSectionLabel(currentUrl, cms.topbarLabels, user, guestPass);
     const tickerItems = [...cms.tickers.topbar, ...cms.tickers.topbar];
-    const authHref = user ? '/profile' : '/';
+    const authHref = user ? '/profile' : guestPass ? '/' : '/';
     const handleAuthClick = useInstantCyberClick(authHref);
-    const authLabel = user ? 'Open profile' : 'Login';
+    const authLabel = user ? 'Open profile' : guestPass ? 'Guest session' : 'Login';
+    const avatarUrl = user?.avatar_url ?? guestPass?.avatar_url;
 
     return (
         <header
@@ -59,16 +61,16 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
                     title={authLabel}
                     className="bg-primary text-black flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg transition-all hover:shadow-[0_0_15px_#ccff00] md:hidden"
                 >
-                    {user?.avatar_url ? (
-                        <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+                    {avatarUrl ? (
+                        <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
                     ) : (
                         <UserRound size={16} />
                     )}
                 </Link>
 
-                {user && (
+                {(user || guestPass) && (
                     <Link
-                        href={route('logout')}
+                        href={user ? route('logout') : route('guest-pass.logout')}
                         method="post"
                         as="button"
                         aria-label="Disconnect session"
@@ -87,12 +89,12 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, onOpenSid
                         onClick={handleAuthClick}
                         className="bg-primary rounded-lg px-6 py-2 text-[10px] font-bold text-black uppercase transition-all hover:shadow-[0_0_15px_#ccff00]"
                     >
-                        {user ? 'Node_Profile' : 'Establish_Link'}
+                        {user ? 'Node_Profile' : guestPass ? 'Guest_Node' : 'Establish_Link'}
                     </Link>
 
-                    {user && (
+                    {(user || guestPass) && (
                         <Link
-                            href={route('logout')}
+                            href={user ? route('logout') : route('guest-pass.logout')}
                             method="post"
                             as="button"
                             aria-label="Disconnect session"
@@ -113,6 +115,7 @@ function getSectionLabel(
     currentUrl: string,
     labels: SharedData['cms']['topbarLabels'],
     user: SharedData['auth']['user'],
+    guestPass: GuestPassIdentity | null,
 ) {
     const path = currentUrl.split('?')[0].split('#')[0];
 
@@ -120,7 +123,7 @@ function getSectionLabel(
         return labels.devTools;
     }
 
-    if ((path === '/' && !user) || path.startsWith('/login')) {
+    if ((path === '/' && !user && !guestPass) || path.startsWith('/login')) {
         return labels.accessGate;
     }
 
