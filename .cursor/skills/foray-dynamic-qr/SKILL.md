@@ -26,6 +26,7 @@ Physical QR codes encode a **fixed Foray URL**; the redirect target changes in a
 ## UI
 
 - Cyber page: `/qr-links` — create, download QR PNG, update destination, copy fixed URL
+- **Mobile page: `/qr-links/mobile`** — phone-first UI, sticky save bar, large QR, share fixed URL
 - Filament: full CRUD + scan relation manager
 
 ## Tests

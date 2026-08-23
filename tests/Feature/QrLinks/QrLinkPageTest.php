@@ -50,6 +50,26 @@ class QrLinkPageTest extends TestCase
         $this->assertSame('https://example.com/tomorrow', $link->fresh()->destination_url);
     }
 
+    public function test_admin_can_open_mobile_qr_links_page(): void
+    {
+        $admin = User::factory()->admin()->create();
+        QrLink::factory()->create(['created_by' => $admin->id, 'name' => 'Póló']);
+
+        $this->actingAs($admin)
+            ->get(route('qr-links.mobile'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('qr-links/mobile')
+                ->has('links', 1)
+                ->where('links.0.name', 'Póló'));
+    }
+
+    public function test_guests_cannot_open_mobile_qr_links_page(): void
+    {
+        $this->get(route('qr-links.mobile'))
+            ->assertRedirect(route('home'));
+    }
+
     public function test_admin_can_open_filament_qr_link_resource(): void
     {
         QrLink::factory()->create();

@@ -1,6 +1,6 @@
 import { generateQrCodeDataUrl } from '@/lib/qr-code';
-import { Head, useForm } from '@inertiajs/react';
-import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, RefreshCw } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, RefreshCw, Smartphone } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type QrLinkItem = {
@@ -47,8 +47,17 @@ export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
                                 bármikor cserélheted — a pólón lévő kód változatlan marad.
                             </p>
                         </div>
-                        <div className="rounded-xl border border-primary/20 bg-black/40 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase">
-                            {links.length} active codes
+                        <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
+                            <div className="rounded-xl border border-primary/20 bg-black/40 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase">
+                                {links.length} active codes
+                            </div>
+                            <Link
+                                href={route('qr-links.mobile')}
+                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/25 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase"
+                            >
+                                <Smartphone size={14} />
+                                Mobil nézet
+                            </Link>
                         </div>
                     </div>
 
