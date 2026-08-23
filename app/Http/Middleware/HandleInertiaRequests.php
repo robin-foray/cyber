@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\ContentService;
+use App\Services\GuestPassSession;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -38,6 +39,8 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $guestPassSession = app(GuestPassSession::class);
+        $guestPass = $request->user()?->is_admin ? null : $guestPassSession->current($request);
 
         return array_merge(parent::share($request), [
             'name' => config('app.name'),
@@ -45,6 +48,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user()?->append(['avatar_url', 'has_custom_avatar', 'is_admin']),
             ],
+            'guestPass' => $guestPassSession->sharedPayload($guestPass),
             'cms' => app(ContentService::class)->sharedPayload(),
         ]);
     }

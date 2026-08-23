@@ -3,6 +3,7 @@ import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { type ReactNode, useEffect, useState } from 'react';
 import CyberFooter from './cyber/footer';
+import GuestPassBanner from './cyber/guest-pass-banner';
 import LetterGlitchBackground from './cyber/letter-glitch-background';
 import CyberSidebar from './cyber/sidebar';
 import CyberTopbar from './cyber/topbar';
@@ -14,7 +15,7 @@ type CyberShellProps = {
 const sidebarStorageKey = 'foray.sidebar.open';
 
 export default function CyberShell({ children }: CyberShellProps) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, guestPass } = usePage<SharedData>().props;
     const { url } = usePage();
     const { optimisticHref } = useInstantNavigation();
     const currentUrl = optimisticHref ?? url;
@@ -59,16 +60,26 @@ export default function CyberShell({ children }: CyberShellProps) {
                 currentUrl={currentUrl}
                 isOpen={isSidebarOpen}
                 user={auth.user}
+                guestPass={guestPass}
                 onClose={() => setSidebarOpen(false)}
                 onOpen={() => setSidebarOpen(true)}
             />
 
             <div className={`flex min-h-screen flex-col transition-all duration-300 ${isSidebarOpen ? 'md:pl-64' : 'md:pl-20'}`}>
-                <CyberTopbar currentUrl={currentUrl} isSidebarOpen={isSidebarOpen} user={auth.user} onOpenSidebar={() => setSidebarOpen(true)} />
+                <CyberTopbar
+                    currentUrl={currentUrl}
+                    isSidebarOpen={isSidebarOpen}
+                    user={auth.user}
+                    guestPass={guestPass}
+                    onOpenSidebar={() => setSidebarOpen(true)}
+                />
 
                 <main className="relative w-full flex-1 overflow-hidden">
                     <LetterGlitchBackground />
-                    <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 px-4 py-6 sm:p-8">{children}</div>
+                    <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 px-4 py-6 sm:p-8">
+                        {guestPass && <GuestPassBanner guestPass={guestPass} />}
+                        {children}
+                    </div>
                 </main>
 
                 <CyberFooter />

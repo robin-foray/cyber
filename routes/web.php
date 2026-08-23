@@ -4,24 +4,40 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DevTools\HashGeneratorController;
 use App\Http\Controllers\DevTools\PhpSyntaxCheckerController;
 use App\Http\Controllers\FreeApiController;
+use App\Http\Controllers\GuestPassController;
 use App\Http\Controllers\MachineGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TechStackController;
 use App\Http\Controllers\UsefulSiteController;
 use App\Http\Controllers\WelcomeController;
+use App\Services\GuestPassSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function (Request $request) {
-    if ($request->user()) {
+    if ($request->user()?->is_admin) {
+        return app(WelcomeController::class)->index();
+    }
+
+    if (app(GuestPassSession::class)->current($request)) {
         return app(WelcomeController::class)->index();
     }
 
     return app(AuthenticatedSessionController::class)->create($request);
 })->name('home');
 
-Route::middleware(['auth'])->group(function () {
+Route::get('pass/{token}', [GuestPassController::class, 'redeem'])
+    ->middleware('throttle:10,1')
+    ->name('guest-pass.redeem');
+
+Route::post('guest-pass/logout', [GuestPassController::class, 'logout'])
+    ->name('guest-pass.logout');
+
+Route::get('media/guest-pass/{guestPass}', [GuestPassController::class, 'avatar'])
+    ->name('guest-pass.avatar');
+
+Route::middleware(['site.access'])->group(function () {
     Route::get('machines', [MachineGalleryController::class, 'index'])->name('machines.index');
     Route::get('tech-stack', [TechStackController::class, 'index'])->name('tech-stack.index');
     Route::get('useful-sites', [UsefulSiteController::class, 'index'])->name('useful-sites.index');
@@ -67,7 +83,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dev-tools/sql-builder', function () {
         return Inertia::render('dev-tools/sql-builder');
     })->name('dev-tools.sql-builder');
+});
 
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

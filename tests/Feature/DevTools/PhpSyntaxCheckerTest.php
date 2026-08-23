@@ -14,7 +14,7 @@ class PhpSyntaxCheckerTest extends TestCase
     {
         $this->postJson(route('dev-tools.php-syntax-checker.lint'), [
             'code' => "<?php\n\nreturn ['status' => 'ok'];",
-        ])->assertUnauthorized();
+        ])->assertRedirect(route('home'));
     }
 
     public function test_lint_endpoint_accepts_valid_php(): void
