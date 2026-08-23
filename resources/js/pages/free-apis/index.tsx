@@ -1,4 +1,11 @@
 import CategoryChip from '@/components/cyber/category-chip';
+import {
+    formatProbeBody,
+    probeStatusLabel,
+    probeStatusTone,
+    type FreeApiProbeResult,
+} from '@/lib/free-api-probe';
+import { buildDemoPreviewFromProbe, type FreeApiDemoPreview } from '@/lib/free-api-demo';
 import { Head, router } from '@inertiajs/react';
 import {
     BookOpen,
@@ -11,11 +18,13 @@ import {
     ExternalLink,
     Globe,
     GraduationCap,
+    LoaderCircle,
     Map,
     MessageSquare,
     Network,
     Package,
     PawPrint,
+    Play,
     Rocket,
     Search,
     Smile,
@@ -36,6 +45,12 @@ type Category = {
     apis_count?: number;
 };
 
+type ApiExample = {
+    label: string;
+    endpoint: string;
+    hint: string | null;
+};
+
 type ApiItem = {
     id: number;
     name: string;
@@ -43,6 +58,7 @@ type ApiItem = {
     url: string;
     base_url: string | null;
     sample_endpoint: string | null;
+    examples: ApiExample[];
     summary: string | null;
     auth: string;
     https: boolean;
@@ -107,6 +123,11 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
     const [authFilter, setAuthFilter] = useState<(typeof authFilters)[number]['value']>('all');
     const [corsOnly, setCorsOnly] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [probeEndpoint, setProbeEndpoint] = useState('');
+    const [activeExample, setActiveExample] = useState<string | null>(null);
+    const [probeLoading, setProbeLoading] = useState(false);
+    const [probeError, setProbeError] = useState('');
+    const [probeResult, setProbeResult] = useState<FreeApiProbeResult | null>(null);
 
     const filtered = useMemo(() => {
         const needle = query.trim().toLowerCase();
@@ -153,6 +174,60 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
         detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, [selectedId]);
 
+    useEffect(() => {
+        if (!selected) {
+            setProbeEndpoint('');
+            setActiveExample(null);
+            setProbeResult(null);
+            setProbeError('');
+            setProbeLoading(false);
+
+            return;
+        }
+
+        const first = selected.examples[0];
+        const nextEndpoint = first?.endpoint ?? selected.sample_endpoint ?? '';
+        const selectedSlug = selected.slug;
+
+        setProbeEndpoint(nextEndpoint);
+        setActiveExample(first?.label ?? null);
+        setProbeResult(null);
+        setProbeError('');
+
+        if (!nextEndpoint) {
+            setProbeLoading(false);
+
+            return;
+        }
+
+        let cancelled = false;
+        setProbeLoading(true);
+
+        void postJson(route('free-apis.probe'), {
+            slug: selectedSlug,
+            endpoint: nextEndpoint,
+        })
+            .then((result) => {
+                if (!cancelled) {
+                    setProbeResult(result as FreeApiProbeResult);
+                }
+            })
+            .catch((exception) => {
+                if (!cancelled) {
+                    setProbeError(exception instanceof Error ? exception.message : 'Live probe failed');
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setProbeLoading(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selected?.id]);
+
     function selectCategory(slug: string | null) {
         router.get(
             '/free-apis',
@@ -171,6 +246,41 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
         }
     }
 
+    async function runLiveProbe(endpointOverride?: string) {
+        if (!selected) {
+            return;
+        }
+
+        const endpoint = (endpointOverride ?? probeEndpoint).trim();
+
+        setProbeLoading(true);
+        setProbeError('');
+        setProbeResult(null);
+
+        try {
+            const result = await postJson(route('free-apis.probe'), {
+                slug: selected.slug,
+                endpoint: endpoint || null,
+            });
+
+            setProbeResult(result as FreeApiProbeResult);
+        } catch (exception) {
+            setProbeError(exception instanceof Error ? exception.message : 'Live probe failed');
+        } finally {
+            setProbeLoading(false);
+        }
+    }
+
+    function runExample(example: ApiExample) {
+        setActiveExample(example.label);
+        setProbeEndpoint(example.endpoint);
+        void runLiveProbe(example.endpoint);
+    }
+
+    const demoPreview: FreeApiDemoPreview | null = probeResult?.parsed
+        ? buildDemoPreviewFromProbe(probeResult.parsed)
+        : null;
+
     return (
         <>
             <Head title="Free APIs" />
@@ -184,7 +294,7 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
                                 FREE_API_REGISTRY
                             </div>
                             <p className="max-w-2xl text-sm text-on-surface-variant">
-                                Curated free public APIs — filter by layer, auth and CORS. Inspect samples, copy endpoints, open docs.
+                                Curated free public APIs — filter by layer, auth and CORS. Run live probes in-panel, copy endpoints, open docs.
                                 Source inspiration:{' '}
                                 <a
                                     href="https://free-apis.github.io/#/browse"
@@ -359,16 +469,48 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
                                     </div>
                                 )}
 
+                                {selected.examples.length > 0 && (
+                                    <div>
+                                        <p className="mb-2 text-[10px] font-bold tracking-widest text-primary uppercase">Try examples</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {selected.examples.map((example) => {
+                                                const isActive = activeExample === example.label;
+
+                                                return (
+                                                    <button
+                                                        key={`${example.label}:${example.endpoint}`}
+                                                        type="button"
+                                                        title={example.hint ?? example.endpoint}
+                                                        onClick={() => runExample(example)}
+                                                        className={`max-w-full truncate rounded-lg border px-2.5 py-1.5 text-[9px] font-bold tracking-widest uppercase transition ${
+                                                            isActive
+                                                                ? 'border-primary bg-primary text-black'
+                                                                : 'border-primary/25 bg-black/35 text-primary hover:border-primary/50 hover:bg-primary/10'
+                                                        }`}
+                                                    >
+                                                        {example.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {activeExample && selected.examples.find((example) => example.label === activeExample)?.hint && (
+                                            <p className="mt-2 text-[10px] leading-relaxed text-on-surface-variant/80">
+                                                {selected.examples.find((example) => example.label === activeExample)?.hint}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+
                                 {selected.sample_endpoint && (
                                     <div>
                                         <p className="mb-1 text-[10px] font-bold tracking-widest text-primary uppercase">Sample</p>
                                         <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-black/35 p-2">
                                             <p className="min-w-0 flex-1 break-all font-mono text-[10px] leading-relaxed text-on-surface-variant">
-                                                {selected.sample_endpoint}
+                                                {probeEndpoint || selected.sample_endpoint}
                                             </p>
                                             <button
                                                 type="button"
-                                                onClick={() => copySample(selected.sample_endpoint!)}
+                                                onClick={() => copySample(probeEndpoint || selected.sample_endpoint!)}
                                                 className="shrink-0 rounded-lg border border-primary/25 p-2 text-primary transition hover:bg-primary/10"
                                                 aria-label="Copy sample endpoint"
                                             >
@@ -377,6 +519,64 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
                                         </div>
                                     </div>
                                 )}
+
+                                <div className="space-y-3 rounded-2xl border border-primary/15 bg-black/30 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <p className="text-[10px] font-bold tracking-widest text-primary uppercase">Live Demo</p>
+                                        {probeResult && (
+                                            <span className={`rounded-lg px-2 py-1 text-[9px] font-bold tracking-widest uppercase ${probeToneClass(probeResult)}`}>
+                                                {probeStatusLabel(probeResult)} // {probeResult.duration_ms}ms
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <label className="block space-y-1">
+                                        <span className="text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">Endpoint</span>
+                                        <input
+                                            type="url"
+                                            value={probeEndpoint}
+                                            onChange={(event) => setProbeEndpoint(event.target.value)}
+                                            placeholder="https://…"
+                                            className="w-full rounded-xl border border-primary/20 bg-black/45 px-3 py-2.5 font-mono text-base text-on-surface outline-none placeholder:text-on-surface-variant/40 focus:border-primary/50 sm:text-[11px]"
+                                        />
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => runLiveProbe()}
+                                        disabled={probeLoading || !probeEndpoint.trim()}
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary px-4 py-2.5 text-[10px] font-bold tracking-widest text-black uppercase transition hover:shadow-[0_0_18px_rgba(204,255,0,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {probeLoading ? <LoaderCircle size={14} className="animate-spin" /> : <Play size={14} />}
+                                        {probeLoading ? 'Probing…' : 'Run Live Probe'}
+                                    </button>
+
+                                    {probeError && (
+                                        <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-[11px] text-red-300">
+                                            {probeError}
+                                        </p>
+                                    )}
+
+                                    {demoPreview && <DemoPreviewCard preview={demoPreview} />}
+
+                                    {probeResult && (
+                                        <div className="space-y-2">
+                                            <div className="flex flex-wrap gap-2 text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">
+                                                {probeResult.content_type && <span>{probeResult.content_type}</span>}
+                                                {probeResult.truncated && <span className="text-amber-300">TRUNCATED</span>}
+                                            </div>
+                                            <pre className="max-h-56 overflow-auto rounded-xl border border-white/5 bg-black/45 p-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap text-on-surface-variant">
+                                                {formatProbeBody(probeResult)}
+                                            </pre>
+                                        </div>
+                                    )}
+
+                                    {!probeResult && !probeError && !probeLoading && (
+                                        <p className="text-[10px] leading-relaxed text-on-surface-variant/70">
+                                            Pick an example chip or run a probe — Foray fetches server-side (no CORS) and renders a demo card + raw JSON.
+                                        </p>
+                                    )}
+                                </div>
 
                                 <div className="flex flex-wrap gap-2">
                                     <a
@@ -415,4 +615,76 @@ function Badge({ label }: { label: string }) {
             {label}
         </span>
     );
+}
+
+function DemoPreviewCard({ preview }: { preview: FreeApiDemoPreview }) {
+    return (
+        <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
+            <p className="text-[9px] font-bold tracking-widest text-primary uppercase">Demo preview</p>
+            {preview.imageUrl && (
+                <img
+                    src={preview.imageUrl}
+                    alt=""
+                    className="max-h-48 w-full rounded-lg border border-primary/15 object-cover"
+                />
+            )}
+            {(preview.title || preview.subtitle) && (
+                <div>
+                    {preview.title && <p className="font-display text-lg font-bold text-white uppercase">{preview.title}</p>}
+                    {preview.subtitle && (
+                        <p className="mt-0.5 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">{preview.subtitle}</p>
+                    )}
+                </div>
+            )}
+            {preview.body && <p className="whitespace-pre-wrap text-sm leading-relaxed text-on-surface-variant">{preview.body}</p>}
+            {preview.facts.length > 0 && (
+                <div className="grid grid-cols-2 gap-2">
+                    {preview.facts.map((fact) => (
+                        <div key={`${fact.label}:${fact.value}`} className="rounded-lg border border-white/5 bg-black/35 px-2.5 py-2">
+                            <p className="text-[8px] font-bold tracking-widest text-primary uppercase">{fact.label}</p>
+                            <p className="mt-1 break-words font-mono text-[11px] text-on-surface">{fact.value}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function probeToneClass(result: FreeApiProbeResult): string {
+    switch (probeStatusTone(result)) {
+        case 'ok':
+            return 'border border-primary/30 bg-primary/15 text-primary';
+        case 'warn':
+            return 'border border-amber-400/30 bg-amber-400/10 text-amber-200';
+        default:
+            return 'border border-red-500/30 bg-red-500/10 text-red-300';
+    }
+}
+
+async function postJson(url: string, payload: Record<string, unknown>) {
+    const token = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message =
+            data?.message ||
+            Object.values(data?.errors ?? {})
+                .flat()
+                .join(' ') ||
+            'Request failed';
+        throw new Error(message);
+    }
+
+    return data;
 }

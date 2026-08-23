@@ -10,4 +10,8 @@ return [
         'avatar_seed' => env('FORAY_ADMIN_AVATAR_SEED', 'robin-foray'),
     ],
 
+    'qr' => [
+        'public_base_url' => env('FORAY_QR_PUBLIC_BASE_URL', env('APP_URL', 'http://localhost')),
+    ],
+
 ];

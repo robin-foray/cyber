@@ -1,18 +1,24 @@
 import CategoryChip from '@/components/cyber/category-chip';
 import { Head, router } from '@inertiajs/react';
 import {
+    BookOpen,
     Box,
     Braces,
     Code2,
     ExternalLink,
     Film,
     Globe,
+    GraduationCap,
     Image,
     Layers,
     LayoutGrid,
     Link2,
+    Map,
     Package,
     PenTool,
+    Shield,
+    Terminal,
+    Zap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -55,6 +61,12 @@ const iconMap: Record<string, ReactNode> = {
     code: <Code2 size={22} />,
     braces: <Braces size={22} />,
     link: <Link2 size={22} />,
+    book: <BookOpen size={22} />,
+    map: <Map size={22} />,
+    graduation: <GraduationCap size={22} />,
+    terminal: <Terminal size={22} />,
+    shield: <Shield size={22} />,
+    zap: <Zap size={22} />,
 };
 
 export default function UsefulSitesIndex({ categories = [], sites = [], activeCategory = null }: Props) {

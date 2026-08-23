@@ -42,6 +42,17 @@ class CatalogSeederTest extends TestCase
         $this->seed(UsefulSiteSeeder::class);
 
         $this->assertGreaterThanOrEqual(1, UsefulSite::query()->where('is_active', true)->count());
+        $this->assertDatabaseHas('useful_sites', [
+            'slug' => 'public-apis',
+            'url' => 'https://github.com/public-apis/public-apis',
+            'is_active' => true,
+        ]);
+        $this->assertDatabaseHas('useful_site_categories', [
+            'slug' => 'github-essentials',
+        ]);
+        $this->assertGreaterThanOrEqual(12, UsefulSite::query()->whereHas('category', function ($query): void {
+            $query->where('slug', 'github-essentials');
+        })->count());
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('useful-sites.index'))
             ->assertOk();

@@ -56,6 +56,8 @@ class FreeApisPageTest extends TestCase
                 ->where('apis.0.name', 'JSONPlaceholder')
                 ->where('apis.0.auth', 'none')
                 ->where('apis.0.host', 'jsonplaceholder.typicode.com')
+                ->where('apis.0.examples.0.label', 'Default sample')
+                ->where('apis.0.examples.0.endpoint', 'https://jsonplaceholder.typicode.com/posts/1')
             );
     }
 
@@ -124,13 +126,27 @@ class FreeApisPageTest extends TestCase
     {
         $this->seed(FreeApiSeeder::class);
 
-        $this->assertGreaterThanOrEqual(8, FreeApiCategory::query()->count());
-        $this->assertGreaterThanOrEqual(20, FreeApi::query()->where('is_active', true)->count());
+        $this->assertGreaterThanOrEqual(13, FreeApiCategory::query()->count());
+        $this->assertGreaterThanOrEqual(45, FreeApi::query()->where('is_active', true)->count());
+        $this->assertDatabaseHas('free_apis', [
+            'slug' => 'public-apis',
+            'auth' => 'none',
+            'cors' => true,
+        ]);
         $this->assertDatabaseHas('free_apis', [
             'slug' => 'open-meteo',
             'auth' => 'none',
             'cors' => true,
         ]);
+        $this->assertDatabaseHas('free_api_categories', [
+            'slug' => 'anime',
+        ]);
+
+        $dog = FreeApi::query()->where('slug', 'dog-api')->first();
+        $this->assertNotNull($dog);
+        $this->assertIsArray($dog->examples);
+        $this->assertGreaterThanOrEqual(2, count($dog->examples));
+        $this->assertSame('Random dog', $dog->examples[0]['label'] ?? null);
 
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('free-apis.index'))
