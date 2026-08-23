@@ -17,7 +17,6 @@ class QrLinkFactory extends Factory
     {
         return [
             'name' => fake()->words(2, true),
-            'slug' => fake()->unique()->slug(2),
             'destination_url' => fake()->url(),
             'notes' => fake()->optional()->sentence(),
             'scan_count' => 0,

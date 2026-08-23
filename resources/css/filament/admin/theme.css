@@ -8,3 +8,8 @@
 @source '../../../../vendor/alizharb/filament-activity-log/resources/**/*';
 @source '../../../../vendor/bezhansalleh/filament-google-analytics/resources/views/**/*';
 @source '../../../../vendor/bezhansalleh/filament-google-analytics/src/{Widgets,Support}/*';
+@source '../../../../vendor/bezhansalleh/filament-exceptions/resources/views/**/*';
+@source '../../../../vendor/croustibat/filament-jobs-monitor/resources/**/*';
+@source '../../../../vendor/pxlrbt/filament-environment-indicator/resources/**/*';
+@source '../../../../vendor/pxlrbt/filament-spotlight/resources/**/*';
+@source '../../../../vendor/wire-elements/spotlight/resources/**/*';

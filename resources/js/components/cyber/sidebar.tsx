@@ -53,7 +53,8 @@ export default function CyberSidebar({ currentUrl, isOpen, user, guestPass, onCl
         setIsCoolStuffOpen(open);
     }
 
-    const navigation = cms.navigation.filter((item) => !item.requiresAuth || user || guestPass);
+    // requiresAuth = logged-in admin only (guest pass must not see /qr-links etc.)
+    const navigation = cms.navigation.filter((item) => !item.requiresAuth || Boolean(user));
     let coolStuffRendered = false;
 
     function closeSidebarOnMobileNavigate() {

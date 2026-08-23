@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ImagePipeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -70,16 +70,16 @@ class ProfileController extends Controller
                 $this->deleteAvatarFile($user->avatar_path);
             }
 
-            // Writable storage disk (www-data); served via profile.avatar route.
-            $path = $request->file('avatar')->store('avatars', 'public');
+            $result = app(ImagePipeline::class)->storeOptimized(
+                $request->file('avatar'),
+                'avatars',
+                'public',
+                maxWidth: 512,
+                webpQuality: 80,
+                avifQuality: 50,
+            );
 
-            if ($path === false) {
-                throw ValidationException::withMessages([
-                    'avatar' => 'Avatar upload failed. Ensure storage/app/public is writable.',
-                ]);
-            }
-
-            $user->avatar_path = $path;
+            $user->avatar_path = $result['path'];
         }
 
         $user->fill([

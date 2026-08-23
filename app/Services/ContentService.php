@@ -20,7 +20,8 @@ class ContentService
 {
     public function sharedPayload(): array
     {
-        return Cache::remember('cms.shared', now()->addMinutes(5), function (): array {
+        // Flush-on-save keeps this fresh; longer TTL cuts Redis/DB churn under Octane.
+        return Cache::remember('cms.shared', now()->addMinutes(30), function (): array {
             return [
                 'navigation' => $this->navigation(),
                 'hero' => $this->hero(),

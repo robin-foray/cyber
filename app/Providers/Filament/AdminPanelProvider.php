@@ -10,7 +10,9 @@ use App\Filament\Widgets\RecentMachinesWidget;
 use App\Filament\Widgets\TechStacksMetricWidget;
 use App\Filament\Widgets\UsefulSitesMetricWidget;
 use Awcodes\StickyHeader\StickyHeaderPlugin;
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 use BezhanSalleh\GoogleAnalytics\GoogleAnalyticsPlugin;
+use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -26,6 +28,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use LaBoiteACode\FilamentDashboardWidgets\FilamentDashboardWidgetsPlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -48,6 +52,19 @@ class AdminPanelProvider extends PanelProvider
                 FilamentDashboardWidgetsPlugin::make(),
                 StickyHeaderPlugin::make()->floating()->colored(),
                 GoogleAnalyticsPlugin::make(),
+                EnvironmentIndicatorPlugin::make()
+                    ->visible(fn (): bool => auth()->user()?->is_admin === true)
+                    ->showGitBranch()
+                    ->showDebugModeWarningInProduction(),
+                SpotlightPlugin::make(),
+                FilamentJobsMonitorPlugin::make()
+                    ->enableNavigation(fn (): bool => auth()->user()?->is_admin === true)
+                    ->navigationGroup('Rendszer')
+                    ->navigationSort(85),
+                FilamentExceptionsPlugin::make()
+                    ->navigationGroup('Rendszer')
+                    ->navigationSort(88)
+                    ->navigationBadge(),
                 ActivityLogPlugin::make()
                     ->label('Log')
                     ->pluralLabel('Activity logs')

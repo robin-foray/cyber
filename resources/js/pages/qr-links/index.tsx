@@ -1,6 +1,6 @@
 import { generateQrCodeDataUrl } from '@/lib/qr-code';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, RefreshCw, Smartphone } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, Save, Smartphone, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type QrLinkItem = {
@@ -25,7 +25,6 @@ type Props = {
 export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
     const createForm = useForm({
         name: '',
-        slug: '',
         destination_url: 'https://',
         notes: '',
     });
@@ -43,13 +42,13 @@ export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
                                 DYNAMIC_QR_REGISTRY
                             </div>
                             <p className="max-w-2xl text-sm text-on-surface-variant">
-                                A nyomtatott QR mindig a Foray fix linkjére mutat ({publicBaseUrl}/q/slug). A cél URL-t
-                                bármikor cserélheted — a pólón lévő kód változatlan marad.
+                                Saját dinamikus QR kódjaid — más user nem látja. A nyomtatott QR fix hash URL-re mutat (
+                                {publicBaseUrl}/q/…). A célt, nevet és jegyzetet bármikor szerkesztheted.
                             </p>
                         </div>
                         <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
                             <div className="rounded-xl border border-primary/20 bg-black/40 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase">
-                                {links.length} active codes
+                                {links.length} codes
                             </div>
                             <Link
                                 href={route('qr-links.mobile')}
@@ -66,7 +65,7 @@ export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
                             event.preventDefault();
                             createForm.post(route('qr-links.store'), {
                                 preserveScroll: true,
-                                onSuccess: () => createForm.reset('name', 'slug', 'destination_url', 'notes'),
+                                onSuccess: () => createForm.reset('name', 'destination_url', 'notes'),
                             });
                         }}
                         className="grid gap-3 rounded-2xl border border-primary/15 bg-black/30 p-4 md:grid-cols-2"
@@ -82,21 +81,21 @@ export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
                             />
                         </label>
                         <label className="space-y-1">
-                            <span className="text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">Slug (opcionális)</span>
-                            <input
-                                value={createForm.data.slug}
-                                onChange={(event) => createForm.setData('slug', event.target.value)}
-                                placeholder="polo-2026"
-                                className="cyber-input w-full font-mono"
-                            />
-                        </label>
-                        <label className="md:col-span-2 space-y-1">
                             <span className="text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">Cél URL (ma)</span>
                             <input
                                 type="url"
                                 value={createForm.data.destination_url}
                                 onChange={(event) => createForm.setData('destination_url', event.target.value)}
                                 className="cyber-input w-full font-mono"
+                            />
+                        </label>
+                        <label className="md:col-span-2 space-y-1">
+                            <span className="text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">Jegyzet (opcionális)</span>
+                            <input
+                                value={createForm.data.notes}
+                                onChange={(event) => createForm.setData('notes', event.target.value)}
+                                placeholder="Hol van nyomtatva / kinek adtuk"
+                                className="cyber-input w-full"
                             />
                         </label>
                         <div className="md:col-span-2 flex justify-end">
@@ -126,7 +125,10 @@ export default function QrLinksIndex({ links = [], publicBaseUrl }: Props) {
 
 function QrLinkCard({ link }: { link: QrLinkItem }) {
     const updateForm = useForm({
+        name: link.name,
         destination_url: link.destination_url,
+        notes: link.notes ?? '',
+        is_active: link.is_active,
     });
     const [qrDataUrl, setQrDataUrl] = useState('');
     const [copied, setCopied] = useState(false);
@@ -150,16 +152,23 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
 
         const anchor = document.createElement('a');
         anchor.href = qrDataUrl;
-        anchor.download = `${link.slug}-dynamic-qr.png`;
+        anchor.download = `qr-${link.slug}.png`;
         anchor.click();
+    }
+
+    function deleteLink() {
+        if (!window.confirm(`Törlöd a „${link.name}” QR linket? A hash URL azonnal érvénytelen lesz.`)) {
+            return;
+        }
+
+        router.delete(route('qr-links.destroy', link.id), { preserveScroll: true });
     }
 
     return (
         <article className="rounded-3xl border border-primary/20 bg-surface-low/80 p-5 shadow-[0_0_28px_rgba(204,255,0,0.08)]">
             <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <p className="text-[10px] font-bold tracking-widest text-primary uppercase">{link.slug}</p>
-                    <h2 className="font-display mt-1 text-2xl font-bold uppercase">{link.name}</h2>
+                <div className="min-w-0">
+                    <p className="font-mono text-[10px] font-bold tracking-widest text-primary uppercase">{link.slug}</p>
                     <p className="mt-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                         {link.scan_count} scans {link.last_scanned_at ? `// last ${new Date(link.last_scanned_at).toLocaleString()}` : ''}
                     </p>
@@ -175,7 +184,7 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
 
             <div className="mt-4 space-y-3">
                 <div>
-                    <p className="mb-1 text-[10px] font-bold tracking-widest text-primary uppercase">Fix QR URL</p>
+                    <p className="mb-1 text-[10px] font-bold tracking-widest text-primary uppercase">Fix QR URL (hash)</p>
                     <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-black/35 p-2">
                         <p className="min-w-0 flex-1 break-all font-mono text-[10px] text-on-surface-variant">{link.public_url}</p>
                         <button type="button" onClick={copyPublicUrl} className="shrink-0 rounded-lg border border-primary/25 p-2 text-primary">
@@ -192,6 +201,14 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                     className="space-y-2"
                 >
                     <label className="block space-y-1">
+                        <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Név</span>
+                        <input
+                            value={updateForm.data.name}
+                            onChange={(event) => updateForm.setData('name', event.target.value)}
+                            className="cyber-input w-full"
+                        />
+                    </label>
+                    <label className="block space-y-1">
                         <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Aktuális cél URL</span>
                         <input
                             type="url"
@@ -200,10 +217,27 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                             className="cyber-input w-full font-mono text-[11px]"
                         />
                     </label>
+                    <label className="block space-y-1">
+                        <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Jegyzet</span>
+                        <input
+                            value={updateForm.data.notes}
+                            onChange={(event) => updateForm.setData('notes', event.target.value)}
+                            className="cyber-input w-full"
+                        />
+                    </label>
+                    <label className="flex items-center gap-2 py-1">
+                        <input
+                            type="checkbox"
+                            checked={updateForm.data.is_active}
+                            onChange={(event) => updateForm.setData('is_active', event.target.checked)}
+                            className="size-4 accent-primary"
+                        />
+                        <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Aktív (redirect engedélyezve)</span>
+                    </label>
                     <div className="flex flex-wrap gap-2">
                         <button type="submit" disabled={updateForm.processing} className="cyber-tool-button inline-flex items-center gap-2">
-                            <RefreshCw size={14} />
-                            Update destination
+                            <Save size={14} />
+                            Mentés
                         </button>
                         <button type="button" onClick={downloadQr} className="cyber-tool-button inline-flex items-center gap-2">
                             <Download size={14} />
@@ -217,6 +251,14 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                             <Link2 size={14} />
                             Open target
                         </a>
+                        <button
+                            type="button"
+                            onClick={deleteLink}
+                            className="cyber-tool-button inline-flex items-center gap-2 border-red-500/40 text-red-300"
+                        >
+                            <Trash2 size={14} />
+                            Törlés
+                        </button>
                     </div>
                 </form>
             </div>

@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('qr-links/mobile', [QrLinkController::class, 'mobile'])->name('qr-links.mobile');
     Route::post('qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
     Route::patch('qr-links/{qrLink}', [QrLinkController::class, 'update'])->name('qr-links.update');
+    Route::delete('qr-links/{qrLink}', [QrLinkController::class, 'destroy'])->name('qr-links.destroy');
 
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');

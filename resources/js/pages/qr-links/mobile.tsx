@@ -1,6 +1,6 @@
 import { generateQrCodeDataUrl } from '@/lib/qr-code';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { Check, ChevronRight, Copy, ExternalLink, Monitor, QrCode, RefreshCw, Share2 } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Check, ChevronRight, Copy, ExternalLink, Monitor, Plus, QrCode, Save, Share2, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 
 type QrLinkItem = {
@@ -24,12 +24,14 @@ type Props = {
 
 export default function QrLinksMobile({ links = [], publicBaseUrl }: Props) {
     const [selectedId, setSelectedId] = useState<number | null>(links[0]?.id ?? null);
+    const [showCreate, setShowCreate] = useState(links.length === 0);
     const detailRef = useRef<HTMLElement>(null);
     const selectedLink = links.find((link) => link.id === selectedId) ?? null;
 
     useEffect(() => {
         if (links.length === 0) {
             setSelectedId(null);
+            setShowCreate(true);
 
             return;
         }
@@ -40,6 +42,7 @@ export default function QrLinksMobile({ links = [], publicBaseUrl }: Props) {
     }, [links, selectedId]);
 
     function selectLink(id: number) {
+        setShowCreate(false);
         setSelectedId(id);
         window.requestAnimationFrame(() => {
             detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -58,10 +61,10 @@ export default function QrLinksMobile({ links = [], publicBaseUrl }: Props) {
                                 <QrCode size={16} className="shrink-0" />
                                 QR_MOBILE
                             </div>
-                            <h1 className="font-display text-xl font-bold text-white uppercase">Gyors cél URL</h1>
+                            <h1 className="font-display text-xl font-bold text-white uppercase">Gyors szerkesztés</h1>
                             <p className="mt-1 text-sm leading-relaxed text-on-surface-variant">
-                                Telefonról állítsd be, hova mutasson a nyomtatott QR ma. A fix link:{' '}
-                                <span className="font-mono text-primary">{publicBaseUrl}/q/slug</span>
+                                Saját QR kódjaid — csak te látod és szerkesztheted. Fix link:{' '}
+                                <span className="font-mono text-primary">{publicBaseUrl}/q/…</span>
                             </p>
                         </div>
                         <Link
@@ -72,9 +75,19 @@ export default function QrLinksMobile({ links = [], publicBaseUrl }: Props) {
                             Desktop
                         </Link>
                     </div>
+                    {links.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setShowCreate((open) => !open)}
+                            className="cyber-tool-button inline-flex w-full items-center justify-center gap-2 py-2.5 text-xs"
+                        >
+                            <Plus size={14} />
+                            {showCreate ? 'Lista vissza' : 'Új QR'}
+                        </button>
+                    )}
                 </div>
 
-                {links.length === 0 ? (
+                {showCreate || links.length === 0 ? (
                     <MobileCreateForm />
                 ) : (
                     <>
@@ -117,7 +130,6 @@ export default function QrLinksMobile({ links = [], publicBaseUrl }: Props) {
 function MobileCreateForm() {
     const createForm = useForm({
         name: '',
-        slug: '',
         destination_url: 'https://',
         notes: '',
     });
@@ -128,12 +140,12 @@ function MobileCreateForm() {
                 event.preventDefault();
                 createForm.post(route('qr-links.store'), {
                     preserveScroll: true,
-                    onSuccess: () => createForm.reset('name', 'slug', 'destination_url', 'notes'),
+                    onSuccess: () => createForm.reset('name', 'destination_url', 'notes'),
                 });
             }}
             className="space-y-3 rounded-2xl border border-primary/15 bg-black/35 p-4"
         >
-            <p className="text-[10px] font-bold tracking-widest text-primary uppercase">Első dinamikus QR</p>
+            <p className="text-[10px] font-bold tracking-widest text-primary uppercase">Új dinamikus QR</p>
             <label className="block space-y-1">
                 <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Név</span>
                 <input
@@ -167,7 +179,10 @@ function MobileLinkEditor({
     detailRef: RefObject<HTMLElement | null>;
 }) {
     const updateForm = useForm({
+        name: link.name,
         destination_url: link.destination_url,
+        notes: link.notes ?? '',
+        is_active: link.is_active,
     });
     const [qrDataUrl, setQrDataUrl] = useState('');
     const [copied, setCopied] = useState(false);
@@ -203,6 +218,14 @@ function MobileLinkEditor({
         }
     }
 
+    function deleteLink() {
+        if (!window.confirm(`Törlöd a „${link.name}” QR linket?`)) {
+            return;
+        }
+
+        router.delete(route('qr-links.destroy', link.id), { preserveScroll: true });
+    }
+
     return (
         <article ref={detailRef} className="scroll-mt-24 space-y-4 rounded-2xl border border-primary/20 bg-surface-low/80 p-4">
             <div className="flex flex-col items-center gap-3">
@@ -213,6 +236,7 @@ function MobileLinkEditor({
                         <QrCode size={48} />
                     </div>
                 )}
+                <p className="text-center font-mono text-[11px] text-primary">{link.slug}</p>
                 <p className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                     {link.scan_count} scan {link.last_scanned_at ? `// ${new Date(link.last_scanned_at).toLocaleString()}` : ''}
                 </p>
@@ -242,6 +266,14 @@ function MobileLinkEditor({
                 className="space-y-3"
             >
                 <label className="block space-y-1.5">
+                    <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Név</span>
+                    <input
+                        value={updateForm.data.name}
+                        onChange={(event) => updateForm.setData('name', event.target.value)}
+                        className="cyber-input w-full text-base"
+                    />
+                </label>
+                <label className="block space-y-1.5">
                     <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Ma hova mutasson?</span>
                     <input
                         type="url"
@@ -252,6 +284,23 @@ function MobileLinkEditor({
                         className="cyber-input w-full font-mono text-base"
                     />
                 </label>
+                <label className="block space-y-1.5">
+                    <span className="text-[10px] font-bold tracking-widest text-primary uppercase">Jegyzet</span>
+                    <input
+                        value={updateForm.data.notes}
+                        onChange={(event) => updateForm.setData('notes', event.target.value)}
+                        className="cyber-input w-full text-base"
+                    />
+                </label>
+                <label className="flex items-center gap-2 py-1">
+                    <input
+                        type="checkbox"
+                        checked={updateForm.data.is_active}
+                        onChange={(event) => updateForm.setData('is_active', event.target.checked)}
+                        className="size-4 accent-primary"
+                    />
+                    <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Aktív</span>
+                </label>
 
                 <div className="fixed inset-x-0 bottom-0 z-30 border-t border-primary/20 bg-background/95 px-4 py-3 backdrop-blur-md">
                     <div className="mx-auto flex max-w-lg flex-col gap-2">
@@ -260,23 +309,31 @@ function MobileLinkEditor({
                             disabled={updateForm.processing}
                             className="cyber-tool-button inline-flex w-full items-center justify-center gap-2 py-3.5 text-sm"
                         >
-                            {saved ? <Check size={16} /> : <RefreshCw size={16} />}
-                            {saved ? 'Mentve' : 'Cél URL mentése'}
+                            {saved ? <Check size={16} /> : <Save size={16} />}
+                            {saved ? 'Mentve' : 'Mentés'}
                         </button>
-                        <div className="grid grid-cols-2 gap-2">
-                            <button type="button" onClick={sharePublicUrl} className="cyber-tool-button inline-flex items-center justify-center gap-2 py-2.5 text-xs">
+                        <div className="grid grid-cols-3 gap-2">
+                            <button type="button" onClick={sharePublicUrl} className="cyber-tool-button inline-flex items-center justify-center gap-1 py-2.5 text-[10px]">
                                 <Share2 size={14} />
-                                Megosztás
+                                Share
                             </button>
                             <a
                                 href={link.public_url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="cyber-tool-button inline-flex items-center justify-center gap-2 py-2.5 text-xs"
+                                className="cyber-tool-button inline-flex items-center justify-center gap-1 py-2.5 text-[10px]"
                             >
                                 <ExternalLink size={14} />
                                 Teszt
                             </a>
+                            <button
+                                type="button"
+                                onClick={deleteLink}
+                                className="cyber-tool-button inline-flex items-center justify-center gap-1 border-red-500/40 py-2.5 text-[10px] text-red-300"
+                            >
+                                <Trash2 size={14} />
+                                Törlés
+                            </button>
                         </div>
                     </div>
                 </div>

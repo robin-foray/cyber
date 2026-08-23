@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use App\Models\Concerns\LogsCmsActivity;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class QrLink extends Model
 {
     use HasFactory, LogsCmsActivity;
 
+    /** Opaque public token length (hex chars) — printed QR encodes /q/{slug}. */
+    public const HASH_LENGTH = 16;
+
     protected $fillable = [
         'name',
-        'slug',
         'destination_url',
         'notes',
         'scan_count',
@@ -37,7 +39,7 @@ class QrLink extends Model
     {
         static::creating(function (QrLink $link): void {
             if (blank($link->slug)) {
-                $link->slug = self::generateUniqueSlug($link->name);
+                $link->slug = self::generateUniqueHash();
             }
         });
     }
@@ -52,6 +54,20 @@ class QrLink extends Model
         return $this->hasMany(QrLinkScan::class);
     }
 
+    public function scopeOwnedBy(Builder $query, User|int|null $user): Builder
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $query->where('created_by', $userId);
+    }
+
+    public function isOwnedBy(User|int|null $user): bool
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return $this->created_by === $userId;
+    }
+
     public function getPublicUrlAttribute(): string
     {
         $base = rtrim((string) config('foray.qr.public_base_url'), '/');
@@ -64,22 +80,12 @@ class QrLink extends Model
         return 'https://quickchart.io/qr?size=320&margin=2&dark=ccff00&light=000000&text='.urlencode($this->public_url);
     }
 
-    public static function generateUniqueSlug(string $name): string
+    public static function generateUniqueHash(): string
     {
-        $base = Str::slug($name);
+        do {
+            $candidate = bin2hex(random_bytes(self::HASH_LENGTH / 2));
+        } while (self::query()->where('slug', $candidate)->exists());
 
-        if ($base === '') {
-            $base = 'link';
-        }
-
-        $candidate = $base;
-        $suffix = 1;
-
-        while (self::query()->where('slug', $candidate)->exists()) {
-            $candidate = $base.'-'.$suffix;
-            $suffix++;
-        }
-
-        return Str::limit($candidate, 64, '');
+        return $candidate;
     }
 }

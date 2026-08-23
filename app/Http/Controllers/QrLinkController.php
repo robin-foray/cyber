@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\QrLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,7 +30,7 @@ class QrLinkController extends Controller
     private function pageProps(Request $request): array
     {
         $links = QrLink::query()
-            ->where('created_by', $request->user()?->id)
+            ->ownedBy($request->user())
             ->orderByDesc('updated_at')
             ->get()
             ->map(fn (QrLink $link) => [
@@ -58,7 +57,6 @@ class QrLinkController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
-            'slug' => ['nullable', 'string', 'max:64', 'alpha_dash', Rule::unique('qr_links', 'slug')],
             'destination_url' => ['required', 'url', 'max:2048'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
@@ -68,13 +66,11 @@ class QrLinkController extends Controller
             'created_by' => $request->user()?->id,
         ]);
 
-        return redirect()->route('qr-links.index');
+        return back();
     }
 
     public function update(Request $request, QrLink $qrLink): RedirectResponse
     {
-        abort_unless($qrLink->created_by === $request->user()?->id, 403);
-
         $validated = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:120'],
             'destination_url' => ['sometimes', 'required', 'url', 'max:2048'],
@@ -84,6 +80,13 @@ class QrLinkController extends Controller
 
         $qrLink->update($validated);
 
-        return redirect()->route('qr-links.index');
+        return back();
+    }
+
+    public function destroy(Request $request, QrLink $qrLink): RedirectResponse
+    {
+        $qrLink->delete();
+
+        return back();
     }
 }

@@ -24,6 +24,7 @@ const lazyPages = import.meta.glob([
     '!./pages/tech-stack/index.tsx',
     '!./pages/useful-sites/index.tsx',
     '!./pages/free-apis/index.tsx',
+    '!./pages/qr-links/*.tsx',
     '!./pages/dev-tools/*.tsx',
 ]);
 const eagerCyberPages = import.meta.glob(
@@ -35,6 +36,7 @@ const eagerCyberPages = import.meta.glob(
         './pages/tech-stack/index.tsx',
         './pages/useful-sites/index.tsx',
         './pages/free-apis/index.tsx',
+        './pages/qr-links/*.tsx',
         './pages/dev-tools/*.tsx',
     ],
     {

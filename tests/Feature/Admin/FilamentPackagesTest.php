@@ -99,4 +99,17 @@ class FilamentPackagesTest extends TestCase
             ->assertOk()
             ->assertSee('App\\Filament\\Pages\\AnalyticsDashboard', false);
     }
+
+    public function test_admin_can_open_queue_monitors_and_exceptions(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get('/admin/queue-monitors')
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->get('/admin/exceptions')
+            ->assertOk();
+    }
 }

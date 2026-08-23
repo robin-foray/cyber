@@ -23,6 +23,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 
@@ -42,11 +43,12 @@ class QrLinkResource extends Resource
     {
         return $schema->components([
             TextInput::make('name')->required()->maxLength(120),
-            TextInput::make('slug')
-                ->maxLength(64)
-                ->alphaDash()
-                ->unique(ignoreRecord: true)
-                ->helperText('Üresen hagyva automatikusan generálódik. A nyomtatott QR mindig: {base}/q/{slug}'),
+            Placeholder::make('hash')
+                ->label('Fix QR hash')
+                ->content(fn (?QrLink $record): string => $record
+                    ? $record->slug.' — a nyomtatott QR URL nem változtatható'
+                    : 'Mentéskor automatikus 16 karakteres hash (pl. /q/a1b2c3d4e5f67890)')
+                ->columnSpanFull(),
             TextInput::make('destination_url')
                 ->label('Aktuális cél URL')
                 ->url()
@@ -58,7 +60,7 @@ class QrLinkResource extends Resource
                 ->label('Nyomtatható QR')
                 ->content(fn (?QrLink $record): HtmlString|string => $record
                     ? new HtmlString(self::previewHtml($record))
-                    : 'Mentés után jelenik meg a fix QR és a statikus URL.')
+                    : 'Mentés után jelenik meg a fix QR és a hash URL.')
                 ->columnSpanFull()
                 ->visible(fn (?QrLink $record): bool => $record !== null),
         ]);
@@ -69,7 +71,7 @@ class QrLinkResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('slug')->copyable(),
+                TextColumn::make('slug')->label('Hash')->copyable()->fontFamily('mono'),
                 TextColumn::make('destination_url')->limit(40)->url(fn (QrLink $record) => $record->destination_url, true),
                 TextColumn::make('scan_count')->label('Scan')->sortable(),
                 TextColumn::make('last_scanned_at')->since()->sortable(),
@@ -89,6 +91,11 @@ class QrLinkResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->ownedBy(Auth::id());
     }
 
     public static function getRelations(): array
