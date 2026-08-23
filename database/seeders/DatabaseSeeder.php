@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TechStackSeeder::class,
             UsefulSiteSeeder::class,
             FreeApiSeeder::class,
+            FamilyMailSeeder::class,
         ]);
     }
 }

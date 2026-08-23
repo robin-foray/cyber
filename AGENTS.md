@@ -96,9 +96,12 @@ Content is database-driven and shared via Inertia `cms` prop (see `ContentServic
 | Dev-tool oldalak | Dev-tool fejlécek, címek, minta input |
 | Oldal szekciók | PROJECTS / SYSTEM_LOGS anchor szekciók |
 | Oldal beállítások | Page titles, copyright, topbar labels, stacks copy |
+| Levelezőszerver / Családi emailek | Filament admin inventory for `@foray.hu` (Roundcube webmail is external) |
 
 Seed default content: `php artisan foray:install` (or `php artisan db:seed`)
 Default admin: `admin@foray.local` / `password` (override with `FORAY_ADMIN_*` in `.env`)
+
+Family mail ops: see `deploy/mail-server.md` (DNS, Mailcow/Postfix, webmail URL).
 
 Production: `php artisan foray:install --force` after `composer install --no-dev` and `npm run build`.
 
