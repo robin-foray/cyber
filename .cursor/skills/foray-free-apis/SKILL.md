@@ -10,8 +10,12 @@ description: Foray free public API registry. Use when editing free APIs, categor
 - Route: `GET /free-apis` (`free-apis.index`)
 - Filter: `?category={slug}` + client search / auth / CORS
 - Filament group: **Free APIs** (`FreeApiCategoryResource`, `FreeApiResource`)
-- Seeder: `FreeApiSeeder` (kurált lista, inspiráció: https://free-apis.github.io/#/browse)
+- Seeder: `FreeApiSeeder` (kurált lista, inspiráció: [public-apis/public-apis](https://github.com/public-apis/public-apis) + https://free-apis.github.io/#/browse)
 - Tests: `tests/Feature/FreeApis/FreeApisPageTest.php`
+
+## Public APIs expansion
+
+Seeder categories include **Anime**, **Games & Comics**, **News**, **Art & Design**, **Music** plus extras in existing groups. Notable entries sourced from public-apis: Public APIs (GitHub catalog), Jikan, Studio Ghibli, Open Trivia DB, Hacker News, Nominatim, OpenAlex, Radio Browser.
 
 ## Fields
 

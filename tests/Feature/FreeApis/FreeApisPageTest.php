@@ -124,12 +124,20 @@ class FreeApisPageTest extends TestCase
     {
         $this->seed(FreeApiSeeder::class);
 
-        $this->assertGreaterThanOrEqual(8, FreeApiCategory::query()->count());
-        $this->assertGreaterThanOrEqual(20, FreeApi::query()->where('is_active', true)->count());
+        $this->assertGreaterThanOrEqual(13, FreeApiCategory::query()->count());
+        $this->assertGreaterThanOrEqual(45, FreeApi::query()->where('is_active', true)->count());
+        $this->assertDatabaseHas('free_apis', [
+            'slug' => 'public-apis',
+            'auth' => 'none',
+            'cors' => true,
+        ]);
         $this->assertDatabaseHas('free_apis', [
             'slug' => 'open-meteo',
             'auth' => 'none',
             'cors' => true,
+        ]);
+        $this->assertDatabaseHas('free_api_categories', [
+            'slug' => 'anime',
         ]);
 
         $this->actingAs(User::factory()->admin()->create())
