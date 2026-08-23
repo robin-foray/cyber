@@ -41,7 +41,7 @@ class FreeApiProbeTest extends TestCase
     public function test_guests_cannot_probe_free_apis(): void
     {
         $this->postJson(route('free-apis.probe'), ['slug' => 'dog-api'])
-            ->assertUnauthorized();
+            ->assertRedirect(route('home'));
     }
 
     public function test_probe_returns_upstream_json_for_catalog_entry(): void
