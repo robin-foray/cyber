@@ -1,7 +1,7 @@
-import { generateQrCodeDataUrl } from '@/lib/qr-code';
+import { QrStylePicker, useQrLinkPreview } from '@/components/cyber/qr-style-picker';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, Save, Smartphone, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type QrLinkItem = {
     id: number;
@@ -130,14 +130,8 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
         notes: link.notes ?? '',
         is_active: link.is_active,
     });
-    const [qrDataUrl, setQrDataUrl] = useState('');
+    const { styleId, selectStyle, qrDataUrl, styleLabel } = useQrLinkPreview(link.public_url, link.id, 240);
     const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        generateQrCodeDataUrl(link.public_url, { width: 240, margin: 2 })
-            .then(setQrDataUrl)
-            .catch(() => setQrDataUrl(''));
-    }, [link.public_url]);
 
     async function copyPublicUrl() {
         await navigator.clipboard.writeText(link.public_url);
@@ -150,9 +144,10 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
             return;
         }
 
+        const extension = qrDataUrl.startsWith('data:image/svg') ? 'svg' : 'png';
         const anchor = document.createElement('a');
         anchor.href = qrDataUrl;
-        anchor.download = `qr-${link.slug}.png`;
+        anchor.download = `qr-${link.slug}-${styleId}.${extension}`;
         anchor.click();
     }
 
@@ -172,6 +167,7 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                     <p className="mt-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                         {link.scan_count} scans {link.last_scanned_at ? `// last ${new Date(link.last_scanned_at).toLocaleString()}` : ''}
                     </p>
+                    <p className="mt-1 text-[9px] font-bold tracking-widest text-on-surface-variant/70 uppercase">style // {styleLabel}</p>
                 </div>
                 {qrDataUrl ? (
                     <img src={qrDataUrl} alt="" className="h-32 w-32 rounded-xl border border-primary/20 bg-black" />
@@ -192,6 +188,8 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                         </button>
                     </div>
                 </div>
+
+                <QrStylePicker value={styleId} onChange={selectStyle} />
 
                 <form
                     onSubmit={(event) => {

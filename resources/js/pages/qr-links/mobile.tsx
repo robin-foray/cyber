@@ -1,6 +1,6 @@
-import { generateQrCodeDataUrl } from '@/lib/qr-code';
+import { QrStylePicker, useQrLinkPreview } from '@/components/cyber/qr-style-picker';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Check, ChevronRight, Copy, ExternalLink, Monitor, Plus, QrCode, Save, Share2, Trash2 } from 'lucide-react';
+import { Check, ChevronRight, Copy, Download, ExternalLink, Monitor, Plus, QrCode, Save, Share2, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 
 type QrLinkItem = {
@@ -184,15 +184,9 @@ function MobileLinkEditor({
         notes: link.notes ?? '',
         is_active: link.is_active,
     });
-    const [qrDataUrl, setQrDataUrl] = useState('');
+    const { styleId, selectStyle, qrDataUrl, styleLabel } = useQrLinkPreview(link.public_url, link.id, 280);
     const [copied, setCopied] = useState(false);
     const [saved, setSaved] = useState(false);
-
-    useEffect(() => {
-        generateQrCodeDataUrl(link.public_url, { width: 280, margin: 2 })
-            .then(setQrDataUrl)
-            .catch(() => setQrDataUrl(''));
-    }, [link.public_url]);
 
     async function copyPublicUrl() {
         await navigator.clipboard.writeText(link.public_url);
@@ -218,6 +212,18 @@ function MobileLinkEditor({
         }
     }
 
+    function downloadQr() {
+        if (!qrDataUrl) {
+            return;
+        }
+
+        const extension = qrDataUrl.startsWith('data:image/svg') ? 'svg' : 'png';
+        const anchor = document.createElement('a');
+        anchor.href = qrDataUrl;
+        anchor.download = `qr-${link.slug}-${styleId}.${extension}`;
+        anchor.click();
+    }
+
     function deleteLink() {
         if (!window.confirm(`Törlöd a „${link.name}” QR linket?`)) {
             return;
@@ -238,7 +244,7 @@ function MobileLinkEditor({
                 )}
                 <p className="text-center font-mono text-[11px] text-primary">{link.slug}</p>
                 <p className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                    {link.scan_count} scan {link.last_scanned_at ? `// ${new Date(link.last_scanned_at).toLocaleString()}` : ''}
+                    {link.scan_count} scan {link.last_scanned_at ? `// ${new Date(link.last_scanned_at).toLocaleString()}` : ''} // {styleLabel}
                 </p>
             </div>
 
@@ -251,6 +257,8 @@ function MobileLinkEditor({
                     </button>
                 </div>
             </div>
+
+            <QrStylePicker value={styleId} onChange={selectStyle} compact />
 
             <form
                 onSubmit={(event) => {
@@ -312,7 +320,11 @@ function MobileLinkEditor({
                             {saved ? <Check size={16} /> : <Save size={16} />}
                             {saved ? 'Mentve' : 'Mentés'}
                         </button>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
+                            <button type="button" onClick={downloadQr} className="cyber-tool-button inline-flex items-center justify-center gap-1 py-2.5 text-[10px]">
+                                <Download size={14} />
+                                QR
+                            </button>
                             <button type="button" onClick={sharePublicUrl} className="cyber-tool-button inline-flex items-center justify-center gap-1 py-2.5 text-[10px]">
                                 <Share2 size={14} />
                                 Share

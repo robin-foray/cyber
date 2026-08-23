@@ -1,6 +1,13 @@
 import { CyberImagePreviewSkeleton } from '@/components/cyber/skeleton';
 import { DevToolPageHeader, useDevToolPage } from '@/components/dev-tool-page-header';
-import { generateQrCodeDataUrl, type QrErrorCorrectionLevel } from '@/lib/qr-code';
+import {
+    DEFAULT_QR_STYLE_ID,
+    generateQrCodeDataUrl,
+    getQrStylePreset,
+    QR_STYLE_PRESETS,
+    type QrErrorCorrectionLevel,
+    type QrStyleId,
+} from '@/lib/qr-code';
 import { Head } from '@inertiajs/react';
 import { CheckCircle2, Clipboard, Download, Eraser, QrCode, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -11,6 +18,7 @@ export default function QrGenerator() {
     const [size, setSize] = useState(320);
     const [margin, setMargin] = useState(2);
     const [errorCorrectionLevel, setErrorCorrectionLevel] = useState<QrErrorCorrectionLevel>('M');
+    const [styleId, setStyleId] = useState<QrStyleId>(DEFAULT_QR_STYLE_ID);
     const [dataUrl, setDataUrl] = useState('');
     const [error, setError] = useState('');
     const [processing, setProcessing] = useState(false);
@@ -21,8 +29,9 @@ export default function QrGenerator() {
             chars: value.length,
             size: `${size}px`,
             ecl: errorCorrectionLevel,
+            style: getQrStylePreset(styleId).label,
         }),
-        [errorCorrectionLevel, size, value],
+        [errorCorrectionLevel, size, styleId, value],
     );
 
     async function generate() {
@@ -35,6 +44,7 @@ export default function QrGenerator() {
                 width: size,
                 margin,
                 errorCorrectionLevel,
+                styleId,
             });
 
             setDataUrl(nextDataUrl);
@@ -57,9 +67,10 @@ export default function QrGenerator() {
             return;
         }
 
+        const extension = dataUrl.startsWith('data:image/svg') ? 'svg' : 'png';
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'qr-code.png';
+        link.download = `qr-code-${styleId}.${extension}`;
         link.click();
     }
 
@@ -95,10 +106,11 @@ export default function QrGenerator() {
                     }
                 />
 
-                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
+                <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatusTile label="Chars" value={String(telemetry.chars)} />
                     <StatusTile label="Size" value={telemetry.size} />
                     <StatusTile label="ECL" value={telemetry.ecl} />
+                    <StatusTile label="Style" value={telemetry.style} />
                 </div>
 
                 <div className="grid min-w-0 gap-6 xl:grid-cols-2">
@@ -154,6 +166,20 @@ export default function QrGenerator() {
                                     <option value="M">M (15%)</option>
                                     <option value="Q">Q (25%)</option>
                                     <option value="H">H (30%)</option>
+                                </select>
+                            </label>
+                            <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase sm:col-span-2">
+                                style_preset
+                                <select
+                                    value={styleId}
+                                    onChange={(event) => setStyleId(event.target.value as QrStyleId)}
+                                    className="border-primary/15 text-primary mt-2 h-10 w-full min-w-0 rounded-lg border bg-black px-3 text-base outline-none"
+                                >
+                                    {QR_STYLE_PRESETS.map((preset) => (
+                                        <option key={preset.id} value={preset.id}>
+                                            {preset.label}
+                                        </option>
+                                    ))}
                                 </select>
                             </label>
                         </div>
