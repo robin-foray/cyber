@@ -13,6 +13,23 @@ class QrLinkController extends Controller
 {
     public function index(Request $request): Response
     {
+        return Inertia::render('qr-links/index', [
+            ...$this->pageProps($request),
+        ]);
+    }
+
+    public function mobile(Request $request): Response
+    {
+        return Inertia::render('qr-links/mobile', [
+            ...$this->pageProps($request),
+        ]);
+    }
+
+    /**
+     * @return array{links: list<array<string, mixed>>, publicBaseUrl: string}
+     */
+    private function pageProps(Request $request): array
+    {
         $links = QrLink::query()
             ->where('created_by', $request->user()?->id)
             ->orderByDesc('updated_at')
@@ -31,10 +48,10 @@ class QrLinkController extends Controller
                 'updated_at' => $link->updated_at?->toIso8601String(),
             ]);
 
-        return Inertia::render('qr-links/index', [
+        return [
             'links' => $links,
             'publicBaseUrl' => rtrim((string) config('foray.qr.public_base_url'), '/'),
-        ]);
+        ];
     }
 
     public function store(Request $request): RedirectResponse

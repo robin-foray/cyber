@@ -3,6 +3,7 @@ import FreeApisIndex from '@/pages/free-apis/index';
 import MachineGallery from '@/pages/machines/gallery';
 import Profile from '@/pages/profile';
 import QrLinksIndex from '@/pages/qr-links/index';
+import QrLinksMobile from '@/pages/qr-links/mobile';
 import TechStackIndex from '@/pages/tech-stack/index';
 import UsefulSitesIndex from '@/pages/useful-sites/index';
 import Welcome from '@/pages/welcome';
@@ -16,6 +17,7 @@ export const cyberShellPages = {
     'useful-sites/index': UsefulSitesIndex,
     'free-apis/index': FreeApisIndex,
     'qr-links/index': QrLinksIndex,
+    'qr-links/mobile': QrLinksMobile,
     ...devToolPages,
 } as const;
 
@@ -56,6 +58,10 @@ export function hrefToPageName(href: string) {
 
     if (path === 'qr-links') {
         return 'qr-links/index';
+    }
+
+    if (path === 'qr-links/mobile') {
+        return 'qr-links/mobile';
     }
 
     return path;

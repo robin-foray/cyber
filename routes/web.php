@@ -93,6 +93,7 @@ Route::middleware(['site.access'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('qr-links', [QrLinkController::class, 'index'])->name('qr-links.index');
+    Route::get('qr-links/mobile', [QrLinkController::class, 'mobile'])->name('qr-links.mobile');
     Route::post('qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
     Route::patch('qr-links/{qrLink}', [QrLinkController::class, 'update'])->name('qr-links.update');
 
