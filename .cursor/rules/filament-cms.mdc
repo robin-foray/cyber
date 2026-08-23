@@ -33,6 +33,7 @@ Do not hardcode editable content in React/Blade when it belongs in the CMS.
    - `Kezdőlap` — home page sections
    - `Navigáció` — menu, social links
    - `Dev Tools` — tool-specific CMS data
+   - `Levelezés` — family mail server + mailboxes (admin inventory; Roundcube webmail is external)
    - `Rendszer` — tickers, site settings
 4. Register in `AdminPanelProvider` via `discoverResources` (auto)
 5. Wire to frontend via `ContentService` + Inertia `cms` prop
