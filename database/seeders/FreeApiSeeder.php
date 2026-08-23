@@ -761,6 +761,7 @@ class FreeApiSeeder extends Seeder
                         'url' => $api['url'],
                         'base_url' => $api['base_url'],
                         'sample_endpoint' => $api['sample_endpoint'],
+                        'examples' => $api['examples'] ?? $this->defaultExamples($api['slug'], $api['sample_endpoint']),
                         'summary' => $api['summary'],
                         'auth' => $api['auth'],
                         'https' => $api['https'],
@@ -776,5 +777,131 @@ class FreeApiSeeder extends Seeder
         FreeApi::query()
             ->whereNotIn('slug', $keepSlugs)
             ->update(['is_active' => false]);
+    }
+
+    /**
+     * Curated interactive demo chips for the Free APIs live probe panel.
+     *
+     * @return list<array{label: string, endpoint: string, hint?: string}>
+     */
+    private function defaultExamples(string $slug, string $sample): array
+    {
+        $catalog = [
+            'dog-api' => [
+                ['label' => 'Random dog', 'endpoint' => 'https://dog.ceo/api/breeds/image/random', 'hint' => 'Returns an image URL'],
+                ['label' => 'Corgi', 'endpoint' => 'https://dog.ceo/api/breed/corgi/images/random', 'hint' => 'Breed-specific random'],
+                ['label' => 'List breeds', 'endpoint' => 'https://dog.ceo/api/breeds/list/all'],
+            ],
+            'cat-facts' => [
+                ['label' => 'Random fact', 'endpoint' => 'https://catfact.ninja/fact'],
+                ['label' => 'Breeds', 'endpoint' => 'https://catfact.ninja/breeds?limit=3'],
+            ],
+            'pokeapi' => [
+                ['label' => 'Ditto', 'endpoint' => 'https://pokeapi.co/api/v2/pokemon/ditto'],
+                ['label' => 'Pikachu', 'endpoint' => 'https://pokeapi.co/api/v2/pokemon/pikachu'],
+                ['label' => 'Type fire', 'endpoint' => 'https://pokeapi.co/api/v2/type/fire'],
+            ],
+            'jsonplaceholder' => [
+                ['label' => 'Post #1', 'endpoint' => 'https://jsonplaceholder.typicode.com/posts/1'],
+                ['label' => 'Users', 'endpoint' => 'https://jsonplaceholder.typicode.com/users'],
+                ['label' => 'Todos', 'endpoint' => 'https://jsonplaceholder.typicode.com/todos?_limit=5'],
+            ],
+            'httpbin' => [
+                ['label' => 'GET echo', 'endpoint' => 'https://httpbin.org/get'],
+                ['label' => 'UUID', 'endpoint' => 'https://httpbin.org/uuid'],
+                ['label' => 'Headers', 'endpoint' => 'https://httpbin.org/headers'],
+            ],
+            'open-meteo' => [
+                ['label' => 'Budapest now', 'endpoint' => 'https://api.open-meteo.com/v1/forecast?latitude=47.5&longitude=19.04&current_weather=true', 'hint' => 'Current weather'],
+                ['label' => 'London', 'endpoint' => 'https://api.open-meteo.com/v1/forecast?latitude=51.5&longitude=-0.12&current_weather=true'],
+            ],
+            'jokeapi' => [
+                ['label' => 'Any joke', 'endpoint' => 'https://v2.jokeapi.dev/joke/Any'],
+                ['label' => 'Programming', 'endpoint' => 'https://v2.jokeapi.dev/joke/Programming'],
+                ['label' => 'Pun only', 'endpoint' => 'https://v2.jokeapi.dev/joke/Pun'],
+            ],
+            'nasa-apod' => [
+                ['label' => 'Today APOD', 'endpoint' => 'https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', 'hint' => 'DEMO_KEY rate-limited'],
+                ['label' => 'Random', 'endpoint' => 'https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=1'],
+            ],
+            'themealdb' => [
+                ['label' => 'Random meal', 'endpoint' => 'https://www.themealdb.com/api/json/v1/1/random.php'],
+                ['label' => 'Search pasta', 'endpoint' => 'https://www.themealdb.com/api/json/v1/1/search.php?s=pasta'],
+            ],
+            'thecocktaildb' => [
+                ['label' => 'Random drink', 'endpoint' => 'https://www.thecocktaildb.com/api/json/v1/1/random.php'],
+                ['label' => 'Search margarita', 'endpoint' => 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita'],
+            ],
+            'dictionary-api' => [
+                ['label' => 'hello', 'endpoint' => 'https://api.dictionaryapi.dev/api/v2/entries/en/hello'],
+                ['label' => 'foray', 'endpoint' => 'https://api.dictionaryapi.dev/api/v2/entries/en/foray'],
+            ],
+            'random-user' => [
+                ['label' => 'One user', 'endpoint' => 'https://randomuser.me/api/'],
+                ['label' => '3 users', 'endpoint' => 'https://randomuser.me/api/?results=3'],
+            ],
+            'agify' => [
+                ['label' => 'michael', 'endpoint' => 'https://api.agify.io?name=michael'],
+                ['label' => 'robin', 'endpoint' => 'https://api.agify.io?name=robin'],
+            ],
+            'genderize' => [
+                ['label' => 'robin', 'endpoint' => 'https://api.genderize.io?name=robin'],
+                ['label' => 'alex', 'endpoint' => 'https://api.genderize.io?name=alex'],
+            ],
+            'nationalize' => [
+                ['label' => 'nathaniel', 'endpoint' => 'https://api.nationalize.io?name=nathaniel'],
+                ['label' => 'mate', 'endpoint' => 'https://api.nationalize.io?name=mate'],
+            ],
+            'frankfurter' => [
+                ['label' => 'EUR rates', 'endpoint' => 'https://api.frankfurter.app/latest?from=EUR'],
+                ['label' => 'EUR→HUF', 'endpoint' => 'https://api.frankfurter.app/latest?from=EUR&to=HUF'],
+            ],
+            'rest-countries' => [
+                ['label' => 'Hungary', 'endpoint' => 'https://restcountries.com/v3.1/name/hungary'],
+                ['label' => 'Japan', 'endpoint' => 'https://restcountries.com/v3.1/name/japan'],
+            ],
+            'rick-and-morty' => [
+                ['label' => 'Rick', 'endpoint' => 'https://rickandmortyapi.com/api/character/1'],
+                ['label' => 'Morty', 'endpoint' => 'https://rickandmortyapi.com/api/character/2'],
+            ],
+            'advice-slip' => [
+                ['label' => 'Random advice', 'endpoint' => 'https://api.adviceslip.com/advice'],
+            ],
+            'chuck-norris' => [
+                ['label' => 'Random joke', 'endpoint' => 'https://api.chucknorris.io/jokes/random'],
+            ],
+            'opentdb' => [
+                ['label' => '1 question', 'endpoint' => 'https://opentdb.com/api.php?amount=1'],
+                ['label' => 'Easy science', 'endpoint' => 'https://opentdb.com/api.php?amount=1&category=17&difficulty=easy'],
+            ],
+            'ipify' => [
+                ['label' => 'My IP JSON', 'endpoint' => 'https://api.ipify.org?format=json'],
+            ],
+            'spacex' => [
+                ['label' => 'Latest launch', 'endpoint' => 'https://api.spacexdata.com/v5/launches/latest'],
+            ],
+            'sunrise-sunset' => [
+                ['label' => 'Budapest', 'endpoint' => 'https://api.sunrise-sunset.org/json?lat=47.5&lng=19.04'],
+            ],
+            'dummyjson' => [
+                ['label' => 'Product #1', 'endpoint' => 'https://dummyjson.com/products/1'],
+                ['label' => 'Quotes', 'endpoint' => 'https://dummyjson.com/quotes/1'],
+            ],
+            'lorem-picsum' => [
+                ['label' => 'Photo list', 'endpoint' => 'https://picsum.photos/v2/list?page=1&limit=3'],
+            ],
+            'jikan' => [
+                ['label' => 'Cowboy Bebop', 'endpoint' => 'https://api.jikan.moe/v4/anime/1'],
+                ['label' => 'Top anime', 'endpoint' => 'https://api.jikan.moe/v4/top/anime'],
+            ],
+        ];
+
+        if (isset($catalog[$slug])) {
+            return $catalog[$slug];
+        }
+
+        return [
+            ['label' => 'Default sample', 'endpoint' => $sample],
+        ];
     }
 }

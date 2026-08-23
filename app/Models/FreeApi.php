@@ -17,6 +17,7 @@ class FreeApi extends Model
         'url',
         'base_url',
         'sample_endpoint',
+        'examples',
         'summary',
         'auth',
         'https',
@@ -29,6 +30,7 @@ class FreeApi extends Model
     protected function casts(): array
     {
         return [
+            'examples' => 'array',
             'https' => 'boolean',
             'cors' => 'boolean',
             'is_active' => 'boolean',

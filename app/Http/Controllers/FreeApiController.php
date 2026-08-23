@@ -40,6 +40,7 @@ class FreeApiController extends Controller
             'url' => $api->url,
             'base_url' => $api->base_url,
             'sample_endpoint' => $api->sample_endpoint,
+            'examples' => $this->normalizeExamples($api),
             'summary' => $api->summary,
             'auth' => $api->auth,
             'https' => $api->https,
@@ -71,5 +72,35 @@ class FreeApiController extends Controller
             ->firstOrFail();
 
         return response()->json($probe->execute($api, $validated['endpoint'] ?? null));
+    }
+
+    /**
+     * @return list<array{label: string, endpoint: string, hint: string|null}>
+     */
+    private function normalizeExamples(FreeApi $api): array
+    {
+        $examples = collect($api->examples ?? [])
+            ->filter(fn ($example) => is_array($example) && filled($example['endpoint'] ?? null))
+            ->map(fn (array $example) => [
+                'label' => (string) ($example['label'] ?? 'Sample'),
+                'endpoint' => (string) $example['endpoint'],
+                'hint' => isset($example['hint']) ? (string) $example['hint'] : null,
+            ])
+            ->values()
+            ->all();
+
+        if ($examples !== []) {
+            return $examples;
+        }
+
+        if (filled($api->sample_endpoint)) {
+            return [[
+                'label' => 'Default sample',
+                'endpoint' => (string) $api->sample_endpoint,
+                'hint' => null,
+            ]];
+        }
+
+        return [];
     }
 }

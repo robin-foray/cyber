@@ -10,6 +10,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -46,6 +47,17 @@ class FreeApiResource extends Resource
             TextInput::make('url')->url()->required()->label('Docs URL')->columnSpanFull(),
             TextInput::make('base_url')->url()->label('Base URL')->columnSpanFull(),
             TextInput::make('sample_endpoint')->url()->label('Sample endpoint')->columnSpanFull(),
+            Repeater::make('examples')
+                ->label('Interactive examples')
+                ->helperText('Shown as clickable demo chips on /free-apis. Endpoints must stay on the same API host.')
+                ->schema([
+                    TextInput::make('label')->required()->maxLength(80),
+                    TextInput::make('endpoint')->url()->required()->columnSpanFull(),
+                    TextInput::make('hint')->maxLength(160)->columnSpanFull(),
+                ])
+                ->defaultItems(0)
+                ->collapsible()
+                ->columnSpanFull(),
             Textarea::make('summary')->rows(3)->columnSpanFull(),
             Select::make('auth')
                 ->options([
