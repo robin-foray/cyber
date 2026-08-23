@@ -224,9 +224,10 @@ class CmsSeeder extends Seeder
             ['label' => 'TECH_STACK', 'href' => '/tech-stack', 'icon' => 'Layers', 'sort_order' => 4, 'requires_auth' => false, 'is_group' => false],
             ['label' => 'USEFUL_SITES', 'href' => '/useful-sites', 'icon' => 'Globe', 'sort_order' => 5, 'requires_auth' => false, 'is_group' => false],
             ['label' => 'FREE_APIS', 'href' => '/free-apis', 'icon' => 'Database', 'sort_order' => 6, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'PROJECTS', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 7, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'SYSTEM_LOGS', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 8, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'PROFILE', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 9, 'requires_auth' => true, 'is_group' => false],
+            ['label' => 'DYNAMIC_QR', 'href' => '/qr-links', 'icon' => 'QrCode', 'sort_order' => 7, 'requires_auth' => true, 'is_group' => false],
+            ['label' => 'PROJECTS', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 8, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'SYSTEM_LOGS', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 9, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'PROFILE', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 10, 'requires_auth' => true, 'is_group' => false],
         ];
 
         foreach ($topLevel as $item) {

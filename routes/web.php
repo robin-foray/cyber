@@ -6,6 +6,8 @@ use App\Http\Controllers\DevTools\PhpSyntaxCheckerController;
 use App\Http\Controllers\FreeApiController;
 use App\Http\Controllers\MachineGalleryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QrLinkController;
+use App\Http\Controllers\QrRedirectController;
 use App\Http\Controllers\TechStackController;
 use App\Http\Controllers\UsefulSiteController;
 use App\Http\Controllers\WelcomeController;
@@ -20,6 +22,10 @@ Route::get('/', function (Request $request) {
 
     return app(AuthenticatedSessionController::class)->create($request);
 })->name('home');
+
+Route::get('q/{slug}', QrRedirectController::class)
+    ->middleware('throttle:60,1')
+    ->name('qr.redirect');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('machines', [MachineGalleryController::class, 'index'])->name('machines.index');
@@ -70,6 +76,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dev-tools/sql-builder', function () {
         return Inertia::render('dev-tools/sql-builder');
     })->name('dev-tools.sql-builder');
+
+    Route::get('qr-links', [QrLinkController::class, 'index'])->name('qr-links.index');
+    Route::get('qr-links/mobile', [QrLinkController::class, 'mobile'])->name('qr-links.mobile');
+    Route::post('qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
+    Route::patch('qr-links/{qrLink}', [QrLinkController::class, 'update'])->name('qr-links.update');
 
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
