@@ -1,4 +1,10 @@
 import CategoryChip from '@/components/cyber/category-chip';
+import {
+    formatProbeBody,
+    probeStatusLabel,
+    probeStatusTone,
+    type FreeApiProbeResult,
+} from '@/lib/free-api-probe';
 import { Head, router } from '@inertiajs/react';
 import {
     BookOpen,
@@ -11,11 +17,13 @@ import {
     ExternalLink,
     Globe,
     GraduationCap,
+    LoaderCircle,
     Map,
     MessageSquare,
     Network,
     Package,
     PawPrint,
+    Play,
     Rocket,
     Search,
     Smile,
@@ -107,6 +115,10 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
     const [authFilter, setAuthFilter] = useState<(typeof authFilters)[number]['value']>('all');
     const [corsOnly, setCorsOnly] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [probeEndpoint, setProbeEndpoint] = useState('');
+    const [probeLoading, setProbeLoading] = useState(false);
+    const [probeError, setProbeError] = useState('');
+    const [probeResult, setProbeResult] = useState<FreeApiProbeResult | null>(null);
 
     const filtered = useMemo(() => {
         const needle = query.trim().toLowerCase();
@@ -153,6 +165,13 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
         detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, [selectedId]);
 
+    useEffect(() => {
+        setProbeEndpoint(selected?.sample_endpoint ?? '');
+        setProbeResult(null);
+        setProbeError('');
+        setProbeLoading(false);
+    }, [selected?.id, selected?.sample_endpoint]);
+
     function selectCategory(slug: string | null) {
         router.get(
             '/free-apis',
@@ -171,6 +190,29 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
         }
     }
 
+    async function runLiveProbe() {
+        if (!selected) {
+            return;
+        }
+
+        setProbeLoading(true);
+        setProbeError('');
+        setProbeResult(null);
+
+        try {
+            const result = await postJson(route('free-apis.probe'), {
+                slug: selected.slug,
+                endpoint: probeEndpoint.trim() || null,
+            });
+
+            setProbeResult(result as FreeApiProbeResult);
+        } catch (exception) {
+            setProbeError(exception instanceof Error ? exception.message : 'Live probe failed');
+        } finally {
+            setProbeLoading(false);
+        }
+    }
+
     return (
         <>
             <Head title="Free APIs" />
@@ -184,7 +226,7 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
                                 FREE_API_REGISTRY
                             </div>
                             <p className="max-w-2xl text-sm text-on-surface-variant">
-                                Curated free public APIs — filter by layer, auth and CORS. Inspect samples, copy endpoints, open docs.
+                                Curated free public APIs — filter by layer, auth and CORS. Run live probes in-panel, copy endpoints, open docs.
                                 Source inspiration:{' '}
                                 <a
                                     href="https://free-apis.github.io/#/browse"
@@ -378,6 +420,62 @@ export default function FreeApisIndex({ categories = [], apis = [], activeCatego
                                     </div>
                                 )}
 
+                                <div className="space-y-3 rounded-2xl border border-primary/15 bg-black/30 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <p className="text-[10px] font-bold tracking-widest text-primary uppercase">Live Probe</p>
+                                        {probeResult && (
+                                            <span className={`rounded-lg px-2 py-1 text-[9px] font-bold tracking-widest uppercase ${probeToneClass(probeResult)}`}>
+                                                {probeStatusLabel(probeResult)} // {probeResult.duration_ms}ms
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <label className="block space-y-1">
+                                        <span className="text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">Endpoint</span>
+                                        <input
+                                            type="url"
+                                            value={probeEndpoint}
+                                            onChange={(event) => setProbeEndpoint(event.target.value)}
+                                            placeholder="https://…"
+                                            className="w-full rounded-xl border border-primary/20 bg-black/45 px-3 py-2.5 font-mono text-[11px] text-on-surface outline-none placeholder:text-on-surface-variant/40 focus:border-primary/50"
+                                        />
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={runLiveProbe}
+                                        disabled={probeLoading || !probeEndpoint.trim()}
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary px-4 py-2.5 text-[10px] font-bold tracking-widest text-black uppercase transition hover:shadow-[0_0_18px_rgba(204,255,0,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {probeLoading ? <LoaderCircle size={14} className="animate-spin" /> : <Play size={14} />}
+                                        Run Live Probe
+                                    </button>
+
+                                    {probeError && (
+                                        <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-[11px] text-red-300">
+                                            {probeError}
+                                        </p>
+                                    )}
+
+                                    {probeResult && (
+                                        <div className="space-y-2">
+                                            <div className="flex flex-wrap gap-2 text-[9px] font-bold tracking-widest text-on-surface-variant uppercase">
+                                                {probeResult.content_type && <span>{probeResult.content_type}</span>}
+                                                {probeResult.truncated && <span className="text-amber-300">TRUNCATED</span>}
+                                            </div>
+                                            <pre className="max-h-64 overflow-auto rounded-xl border border-white/5 bg-black/45 p-3 font-mono text-[10px] leading-relaxed whitespace-pre-wrap text-on-surface-variant">
+                                                {formatProbeBody(probeResult)}
+                                            </pre>
+                                        </div>
+                                    )}
+
+                                    {!probeResult && !probeError && !probeLoading && (
+                                        <p className="text-[10px] leading-relaxed text-on-surface-variant/70">
+                                            Server-side GET through Foray — bypasses browser CORS and shows status, timing and response body.
+                                        </p>
+                                    )}
+                                </div>
+
                                 <div className="flex flex-wrap gap-2">
                                     <a
                                         href={selected.url}
@@ -415,4 +513,42 @@ function Badge({ label }: { label: string }) {
             {label}
         </span>
     );
+}
+
+function probeToneClass(result: FreeApiProbeResult): string {
+    switch (probeStatusTone(result)) {
+        case 'ok':
+            return 'border border-primary/30 bg-primary/15 text-primary';
+        case 'warn':
+            return 'border border-amber-400/30 bg-amber-400/10 text-amber-200';
+        default:
+            return 'border border-red-500/30 bg-red-500/10 text-red-300';
+    }
+}
+
+async function postJson(url: string, payload: Record<string, unknown>) {
+    const token = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message =
+            data?.message ||
+            Object.values(data?.errors ?? {})
+                .flat()
+                .join(' ') ||
+            'Request failed';
+        throw new Error(message);
+    }
+
+    return data;
 }

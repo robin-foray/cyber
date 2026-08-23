@@ -26,6 +26,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('tech-stack', [TechStackController::class, 'index'])->name('tech-stack.index');
     Route::get('useful-sites', [UsefulSiteController::class, 'index'])->name('useful-sites.index');
     Route::get('free-apis', [FreeApiController::class, 'index'])->name('free-apis.index');
+    Route::post('free-apis/probe', [FreeApiController::class, 'probe'])
+        ->middleware('throttle:30,1')
+        ->name('free-apis.probe');
 
     Route::get('dev-tools/console', function () {
         return Inertia::render('dev-tools/console');

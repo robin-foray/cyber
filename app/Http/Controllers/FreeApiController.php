@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\FreeApi;
 use App\Models\FreeApiCategory;
+use App\Services\FreeApiProbeService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -54,5 +56,20 @@ class FreeApiController extends Controller
             'apis' => $apis,
             'activeCategory' => $activeCategory?->slug,
         ]);
+    }
+
+    public function probe(Request $request, FreeApiProbeService $probe): JsonResponse
+    {
+        $validated = $request->validate([
+            'slug' => ['required', 'string', 'max:120'],
+            'endpoint' => ['nullable', 'string', 'url', 'max:2048'],
+        ]);
+
+        $api = FreeApi::query()
+            ->where('slug', $validated['slug'])
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return response()->json($probe->execute($api, $validated['endpoint'] ?? null));
     }
 }

@@ -25,6 +25,7 @@ Seeder categories include **Anime**, **Games & Comics**, **News**, **Art & Desig
 
 - Category filters: shared `CategoryChip` (`resources/js/components/cyber/category-chip.tsx`) — plain buttons with `flex-wrap`, not SpecularButton (WebGL inset overflow on mobile).
 - Cards: mobile 2-col full-width (same as tech-stack); detail scrollIntoView; copy sample; Try Sample / Open Docs.
+- **Live Probe:** `POST /free-apis/probe` (`free-apis.probe`) — server-side GET proxy for registered catalog hosts only. UI panel on `/free-apis` with editable endpoint, status/timing and formatted response (`resources/js/lib/free-api-probe.ts`).
 
 ## Deploy
 
