@@ -23,9 +23,9 @@ QR / link based guest access without admin login. Employers or visitors get a sc
 
 ## Admin (Filament → Statisztika)
 
-- **Vendég belépők** — list header `CreateAction` → create form (label, identity, expiry, routes, avatar); after save: QR preview (QuickChart), copy link, revoke, view log relation
+- **Vendég belépők** — list / empty-state **Create** → `/admin/guest-passes/create` (full page, not modal). After save redirects to view with QR + copy link. Also: revoke, view log relation.
 - **Vendég statisztika** — aggregate counters + global recent views table
-- List / Edit / View pages must expose header actions (`CreateAction`, `EditAction`/`ViewAction`/`DeleteAction`) like other Filament resources
+- Create mutates `created_by`, clears empty `avatar_path` / `allowed_routes`, defaults expiry +1 week
 
 ## Frontend
 

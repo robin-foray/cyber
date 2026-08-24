@@ -64,7 +64,8 @@ class GuestPassFilamentTest extends TestCase
                 'allowed_routes' => ['home', 'machines.index'],
             ])
             ->call('create')
-            ->assertHasNoFormErrors();
+            ->assertHasNoFormErrors()
+            ->assertRedirect();
 
         $pass = GuestPass::query()->where('label', 'Demo munkaltato')->first();
 
@@ -78,5 +79,17 @@ class GuestPassFilamentTest extends TestCase
             $expiresAt->format('Y-m-d H:i'),
             $pass->expires_at->format('Y-m-d H:i'),
         );
+
+        $this->get(GuestPassResource::getUrl('view', ['record' => $pass]))
+            ->assertOk();
+    }
+
+    public function test_create_header_action_links_to_create_page(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+
+        Livewire::test(ListGuestPasses::class)
+            ->assertActionExists('create')
+            ->assertActionHasUrl('create', GuestPassResource::getUrl('create'));
     }
 }

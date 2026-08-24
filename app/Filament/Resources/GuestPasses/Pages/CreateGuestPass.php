@@ -13,4 +13,9 @@ class CreateGuestPass extends CreateRecord
     {
         return GuestPassResource::mutateFormDataBeforeCreate($data);
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return GuestPassResource::getUrl('view', ['record' => $this->getRecord()]);
+    }
 }

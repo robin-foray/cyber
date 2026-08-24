@@ -8,8 +8,10 @@ use App\Filament\Resources\GuestPasses\Pages\ListGuestPasses;
 use App\Filament\Resources\GuestPasses\Pages\ViewGuestPass;
 use App\Filament\Resources\GuestPasses\RelationManagers\ViewsRelationManager;
 use App\Models\GuestPass;
+use Carbon\CarbonInterface;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -82,7 +84,8 @@ class GuestPassResource extends Resource
                 ->required()
                 ->native(false)
                 ->seconds(false)
-                ->minDate(now()),
+                ->default(fn (): CarbonInterface => now()->addWeek()->seconds(0))
+                ->minDate(fn (): CarbonInterface => now()->startOfDay()),
             Toggle::make('is_active')
                 ->label('Aktív')
                 ->default(true),
@@ -98,7 +101,7 @@ class GuestPassResource extends Resource
                     ? new HtmlString(self::passLinkPreview($record))
                     : 'Mentés után generálódik a link és a QR kód.')
                 ->columnSpanFull()
-                ->visible(fn (?GuestPass $record): bool => $record !== null),
+                ->visibleOn(['edit', 'view']),
         ]);
     }
 
@@ -132,6 +135,12 @@ class GuestPassResource extends Resource
             ->defaultSort('expires_at', 'desc')
             ->filters([
                 TernaryFilter::make('is_active'),
+            ])
+            ->emptyStateHeading('Nincs vendég belépő')
+            ->emptyStateDescription('Hozz létre egy QR / link belépőt vendégeknek.')
+            ->emptyStateActions([
+                CreateAction::make()
+                    ->url(fn (): string => static::getUrl('create')),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -221,6 +230,18 @@ class GuestPassResource extends Resource
     public static function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = Auth::id();
+
+        if (($data['avatar_path'] ?? null) === [] || blank($data['avatar_path'] ?? null)) {
+            $data['avatar_path'] = null;
+        }
+
+        if (($data['allowed_routes'] ?? null) === []) {
+            $data['allowed_routes'] = null;
+        }
+
+        if (blank($data['expires_at'] ?? null)) {
+            $data['expires_at'] = now()->addWeek();
+        }
 
         return $data;
     }
