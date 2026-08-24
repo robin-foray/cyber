@@ -37,6 +37,8 @@ export type QrStylePreset = {
     eyeStyle: QrEyeStyle;
 };
 
+export type QrLogoShape = 'circle' | 'rounded' | 'square';
+
 export type QrCodeOptions = {
     width: number;
     margin: number;
@@ -46,6 +48,11 @@ export type QrCodeOptions = {
     lightColor?: string;
     moduleShape?: QrModuleShape;
     eyeStyle?: QrEyeStyle;
+    logoDataUrl?: string;
+    logoRatio?: number;
+    logoPad?: boolean;
+    logoShape?: QrLogoShape;
+    punchLogoHole?: boolean;
 };
 
 export const DEFAULT_QR_STYLE_ID: QrStyleId = 'cyber';
@@ -201,15 +208,71 @@ function eyeMarkup(ox: number, oy: number, cell: number, style: QrEyeStyle, dark
     ].join('');
 }
 
+function isLogoZone(row: number, col: number, moduleCount: number, ratio: number): boolean {
+    const zone = moduleCount * ratio;
+    const start = (moduleCount - zone) / 2;
+    const end = start + zone;
+    const centerRow = row + 0.5;
+    const centerCol = col + 0.5;
+
+    return centerRow >= start && centerRow < end && centerCol >= start && centerCol < end;
+}
+
+function escapeXmlAttr(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function logoMarkup(
+    pixelSize: number,
+    ratio: number,
+    shape: QrLogoShape,
+    dataUrl: string,
+    pad: boolean,
+    padFill: string,
+): string {
+    const size = pixelSize * ratio;
+    const x = (pixelSize - size) / 2;
+    const y = (pixelSize - size) / 2;
+    const padSize = pad ? size * 1.12 : size;
+    const padX = (pixelSize - padSize) / 2;
+    const padY = (pixelSize - padSize) / 2;
+    const radius =
+        shape === 'circle' ? padSize / 2 : shape === 'rounded' ? padSize * 0.22 : 0;
+    const clipRadius = shape === 'circle' ? size / 2 : shape === 'rounded' ? size * 0.22 : 0;
+    const href = escapeXmlAttr(dataUrl);
+    const clipId = 'qr-logo-clip';
+
+    const padShape =
+        shape === 'circle'
+            ? `<circle cx="${pixelSize / 2}" cy="${pixelSize / 2}" r="${padSize / 2}" fill="${padFill}" />`
+            : `<rect x="${padX}" y="${padY}" width="${padSize}" height="${padSize}" rx="${radius}" ry="${radius}" fill="${padFill}" />`;
+
+    const clipShape =
+        shape === 'circle'
+            ? `<circle cx="${pixelSize / 2}" cy="${pixelSize / 2}" r="${clipRadius}" />`
+            : `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${clipRadius}" ry="${clipRadius}" />`;
+
+    return [
+        `<defs><clipPath id="${clipId}">${clipShape}</clipPath></defs>`,
+        pad ? padShape : '',
+        `<image href="${href}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${clipId})" />`,
+    ].join('');
+}
+
 export function generateQrSvg(value: string, options: Partial<QrCodeOptions> = {}): string {
     const merged = { ...DEFAULT_QR_OPTIONS, ...options };
+    const hasLogo = Boolean(merged.logoDataUrl) || Boolean(merged.punchLogoHole);
+    const errorCorrectionLevel = hasLogo ? 'H' : merged.errorCorrectionLevel;
     const style = resolveStyle(merged);
-    const qr = QRCode.create(value, { errorCorrectionLevel: merged.errorCorrectionLevel });
+    const qr = QRCode.create(value, { errorCorrectionLevel });
     const size = qr.modules.size;
     const margin = Math.max(0, merged.margin);
     const modulesAcross = size + margin * 2;
     const cell = merged.width / modulesAcross;
     const pixelSize = merged.width;
+    const logoRatio = Math.min(0.32, Math.max(0.1, merged.logoRatio ?? 0.22));
+    const holeRatio = (merged.logoPad ?? true) ? logoRatio * 1.18 : logoRatio;
+    const punchHole = hasLogo;
 
     const parts: string[] = [
         `<svg xmlns="http://www.w3.org/2000/svg" width="${pixelSize}" height="${pixelSize}" viewBox="0 0 ${pixelSize} ${pixelSize}" shape-rendering="geometricPrecision">`,
@@ -220,6 +283,10 @@ export function generateQrSvg(value: string, options: Partial<QrCodeOptions> = {
     for (let row = 0; row < size; row += 1) {
         for (let col = 0; col < size; col += 1) {
             if (!qr.modules.get(row, col) || isFinderCell(row, col, size)) {
+                continue;
+            }
+
+            if (punchHole && isLogoZone(row, col, size, holeRatio)) {
                 continue;
             }
 
@@ -243,6 +310,19 @@ export function generateQrSvg(value: string, options: Partial<QrCodeOptions> = {
         parts.push(eyeMarkup(ox, oy, cell, style.eyeStyle, style.dark, style.light));
     }
 
+    if (merged.logoDataUrl) {
+        parts.push(
+            logoMarkup(
+                pixelSize,
+                logoRatio,
+                merged.logoShape ?? 'rounded',
+                merged.logoDataUrl,
+                merged.logoPad ?? true,
+                style.light,
+            ),
+        );
+    }
+
     parts.push('</svg>');
 
     return parts.join('');
@@ -252,43 +332,134 @@ export function qrSvgToDataUrl(svg: string): string {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-async function rasterizeSvgToPngDataUrl(svg: string, width: number): Promise<string | null> {
-    if (typeof document === 'undefined' || typeof Image === 'undefined') {
-        return null;
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+    if (typeof Image === 'undefined') {
+        return Promise.resolve(null);
     }
-
-    const svgUrl = qrSvgToDataUrl(svg);
 
     return new Promise((resolve) => {
         const image = new Image();
-        image.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = width;
-            const context = canvas.getContext('2d');
-
-            if (!context) {
-                resolve(null);
-
-                return;
-            }
-
-            context.drawImage(image, 0, 0, width, width);
-            resolve(canvas.toDataURL('image/png'));
-        };
+        image.onload = () => resolve(image);
         image.onerror = () => resolve(null);
-        image.src = svgUrl;
+        image.src = src;
     });
+}
+
+export async function rasterizeSvgToPngDataUrl(
+    svg: string,
+    width: number,
+    height = width,
+): Promise<string | null> {
+    if (typeof document === 'undefined') {
+        return null;
+    }
+
+    const image = await loadImage(qrSvgToDataUrl(svg));
+
+    if (!image) {
+        return null;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        return null;
+    }
+
+    context.drawImage(image, 0, 0, width, height);
+
+    return canvas.toDataURL('image/png');
+}
+
+async function compositeLogoOnPng(
+    pngDataUrl: string,
+    logoDataUrl: string,
+    canvasWidth: number,
+    canvasHeight: number,
+    qr: { x: number; y: number; size: number },
+    logoRatio: number,
+    shape: QrLogoShape,
+): Promise<string | null> {
+    if (typeof document === 'undefined') {
+        return null;
+    }
+
+    const qrImage = await loadImage(pngDataUrl);
+    const logoImage = await loadImage(logoDataUrl);
+
+    if (!qrImage || !logoImage) {
+        return null;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+        return null;
+    }
+
+    context.drawImage(qrImage, 0, 0, canvasWidth, canvasHeight);
+
+    const logoSize = qr.size * logoRatio;
+    const x = qr.x + (qr.size - logoSize) / 2;
+    const y = qr.y + (qr.size - logoSize) / 2;
+
+    context.save();
+    context.beginPath();
+
+    if (shape === 'circle') {
+        context.arc(x + logoSize / 2, y + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+    } else if (shape === 'rounded') {
+        const radius = logoSize * 0.22;
+        context.roundRect(x, y, logoSize, logoSize, radius);
+    } else {
+        context.rect(x, y, logoSize, logoSize);
+    }
+
+    context.closePath();
+    context.clip();
+    context.drawImage(logoImage, x, y, logoSize, logoSize);
+    context.restore();
+
+    return canvas.toDataURL('image/png');
 }
 
 export async function generateQrCodeDataUrl(value: string, options: Partial<QrCodeOptions> = {}): Promise<string> {
     const merged = { ...DEFAULT_QR_OPTIONS, ...options };
-    const svg = generateQrSvg(value, merged);
+    const logoDataUrl = merged.logoDataUrl;
+    const svg = generateQrSvg(value, {
+        ...merged,
+        logoDataUrl: undefined,
+        punchLogoHole: Boolean(logoDataUrl) || merged.punchLogoHole,
+    });
     const png = await rasterizeSvgToPngDataUrl(svg, merged.width);
+
+    if (png && logoDataUrl) {
+        const composited = await compositeLogoOnPng(
+            png,
+            logoDataUrl,
+            merged.width,
+            merged.width,
+            { x: 0, y: 0, size: merged.width },
+            Math.min(0.32, Math.max(0.1, merged.logoRatio ?? 0.22)),
+            merged.logoShape ?? 'rounded',
+        );
+
+        if (composited) {
+            return composited;
+        }
+    }
 
     if (png) {
         return png;
     }
 
-    return qrSvgToDataUrl(svg);
+    return qrSvgToDataUrl(generateQrSvg(value, merged));
 }
+
+export { compositeLogoOnPng };

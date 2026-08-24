@@ -98,7 +98,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('qr-links', [QrLinkController::class, 'index'])->name('qr-links.index');
     Route::get('qr-links/mobile', [QrLinkController::class, 'mobile'])->name('qr-links.mobile');
     Route::post('qr-links', [QrLinkController::class, 'store'])->name('qr-links.store');
-    Route::patch('qr-links/{qrLink}', [QrLinkController::class, 'update'])->name('qr-links.update');
+    Route::match(['patch', 'post'], 'qr-links/{qrLink}', [QrLinkController::class, 'update'])->name('qr-links.update');
+    Route::get('qr-links/{qrLink}/logo', [QrLinkController::class, 'logo'])->name('qr-links.logo');
     Route::delete('qr-links/{qrLink}', [QrLinkController::class, 'destroy'])->name('qr-links.destroy');
 
     Route::get('dashboard', function () {

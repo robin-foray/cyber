@@ -1,6 +1,6 @@
 ---
 name: foray-dynamic-qr
-description: Foray dynamic QR redirect links with fixed public hash URL and admin-controlled destination. Use when editing /qr-links page, QrLinkResource, QR style presets, or /q/{slug} redirects.
+description: Foray dynamic QR redirect links with fixed public hash URL, stored appearance (styles, logo, frames, embed HTML), and admin-controlled destination. Use when editing /qr-links, QrLinkResource, QR design, or /q/{slug} redirects.
 ---
 
 # Foray Dynamic QR
@@ -12,9 +12,10 @@ Physical QR codes encode a **fixed Foray URL** with an opaque hash; the redirect
 1. Admin creates link at `/qr-links` (auth) or Filament **Statisztika → Dinamikus QR linkek**
 2. Permanent URL: `{FORAY_QR_PUBLIC_BASE_URL}/q/{hash}` (16 hex chars, auto-generated, **immutable**)
 3. Edit anytime: name, destination_url, notes, is_active — hash never changes
-4. Pick a **QR style preset** (client-side) for preview/download — preference stored in `localStorage` per link
-5. Delete removes the link (printed QR stops resolving)
-6. Public `GET /q/{slug}` → 302 away + scan log
+4. Design is **stored on the model**: style preset, color/shape overrides, logo, frame, caption, and optional embed HTML
+5. Download PNG / SVG / HTML from the cyber UI — HTML uses `{{qr}} {{name}} {{url}} {{caption}} {{subtitle}}`
+6. Delete removes the link (printed QR stops resolving)
+7. Public `GET /q/{slug}` → 302 away + scan log
 
 ## Ownership
 
@@ -28,22 +29,23 @@ Public `/q/{hash}` redirect is global (anyone with the printed QR can scan).
 
 ## Models
 
-- `QrLink` — name, slug (hash), destination_url, notes, scan_count, is_active
+- `QrLink` — name, slug (hash), destination_url, notes, logo_path, design JSON, scan_count, is_active
 - `QrLinkScan` — audit trail (destination at scan time, IP, UA)
 - Hash via `QrLink::generateUniqueHash()` on create (`slug` column kept for route compat)
 
-## QR styles (client)
+## QR appearance (stored)
 
-Lib: `resources/js/lib/qr-code.ts`
+Lib: `resources/js/lib/qr-code.ts`, `qr-frame.ts`, `qr-design.ts`
 
-- `QR_STYLE_PRESETS` — named themes (colors + module shape + eye style)
-- Shapes: `square` | `rounded` | `soft` | `dots` | `diamond`
-- Eyes: `square` | `rounded` | `circle` | `leaf`
-- `generateQrSvg` / `generateQrCodeDataUrl` render styled SVG (PNG when canvas available)
-- UI picker: `resources/js/components/cyber/qr-style-picker.tsx` (`QrStylePicker`, `useQrLinkPreview`)
-- Also available on `/dev-tools/qr-generator` via style select
+- `design` JSON on `qr_links`: style_id, dark/light, module_shape, eye_style, logo_size/pad/shape, frame, caption, subtitle, embed_html
+- `logo_path` on the public disk, streamed at `GET /qr-links/{qrLink}/logo`
+- Frames: `bare | badge | card | banner | sticker | poster | custom`
+- Logo overlay punches a center hole and uses error correction **H**
+- Custom HTML preview is a sandboxed iframe; download is a standalone HTML file
+- UI: `resources/js/components/cyber/qr-design-editor.tsx`
+- Filament appearance section on `QrLinkResource`
 
-Styles are **not** stored on the model — redirect URL is style-agnostic; choice is local per browser for print/download.
+The public redirect URL stays style-agnostic. Appearance is for print/preview/download.
 
 ## Config
 
@@ -51,9 +53,9 @@ Styles are **not** stored on the model — redirect URL is style-agnostic; choic
 
 ## UI
 
-- Cyber page: `/qr-links` — create, edit, style picker, delete, download styled QR
-- Mobile: `/qr-links/mobile` — same + sticky save + style picker
-- Filament: CRUD + scan relation manager (hash shown read-only; quickchart preview remains cyber default)
+- Cyber page: `/qr-links` — create, edit, design studio (style/logo/HTML), delete, download PNG/SVG/HTML
+- Mobile: `/qr-links/mobile` — same + sticky save
+- Filament: CRUD + appearance + scan relation manager
 
 ## Routes
 
@@ -62,11 +64,12 @@ Styles are **not** stored on the model — redirect URL is style-agnostic; choic
 | GET | `/qr-links` | `qr-links.index` |
 | GET | `/qr-links/mobile` | `qr-links.mobile` |
 | POST | `/qr-links` | `qr-links.store` |
-| PATCH | `/qr-links/{qrLink}` | `qr-links.update` |
+| POST/PATCH | `/qr-links/{qrLink}` | `qr-links.update` |
+| GET | `/qr-links/{qrLink}/logo` | `qr-links.logo` |
 | DELETE | `/qr-links/{qrLink}` | `qr-links.destroy` |
 | GET | `/q/{slug}` | `qr.redirect` |
 
 ## Tests
 
 - PHPUnit: `tests/Feature/QrLinks/*`
-- Vitest: `resources/js/lib/qr-code.test.ts` (presets + svg/data URL generation)
+- Vitest: `resources/js/lib/qr-code.test.ts`, `qr-frame.test.ts`

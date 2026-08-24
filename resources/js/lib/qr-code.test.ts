@@ -132,3 +132,37 @@ describe('isQrCodeDataUrl', () => {
         expect(isQrCodeDataUrl(svgUrl)).toBe(true);
     });
 });
+
+const TINY_PNG =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg==';
+
+describe('logo overlay', () => {
+    it('punches a center hole and embeds the logo image', () => {
+        const withoutLogo = generateQrSvg('https://foray.hu/q/logo-check', { width: 240, styleId: 'print' });
+        const withLogo = generateQrSvg('https://foray.hu/q/logo-check', {
+            width: 240,
+            styleId: 'print',
+            logoDataUrl: TINY_PNG,
+            logoRatio: 0.24,
+            logoShape: 'circle',
+        });
+
+        expect(withLogo).toContain('<image');
+        expect(withLogo).toContain('clipPath');
+        expect(withoutLogo).not.toContain('<image');
+        expect(withLogo).not.toBe(withoutLogo);
+    });
+
+    it('keeps custom module colors when a logo is present', () => {
+        const svg = generateQrSvg('logo-color', {
+            width: 180,
+            darkColor: '#112233',
+            lightColor: '#eeeeee',
+            logoDataUrl: TINY_PNG,
+        });
+
+        expect(svg).toContain('#eeeeee');
+        expect(svg).toContain('#112233');
+        expect(svg).toContain('<image');
+    });
+});

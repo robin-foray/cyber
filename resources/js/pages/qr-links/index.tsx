@@ -1,6 +1,13 @@
-import { QrStylePicker, useQrLinkPreview } from '@/components/cyber/qr-style-picker';
+import {
+    downloadDataUrl,
+    downloadTextFile,
+    QrDesignEditor,
+    useDesignedQrPreview,
+    useQrLogoDataUrl,
+} from '@/components/cyber/qr-design-editor';
+import { normalizeQrLinkDesign, type QrLinkDesign } from '@/lib/qr-design';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Check, Copy, Download, ExternalLink, Link2, Plus, QrCode, Save, Smartphone, Trash2 } from 'lucide-react';
+import { Check, Copy, Download, ExternalLink, FileCode, Link2, Plus, QrCode, Save, Smartphone, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 type QrLinkItem = {
@@ -15,6 +22,9 @@ type QrLinkItem = {
     last_scanned_at: string | null;
     is_active: boolean;
     updated_at: string | null;
+    design: QrLinkDesign;
+    logo_url: string | null;
+    has_logo: boolean;
 };
 
 type Props = {
@@ -129,8 +139,18 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
         destination_url: link.destination_url,
         notes: link.notes ?? '',
         is_active: link.is_active,
+        design: normalizeQrLinkDesign(link.design),
+        logo: null as File | null,
+        remove_logo: false,
     });
-    const { styleId, selectStyle, qrDataUrl, styleLabel } = useQrLinkPreview(link.public_url, link.id, 240);
+    const logoDataUrl = useQrLogoDataUrl(updateForm.data.logo, link.logo_url, updateForm.data.remove_logo);
+    const { previewUrl, html, svg, usesHtmlPreview } = useDesignedQrPreview(
+        link.public_url,
+        updateForm.data.design,
+        updateForm.data.name,
+        240,
+        logoDataUrl,
+    );
     const [copied, setCopied] = useState(false);
 
     async function copyPublicUrl() {
@@ -140,15 +160,21 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
     }
 
     function downloadQr() {
-        if (!qrDataUrl) {
-            return;
+        if (previewUrl) {
+            downloadDataUrl(`qr-${link.slug}-${updateForm.data.design.style_id}.png`, previewUrl);
         }
+    }
 
-        const extension = qrDataUrl.startsWith('data:image/svg') ? 'svg' : 'png';
-        const anchor = document.createElement('a');
-        anchor.href = qrDataUrl;
-        anchor.download = `qr-${link.slug}-${styleId}.${extension}`;
-        anchor.click();
+    function downloadSvg() {
+        if (svg) {
+            downloadTextFile(`qr-${link.slug}.svg`, svg, 'image/svg+xml');
+        }
+    }
+
+    function downloadHtml() {
+        if (html) {
+            downloadTextFile(`qr-${link.slug}.html`, html, 'text/html');
+        }
     }
 
     function deleteLink() {
@@ -167,10 +193,19 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                     <p className="mt-1 text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
                         {link.scan_count} scans {link.last_scanned_at ? `// last ${new Date(link.last_scanned_at).toLocaleString()}` : ''}
                     </p>
-                    <p className="mt-1 text-[9px] font-bold tracking-widest text-on-surface-variant/70 uppercase">style // {styleLabel}</p>
+                    <p className="mt-1 text-[9px] font-bold tracking-widest text-on-surface-variant/70 uppercase">
+                        style // {updateForm.data.design.style_id} // {updateForm.data.design.frame}
+                    </p>
                 </div>
-                {qrDataUrl ? (
-                    <img src={qrDataUrl} alt="" className="h-32 w-32 rounded-xl border border-primary/20 bg-black" />
+                {usesHtmlPreview && html ? (
+                    <iframe
+                        title={`${link.name} HTML preview`}
+                        srcDoc={html}
+                        sandbox=""
+                        className="h-40 w-40 rounded-xl border border-primary/20 bg-white"
+                    />
+                ) : previewUrl ? (
+                    <img src={previewUrl} alt="" className="h-32 w-32 rounded-xl border border-primary/20 bg-black object-contain" />
                 ) : (
                     <div className="flex h-32 w-32 items-center justify-center rounded-xl border border-primary/20 bg-black/40 text-primary">
                         <QrCode size={28} />
@@ -189,12 +224,53 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                     </div>
                 </div>
 
-                <QrStylePicker value={styleId} onChange={selectStyle} />
+                <QrDesignEditor
+                    design={updateForm.data.design}
+                    onChange={(design) => updateForm.setData('design', design)}
+                    logoUrl={link.logo_url}
+                    logoFile={updateForm.data.logo}
+                    onLogoFile={(file) => {
+                        updateForm.setData('logo', file);
+                        updateForm.setData('remove_logo', false);
+                    }}
+                    removeLogo={updateForm.data.remove_logo}
+                    onRemoveLogo={(remove) => {
+                        updateForm.setData('remove_logo', remove);
+                        if (remove) {
+                            updateForm.setData('logo', null);
+                        }
+                    }}
+                />
 
                 <form
                     onSubmit={(event) => {
                         event.preventDefault();
-                        updateForm.patch(route('qr-links.update', link.id), { preserveScroll: true });
+                        updateForm
+                            .transform((data) => {
+                                const payload: Record<string, unknown> = {
+                                    name: data.name,
+                                    destination_url: data.destination_url,
+                                    notes: data.notes,
+                                    is_active: data.is_active ? 1 : 0,
+                                    design: data.design,
+                                    remove_logo: data.remove_logo ? 1 : 0,
+                                    _method: 'patch',
+                                };
+
+                                if (data.logo) {
+                                    payload.logo = data.logo;
+                                }
+
+                                return payload as typeof data;
+                            })
+                            .post(route('qr-links.update', link.id), {
+                                forceFormData: true,
+                                preserveScroll: true,
+                                onSuccess: () => {
+                                    updateForm.setData('logo', null);
+                                    updateForm.setData('remove_logo', false);
+                                },
+                            });
                     }}
                     className="space-y-2"
                 >
@@ -239,7 +315,15 @@ function QrLinkCard({ link }: { link: QrLinkItem }) {
                         </button>
                         <button type="button" onClick={downloadQr} className="cyber-tool-button inline-flex items-center gap-2">
                             <Download size={14} />
-                            Download QR
+                            PNG
+                        </button>
+                        <button type="button" onClick={downloadSvg} className="cyber-tool-button inline-flex items-center gap-2">
+                            <Download size={14} />
+                            SVG
+                        </button>
+                        <button type="button" onClick={downloadHtml} className="cyber-tool-button inline-flex items-center gap-2">
+                            <FileCode size={14} />
+                            HTML
                         </button>
                         <a href={link.public_url} target="_blank" rel="noreferrer" className="cyber-tool-button inline-flex items-center gap-2">
                             <ExternalLink size={14} />

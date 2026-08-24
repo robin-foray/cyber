@@ -6,6 +6,8 @@ use App\Filament\Resources\QrLinks\QrLinkResource;
 use App\Models\QrLink;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -166,5 +168,97 @@ class QrLinkPageTest extends TestCase
         $this->actingAs($admin)
             ->get('/admin/qr-links')
             ->assertOk();
+    }
+
+    public function test_admin_can_save_qr_design_and_upload_logo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->admin()->create();
+        $link = QrLink::factory()->create(['created_by' => $admin->id]);
+        $logo = UploadedFile::fake()->image('brand.png', 180, 180);
+
+        $this->actingAs($admin)
+            ->from(route('qr-links.index'))
+            ->post(route('qr-links.update', $link), [
+                '_method' => 'patch',
+                'name' => $link->name,
+                'destination_url' => $link->destination_url,
+                'design' => [
+                    'style_id' => 'gold-classy',
+                    'dark' => '#112233',
+                    'frame' => 'poster',
+                    'caption' => 'Scan me',
+                    'embed_html' => '<section>{{qr}}</section>',
+                    'logo_size' => 24,
+                    'logo_pad' => 1,
+                    'logo_shape' => 'circle',
+                ],
+                'logo' => $logo,
+            ])
+            ->assertRedirect(route('qr-links.index'));
+
+        $link->refresh();
+        $design = $link->normalizedDesign();
+
+        $this->assertSame('gold-classy', $design['style_id']);
+        $this->assertSame('#112233', $design['dark']);
+        $this->assertSame('poster', $design['frame']);
+        $this->assertSame('Scan me', $design['caption']);
+        $this->assertSame('<section>{{qr}}</section>', $design['embed_html']);
+        $this->assertNotNull($link->logo_path);
+        Storage::disk('public')->assertExists($link->logo_path);
+
+        $this->actingAs($admin)
+            ->get(route('qr-links.logo', $link))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->get(route('qr-links.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('links.0.design.style_id', 'gold-classy')
+                ->where('links.0.has_logo', true));
+    }
+
+    public function test_user_cannot_fetch_another_users_qr_logo(): void
+    {
+        Storage::fake('public');
+
+        $owner = User::factory()->admin()->create();
+        $other = User::factory()->admin()->create();
+        $path = UploadedFile::fake()->image('secret.png')->store('qr-logos', 'public');
+        $link = QrLink::factory()->create([
+            'created_by' => $owner->id,
+            'logo_path' => $path,
+        ]);
+
+        $this->actingAs($other)
+            ->get(route('qr-links.logo', $link))
+            ->assertNotFound();
+    }
+
+    public function test_admin_can_remove_qr_logo(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->admin()->create();
+        $path = UploadedFile::fake()->image('old.png')->store('qr-logos', 'public');
+        $link = QrLink::factory()->create([
+            'created_by' => $admin->id,
+            'logo_path' => $path,
+        ]);
+
+        $this->actingAs($admin)
+            ->from(route('qr-links.index'))
+            ->post(route('qr-links.update', $link), [
+                '_method' => 'patch',
+                'remove_logo' => 1,
+            ])
+            ->assertRedirect(route('qr-links.index'));
+
+        $link->refresh();
+        $this->assertNull($link->logo_path);
+        Storage::disk('public')->assertMissing($path);
     }
 }

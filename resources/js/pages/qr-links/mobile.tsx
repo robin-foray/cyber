@@ -1,4 +1,10 @@
-import { QrStylePicker, useQrLinkPreview } from '@/components/cyber/qr-style-picker';
+import {
+    downloadDataUrl,
+    QrDesignEditor,
+    useDesignedQrPreview,
+    useQrLogoDataUrl,
+} from '@/components/cyber/qr-design-editor';
+import { normalizeQrLinkDesign, type QrLinkDesign } from '@/lib/qr-design';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Check, ChevronRight, Copy, Download, ExternalLink, Monitor, Plus, QrCode, Save, Share2, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type RefObject } from 'react';
@@ -15,6 +21,9 @@ type QrLinkItem = {
     last_scanned_at: string | null;
     is_active: boolean;
     updated_at: string | null;
+    design: QrLinkDesign;
+    logo_url: string | null;
+    has_logo: boolean;
 };
 
 type Props = {
@@ -183,8 +192,18 @@ function MobileLinkEditor({
         destination_url: link.destination_url,
         notes: link.notes ?? '',
         is_active: link.is_active,
+        design: normalizeQrLinkDesign(link.design),
+        logo: null as File | null,
+        remove_logo: false,
     });
-    const { styleId, selectStyle, qrDataUrl, styleLabel } = useQrLinkPreview(link.public_url, link.id, 280);
+    const logoDataUrl = useQrLogoDataUrl(updateForm.data.logo, link.logo_url, updateForm.data.remove_logo);
+    const { previewUrl, html, usesHtmlPreview } = useDesignedQrPreview(
+        link.public_url,
+        updateForm.data.design,
+        updateForm.data.name,
+        280,
+        logoDataUrl,
+    );
     const [copied, setCopied] = useState(false);
     const [saved, setSaved] = useState(false);
 
@@ -213,15 +232,9 @@ function MobileLinkEditor({
     }
 
     function downloadQr() {
-        if (!qrDataUrl) {
-            return;
+        if (previewUrl) {
+            downloadDataUrl(`qr-${link.slug}-${updateForm.data.design.style_id}.png`, previewUrl);
         }
-
-        const extension = qrDataUrl.startsWith('data:image/svg') ? 'svg' : 'png';
-        const anchor = document.createElement('a');
-        anchor.href = qrDataUrl;
-        anchor.download = `qr-${link.slug}-${styleId}.${extension}`;
-        anchor.click();
     }
 
     function deleteLink() {
@@ -235,8 +248,15 @@ function MobileLinkEditor({
     return (
         <article ref={detailRef} className="scroll-mt-24 space-y-4 rounded-2xl border border-primary/20 bg-surface-low/80 p-4">
             <div className="flex flex-col items-center gap-3">
-                {qrDataUrl ? (
-                    <img src={qrDataUrl} alt="" className="h-56 w-56 rounded-2xl border border-primary/25 bg-black p-2" />
+                {usesHtmlPreview && html ? (
+                    <iframe
+                        title={`${link.name} HTML preview`}
+                        srcDoc={html}
+                        sandbox=""
+                        className="h-56 w-56 rounded-2xl border border-primary/25 bg-white"
+                    />
+                ) : previewUrl ? (
+                    <img src={previewUrl} alt="" className="h-56 w-56 rounded-2xl border border-primary/25 bg-black object-contain p-2" />
                 ) : (
                     <div className="flex h-56 w-56 items-center justify-center rounded-2xl border border-primary/25 bg-black/40 text-primary">
                         <QrCode size={48} />
@@ -244,7 +264,8 @@ function MobileLinkEditor({
                 )}
                 <p className="text-center font-mono text-[11px] text-primary">{link.slug}</p>
                 <p className="text-center text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                    {link.scan_count} scan {link.last_scanned_at ? `// ${new Date(link.last_scanned_at).toLocaleString()}` : ''} // {styleLabel}
+                    {link.scan_count} scan {link.last_scanned_at ? `// ${new Date(link.last_scanned_at).toLocaleString()}` : ''} //{' '}
+                    {updateForm.data.design.style_id}
                 </p>
             </div>
 
@@ -258,18 +279,56 @@ function MobileLinkEditor({
                 </div>
             </div>
 
-            <QrStylePicker value={styleId} onChange={selectStyle} compact />
+            <QrDesignEditor
+                design={updateForm.data.design}
+                onChange={(design) => updateForm.setData('design', design)}
+                logoUrl={link.logo_url}
+                logoFile={updateForm.data.logo}
+                onLogoFile={(file) => {
+                    updateForm.setData('logo', file);
+                    updateForm.setData('remove_logo', false);
+                }}
+                removeLogo={updateForm.data.remove_logo}
+                onRemoveLogo={(remove) => {
+                    updateForm.setData('remove_logo', remove);
+                    if (remove) {
+                        updateForm.setData('logo', null);
+                    }
+                }}
+                compact
+            />
 
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
-                    updateForm.patch(route('qr-links.update', link.id), {
-                        preserveScroll: true,
-                        onSuccess: () => {
-                            setSaved(true);
-                            window.setTimeout(() => setSaved(false), 1600);
-                        },
-                    });
+                    updateForm
+                        .transform((data) => {
+                            const payload: Record<string, unknown> = {
+                                name: data.name,
+                                destination_url: data.destination_url,
+                                notes: data.notes,
+                                is_active: data.is_active ? 1 : 0,
+                                design: data.design,
+                                remove_logo: data.remove_logo ? 1 : 0,
+                                _method: 'patch',
+                            };
+
+                            if (data.logo) {
+                                payload.logo = data.logo;
+                            }
+
+                            return payload as typeof data;
+                        })
+                        .post(route('qr-links.update', link.id), {
+                            forceFormData: true,
+                            preserveScroll: true,
+                            onSuccess: () => {
+                                updateForm.setData('logo', null);
+                                updateForm.setData('remove_logo', false);
+                                setSaved(true);
+                                window.setTimeout(() => setSaved(false), 1600);
+                            },
+                        });
                 }}
                 className="space-y-3"
             >

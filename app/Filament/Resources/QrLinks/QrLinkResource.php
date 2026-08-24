@@ -13,11 +13,15 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -56,6 +60,55 @@ class QrLinkResource extends Resource
                 ->columnSpanFull(),
             Textarea::make('notes')->rows(2)->columnSpanFull(),
             Toggle::make('is_active')->default(true),
+            Section::make('Megjelenés')
+                ->description('Stílus, logó, keret és egyedi HTML a nyomtatható QR-hez.')
+                ->schema([
+                    Select::make('design.style_id')
+                        ->label('Stílus preset')
+                        ->options(array_combine(QrLink::STYLE_IDS, QrLink::STYLE_IDS))
+                        ->default('cyber'),
+                    ColorPicker::make('design.dark')->label('Sötét szín')->nullable(),
+                    ColorPicker::make('design.light')->label('Világos szín')->nullable(),
+                    Select::make('design.module_shape')
+                        ->label('Modul forma')
+                        ->options(array_combine(QrLink::MODULE_SHAPES, QrLink::MODULE_SHAPES))
+                        ->placeholder('Preset alap'),
+                    Select::make('design.eye_style')
+                        ->label('Eye stílus')
+                        ->options(array_combine(QrLink::EYE_STYLES, QrLink::EYE_STYLES))
+                        ->placeholder('Preset alap'),
+                    Select::make('design.frame')
+                        ->label('Keret')
+                        ->options(array_combine(QrLink::FRAMES, QrLink::FRAMES))
+                        ->default('bare'),
+                    TextInput::make('design.logo_size')
+                        ->label('Logó méret %')
+                        ->numeric()
+                        ->minValue(10)
+                        ->maxValue(32)
+                        ->default(22),
+                    Select::make('design.logo_shape')
+                        ->label('Logó forma')
+                        ->options(array_combine(QrLink::LOGO_SHAPES, QrLink::LOGO_SHAPES))
+                        ->default('rounded'),
+                    Toggle::make('design.logo_pad')->label('Logó háttér')->default(true),
+                    TextInput::make('design.caption')->label('Felirat')->maxLength(120),
+                    TextInput::make('design.subtitle')->label('Alcím')->maxLength(200),
+                    FileUpload::make('logo_path')
+                        ->label('Logó')
+                        ->disk('public')
+                        ->directory('qr-logos')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'])
+                        ->maxSize(2048)
+                        ->columnSpanFull(),
+                    Textarea::make('design.embed_html')
+                        ->label('Beágyazott HTML')
+                        ->rows(8)
+                        ->helperText('Helyőrzők: {{qr}} {{name}} {{url}} {{caption}} {{subtitle}}')
+                        ->columnSpanFull(),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
             Placeholder::make('preview')
                 ->label('Nyomtatható QR')
                 ->content(fn (?QrLink $record): HtmlString|string => $record
@@ -118,6 +171,30 @@ class QrLinkResource extends Resource
     public static function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = Auth::id();
+
+        return self::normalizeAppearanceData($data);
+    }
+
+    public static function mutateFormDataBeforeSave(array $data): array
+    {
+        return self::normalizeAppearanceData($data);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public static function normalizeAppearanceData(array $data): array
+    {
+        if (is_array($data['logo_path'] ?? null)) {
+            $data['logo_path'] = $data['logo_path'][0] ?? null;
+        }
+
+        if (($data['logo_path'] ?? null) === [] || blank($data['logo_path'] ?? null)) {
+            $data['logo_path'] = null;
+        }
+
+        $data['design'] = QrLink::normalizeDesign($data['design'] ?? []);
 
         return $data;
     }
