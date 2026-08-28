@@ -248,7 +248,7 @@ class ContentService
         $settings = $this->settings();
 
         return [
-            'terminal' => $settings['topbar_terminal'] ?? 'Kezdőlap',
+            'terminal' => $settings['topbar_terminal'] ?? 'Portfólió',
             'devTools' => $settings['topbar_dev_tools'] ?? 'Eszközök',
             'accessGate' => $settings['topbar_access_gate'] ?? 'Bejelentkezés',
             'nodeRegistration' => $settings['topbar_node_registration'] ?? 'Regisztráció',
@@ -277,10 +277,10 @@ class ContentService
     private function defaultHero(): array
     {
         return [
-            'badge' => 'Foray.hu · Családi hub',
-            'titleLine' => 'Minden egy helyen —',
-            'titleAccent' => 'Foray.hu-n',
-            'ctaLabel' => 'Fedezd fel',
+            'badge' => 'Foray.hu · Fejlesztői portfólió',
+            'titleLine' => 'Full-stack fejlesztő —',
+            'titleAccent' => 'kód & projektek',
+            'ctaLabel' => 'Portfólió',
             'backgroundImage' => '/assets/hero-cyber-archer.png',
         ];
     }

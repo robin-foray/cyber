@@ -35,10 +35,10 @@ class CmsSeeder extends Seeder
     private function seedHero(): void
     {
         $this->upsertSingleton(HeroContent::class, [
-            'badge' => 'Foray.hu · Családi hub',
-            'title_line' => 'Minden egy helyen —',
-            'title_accent' => 'Foray.hu-n',
-            'cta_label' => 'Fedezd fel',
+            'badge' => 'Foray.hu · Fejlesztői portfólió',
+            'title_line' => 'Full-stack fejlesztő —',
+            'title_accent' => 'kód & projektek',
+            'cta_label' => 'Portfólió',
             'background_image' => '/assets/hero-cyber-archer.png',
         ]);
     }
@@ -142,14 +142,14 @@ class CmsSeeder extends Seeder
     private function seedSiteSettings(): void
     {
         $settings = [
-            'footer_copyright' => '(c) 2026 Foray.hu',
-            'welcome_page_title' => 'Foray.hu kezdőlap',
+            'footer_copyright' => '(c) 2026 Foray.hu · Developer Portfolio',
+            'welcome_page_title' => 'Foray.hu · Portfólió',
             'integrity_section_title' => 'Oldal áttekintés',
             'stacks_section_title' => 'Technológiák',
             'stacks_heading_prefix' => 'Használt',
             'stacks_heading_accent' => 'technológiák',
             'stacks_panel_hint' => 'Kattints egy technológiára a részletekért',
-            'topbar_terminal' => 'Kezdőlap',
+            'topbar_terminal' => 'Portfólió',
             'topbar_dev_tools' => 'Eszközök',
             'topbar_access_gate' => 'Bejelentkezés',
             'topbar_node_registration' => 'Regisztráció',
@@ -197,7 +197,7 @@ class CmsSeeder extends Seeder
                 'section_label' => 'Projektek',
                 'title' => 'Aktív',
                 'title_accent' => 'munkák',
-                'body' => 'Itt jelennek meg a futó projektek és kiadások, ahogy a lista bővül.',
+                'body' => 'Kiemelt projektek, demók és side projectek — ahogy a portfólió bővül, itt jelennek meg.',
                 'sort_order' => 1,
             ],
             [
@@ -219,7 +219,7 @@ class CmsSeeder extends Seeder
     private function seedNavigation(): void
     {
         $topLevel = [
-            ['label' => 'Kezdőlap', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Portfólió', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'requires_auth' => false, 'is_group' => false],
             ['label' => 'Gépek', 'href' => '/machines', 'icon' => 'Cpu', 'sort_order' => 3, 'requires_auth' => false, 'is_group' => false],
             ['label' => 'Tech stack', 'href' => '/tech-stack', 'icon' => 'Layers', 'sort_order' => 4, 'requires_auth' => false, 'is_group' => false],
             ['label' => 'Hasznos oldalak', 'href' => '/useful-sites', 'icon' => 'Globe', 'sort_order' => 5, 'requires_auth' => false, 'is_group' => false],

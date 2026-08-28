@@ -19,7 +19,7 @@ class WelcomePreviewPageTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('welcome')
-                ->where('cms.hero.titleAccent', 'Foray.hu-n')
+                ->where('cms.hero.titleAccent', 'kód & projektek')
             );
     }
 }

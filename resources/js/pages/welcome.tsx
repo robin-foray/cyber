@@ -58,7 +58,7 @@ const integrityStorageKey = 'foray.welcome.integrity.open';
 
 export default function Welcome({ stacks = [], integrity = [], telemetry = null }: WelcomeProps) {
     const { cms } = usePage<SharedData>().props;
-    const pageTitle = cms.settings.welcome_page_title ?? 'Foray.hu kezdőlap';
+    const pageTitle = cms.settings.welcome_page_title ?? 'Foray.hu · Portfólió';
     const integrityTitle = cms.settings.integrity_section_title ?? 'Oldal áttekintés';
     const stacksTitle = cms.settings.stacks_section_title ?? 'Technológiák';
     const stacksHeadingPrefix = cms.settings.stacks_heading_prefix ?? 'Használt';
