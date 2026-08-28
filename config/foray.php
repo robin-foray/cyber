@@ -14,6 +14,10 @@ return [
         'public_base_url' => env('FORAY_QR_PUBLIC_BASE_URL', env('APP_URL', 'http://localhost')),
     ],
 
+    'preview' => [
+        'welcome' => env('FORAY_WELCOME_PREVIEW', false),
+    ],
+
     'mail' => [
         'domain' => env('FORAY_MAIL_DOMAIN', 'foray.hu'),
         'display_name' => env('FORAY_MAIL_DISPLAY_NAME', 'Foray Family Mail'),
