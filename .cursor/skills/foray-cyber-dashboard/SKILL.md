@@ -47,4 +47,17 @@ php artisan test
 php artisan db:seed --class=MachineSeeder
 ```
 
+## Welcome page copy (kezdőlap)
+
+CMS labels live in `CmsSeeder` + `SiteSettingResource`; hardcoded UI strings in `welcome.tsx` use plain Hungarian.
+
+| Area | Key files |
+|------|-----------|
+| Hero, console, sections | `CmsSeeder` → `HeroContent`, `HomeConsoleContent`, `PageSection`, `SiteSetting` |
+| Sidebar nav labels | `CmsSeeder` → `NavigationItem` (match by `href`) |
+| Cool stuff submenu | `resources/js/lib/cool-stuff-menu.ts` (category + link labels) |
+| Telemetry chips | `WelcomeController` + `welcome.tsx` |
+
+Re-seed after label changes: `php artisan db:seed --class=CmsSeeder`
+
 Admin (seed): `robin.foray@gmail.com` / `Cursor2026!` (`AdminUserSeeder`)

@@ -58,12 +58,12 @@ const integrityStorageKey = 'foray.welcome.integrity.open';
 
 export default function Welcome({ stacks = [], integrity = [], telemetry = null }: WelcomeProps) {
     const { cms } = usePage<SharedData>().props;
-    const pageTitle = cms.settings.welcome_page_title ?? 'Neural Dev Dashboard';
-    const integrityTitle = cms.settings.integrity_section_title ?? 'Integrity_Check';
-    const stacksTitle = cms.settings.stacks_section_title ?? 'STACKS_PROTOCOL';
-    const stacksHeadingPrefix = cms.settings.stacks_heading_prefix ?? 'Tech';
-    const stacksHeadingAccent = cms.settings.stacks_heading_accent ?? 'Stack';
-    const stacksPanelHint = cms.settings.stacks_panel_hint ?? 'live module registry // click a cell to open stack telemetry';
+    const pageTitle = cms.settings.welcome_page_title ?? 'Foray.hu kezdőlap';
+    const integrityTitle = cms.settings.integrity_section_title ?? 'Oldal áttekintés';
+    const stacksTitle = cms.settings.stacks_section_title ?? 'Technológiák';
+    const stacksHeadingPrefix = cms.settings.stacks_heading_prefix ?? 'Használt';
+    const stacksHeadingAccent = cms.settings.stacks_heading_accent ?? 'technológiák';
+    const stacksPanelHint = cms.settings.stacks_panel_hint ?? 'Kattints egy technológiára a részletekért';
 
     const integrityItems = integrity.length
         ? integrity.map((item) => ({
@@ -126,7 +126,7 @@ export default function Welcome({ stacks = [], integrity = [], telemetry = null 
                 <CyberExpandablePanel
                     storageKey={consoleStorageKey}
                     title={cms.homeConsole.sectionLabel}
-                    subtitle="input // output preview channel"
+                    subtitle="Példa bemenet és eredmény"
                     className="cyber-grid lg:col-span-8"
                     trailing={
                         <Link
@@ -134,17 +134,17 @@ export default function Welcome({ stacks = [], integrity = [], telemetry = null 
                             onClick={(event) => event.stopPropagation()}
                             className="hidden items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-[9px] font-bold tracking-widest text-primary uppercase transition hover:bg-primary hover:text-black sm:inline-flex"
                         >
-                            <Terminal size={12} /> Open_Tool
+                            <Terminal size={12} /> Eszköz megnyitása
                         </Link>
                     }
                 >
                     <div className="grid min-h-52 grid-cols-1 gap-6 md:grid-cols-2">
                         <div className="rounded-2xl border border-white/5 bg-black/40 p-6 font-mono text-[11px]">
-                            <p className="mb-2 text-primary/30">// INPUT_BUFFER</p>
+                            <p className="mb-2 text-primary/30">Bemenet</p>
                             <code className="break-words text-on-surface-variant">{cms.homeConsole.inputSample}</code>
                         </div>
                         <div className="rounded-2xl border border-primary/20 bg-black/60 p-6 font-mono text-[11px]">
-                            <p className="mb-2 text-primary">// OUTPUT</p>
+                            <p className="mb-2 text-primary">Eredmény</p>
                             <code className="break-words text-primary">{cms.homeConsole.outputSample}</code>
                         </div>
                     </div>
@@ -153,7 +153,7 @@ export default function Welcome({ stacks = [], integrity = [], telemetry = null 
                             href="/dev-tools/console"
                             className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-[10px] font-bold tracking-widest text-primary uppercase"
                         >
-                            <Terminal size={12} /> Open console tool
+                            <Terminal size={12} /> JSON formázó megnyitása
                         </Link>
                     </div>
                 </CyberExpandablePanel>
@@ -163,17 +163,17 @@ export default function Welcome({ stacks = [], integrity = [], telemetry = null 
                     title={integrityTitle}
                     subtitle={
                         telemetry
-                            ? `avg ${telemetry.avg_integrity}% // ${telemetry.counts.stacks} modules`
-                            : 'skill channel integrity'
+                            ? `átlag ${telemetry.avg_integrity}% · ${telemetry.counts.stacks} technológia`
+                            : 'Technológiai szintek áttekintése'
                     }
                     className="lg:col-span-4"
                 >
                     {telemetry && (
                         <div className="mb-5 grid grid-cols-2 gap-2">
-                            <TelemetryChip label="Status" value={telemetry.status} />
-                            <TelemetryChip label="Node" value={telemetry.node} />
-                            <TelemetryChip label="Layers" value={String(telemetry.counts.layers)} />
-                            <TelemetryChip label="Top_Layer" value={telemetry.top_layer ?? 'n/a'} />
+                            <TelemetryChip label="Állapot" value={telemetry.status} />
+                            <TelemetryChip label="Szerver" value={telemetry.node} />
+                            <TelemetryChip label="Kategóriák" value={String(telemetry.counts.layers)} />
+                            <TelemetryChip label="Legnagyobb csoport" value={telemetry.top_layer ?? 'nincs adat'} />
                         </div>
                     )}
                     <div className="space-y-5">
@@ -302,7 +302,7 @@ function StacksSection({
                         href="/tech-stack"
                         className="inline-flex w-fit items-center gap-2 text-[10px] font-bold tracking-widest text-primary uppercase transition hover:underline"
                     >
-                        Open full registry <ExternalLink size={12} />
+                        Teljes lista megnyitása <ExternalLink size={12} />
                     </Link>
                 </div>
             </div>
@@ -391,7 +391,7 @@ function StacksSection({
                             <p className="text-sm leading-relaxed text-on-surface-variant">{selected.summary}</p>
 
                             <div>
-                                <p className="mb-2 text-[10px] font-bold tracking-widest text-primary uppercase">Capabilities</p>
+                                <p className="mb-2 text-[10px] font-bold tracking-widest text-primary uppercase">Mit tud</p>
                                 <ul className="space-y-2">
                                     {selected.bullets.map((bullet) => (
                                         <li
@@ -407,7 +407,7 @@ function StacksSection({
 
                             <div>
                                 <div className="mb-2 flex items-center justify-between text-[10px] font-bold tracking-widest uppercase">
-                                    <span className="text-on-surface-variant">Integrity</span>
+                                    <span className="text-on-surface-variant">Ismerettség</span>
                                     <span className="text-primary">{selected.level}%</span>
                                 </div>
                                 <div className="h-2 overflow-hidden rounded-full bg-black/40">
@@ -427,7 +427,7 @@ function StacksSection({
                                     rel="noreferrer"
                                     className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-[10px] font-bold tracking-widest text-primary uppercase transition hover:bg-primary hover:text-black"
                                 >
-                                    Open Docs <ExternalLink size={14} />
+                                    Dokumentáció <ExternalLink size={14} />
                                 </a>
                             )}
                         </div>
@@ -437,7 +437,7 @@ function StacksSection({
                                 <Layers size={24} />
                             </div>
                             <p className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">
-                                select_stack_cell // telemetry panel idle
+                                Válassz egy technológiát a részletek megtekintéséhez
                             </p>
                         </div>
                     )}

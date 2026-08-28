@@ -79,8 +79,8 @@ class WelcomeController extends Controller
                 'stacks' => $stacks,
                 'integrity' => $integrity,
                 'telemetry' => [
-                    'status' => 'online',
-                    'node' => 'foray-core',
+                    'status' => 'Elérhető',
+                    'node' => 'foray.hu',
                     'protocol' => 'stacks/v1',
                     'avg_integrity' => $avgIntegrity,
                     'counts' => [

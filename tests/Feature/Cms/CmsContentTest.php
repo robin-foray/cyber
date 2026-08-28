@@ -19,14 +19,14 @@ class CmsContentTest extends TestCase
         $payload = app(ContentService::class)->sharedPayload();
 
         $this->assertNotEmpty($payload['navigation']);
-        $this->assertSame('Digital Future', $payload['hero']['titleAccent']);
+        $this->assertSame('Foray.hu-n', $payload['hero']['titleAccent']);
         $this->assertCount(10, $payload['stacks']);
         $this->assertNotEmpty($payload['tickers']['topbar']);
         $this->assertNotEmpty($payload['deploymentSteps']);
         $this->assertArrayHasKey('console', $payload['devToolPages']);
         $this->assertSame('DEV_TOOL_01 // JSON_FORMATTER', $payload['devToolPages']['console']['headerLabel']);
         $this->assertCount(2, $payload['pageSections']);
-        $this->assertSame('TERMINAL', $payload['topbarLabels']['terminal']);
+        $this->assertSame('Kezdőlap', $payload['topbarLabels']['terminal']);
     }
 
     public function test_authenticated_admin_can_open_filament_dashboard(): void

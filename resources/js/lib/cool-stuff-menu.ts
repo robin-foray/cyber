@@ -13,39 +13,39 @@ export type CoolStuffCategory = {
 export const coolStuffMenu = [
     {
         id: 'dev-tools',
-        label: 'DEV_TOOLS',
+        label: 'Fejlesztői eszközök',
         items: [
-            { label: 'CONSOLE', href: '/dev-tools/console', page: 'dev-tools/console' },
-            { label: 'RUNTIME', href: '/dev-tools/runtime', page: 'dev-tools/runtime' },
-            { label: 'HASH_GENERATOR', href: '/dev-tools/hash-generator', page: 'dev-tools/hash-generator' },
-            { label: 'QR_GENERATOR', href: '/dev-tools/qr-generator', page: 'dev-tools/qr-generator' },
-            { label: 'CRON_GURU', href: '/dev-tools/cron-guru', page: 'dev-tools/cron-guru' },
-            { label: 'IMAGE_COMPRESSOR', href: '/dev-tools/image-compressor', page: 'dev-tools/image-compressor' },
-            { label: 'DEPLOYMENTS', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
+            { label: 'JSON formázó', href: '/dev-tools/console', page: 'dev-tools/console' },
+            { label: 'Base64 kodek', href: '/dev-tools/runtime', page: 'dev-tools/runtime' },
+            { label: 'Hash generátor', href: '/dev-tools/hash-generator', page: 'dev-tools/hash-generator' },
+            { label: 'QR generátor', href: '/dev-tools/qr-generator', page: 'dev-tools/qr-generator' },
+            { label: 'Cron segéd', href: '/dev-tools/cron-guru', page: 'dev-tools/cron-guru' },
+            { label: 'Kép tömörítő', href: '/dev-tools/image-compressor', page: 'dev-tools/image-compressor' },
+            { label: 'Telepítések', href: '/dev-tools/deployments', page: 'dev-tools/deployments' },
         ],
     },
     {
         id: 'syntax',
-        label: 'SYNTAX',
+        label: 'Szintaxis',
         items: [
-            { label: 'PHP_SYNTAX', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
-            { label: 'HTML_SYNTAX', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
+            { label: 'PHP szintaxis', href: '/dev-tools/php-syntax-checker', page: 'dev-tools/php-syntax-checker' },
+            { label: 'HTML szintaxis', href: '/dev-tools/html-syntax-checker', page: 'dev-tools/html-syntax-checker' },
         ],
     },
     {
         id: 'ui',
-        label: 'UI',
-        items: [{ label: 'COLOR_CONVERTER', href: '/dev-tools/color-converter', page: 'dev-tools/color-converter' }],
+        label: 'Megjelenés',
+        items: [{ label: 'Színkonverter', href: '/dev-tools/color-converter', page: 'dev-tools/color-converter' }],
     },
     {
         id: 'pattern',
-        label: 'PATTERN',
-        items: [{ label: 'REGEX_LAB', href: '/dev-tools/regex-lab', page: 'dev-tools/regex-lab' }],
+        label: 'Minták',
+        items: [{ label: 'Regex labor', href: '/dev-tools/regex-lab', page: 'dev-tools/regex-lab' }],
     },
     {
         id: 'data',
-        label: 'DATA',
-        items: [{ label: 'SQL_BUILDER', href: '/dev-tools/sql-builder', page: 'dev-tools/sql-builder' }],
+        label: 'Adat',
+        items: [{ label: 'SQL építő', href: '/dev-tools/sql-builder', page: 'dev-tools/sql-builder' }],
     },
 ] as const satisfies readonly CoolStuffCategory[];
 

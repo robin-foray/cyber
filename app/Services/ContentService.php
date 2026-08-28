@@ -248,11 +248,11 @@ class ContentService
         $settings = $this->settings();
 
         return [
-            'terminal' => $settings['topbar_terminal'] ?? 'TERMINAL',
-            'devTools' => $settings['topbar_dev_tools'] ?? 'DEV_TOOLS',
-            'accessGate' => $settings['topbar_access_gate'] ?? 'ACCESS_GATE',
-            'nodeRegistration' => $settings['topbar_node_registration'] ?? 'NODE_REGISTRATION',
-            'profile' => $settings['topbar_profile'] ?? 'PROFILE',
+            'terminal' => $settings['topbar_terminal'] ?? 'Kezdőlap',
+            'devTools' => $settings['topbar_dev_tools'] ?? 'Eszközök',
+            'accessGate' => $settings['topbar_access_gate'] ?? 'Bejelentkezés',
+            'nodeRegistration' => $settings['topbar_node_registration'] ?? 'Regisztráció',
+            'profile' => $settings['topbar_profile'] ?? 'Profil',
         ];
     }
 
@@ -277,10 +277,10 @@ class ContentService
     private function defaultHero(): array
     {
         return [
-            'badge' => 'Deployment Protocol // Archive_01',
-            'titleLine' => 'Architecting the',
-            'titleAccent' => 'Digital Future',
-            'ctaLabel' => 'LAUNCH_CORE',
+            'badge' => 'Foray.hu · Családi hub',
+            'titleLine' => 'Minden egy helyen —',
+            'titleAccent' => 'Foray.hu-n',
+            'ctaLabel' => 'Fedezd fel',
             'backgroundImage' => '/assets/hero-cyber-archer.png',
         ];
     }
@@ -288,9 +288,9 @@ class ContentService
     private function defaultHomeConsole(): array
     {
         return [
-            'sectionLabel' => 'DEV_TOOLS_CONSOLE',
-            'inputSample' => '{ "node": "0x4a2b", "status": "sync" }',
-            'outputSample' => '{ "verified": true, "latency": "0.4ms" }',
+            'sectionLabel' => 'Fejlesztői eszközök',
+            'inputSample' => '{ "név": "foray", "állapot": "kész" }',
+            'outputSample' => '{ "ellenőrizve": true, "eredmény": "rendben" }',
         ];
     }
 }

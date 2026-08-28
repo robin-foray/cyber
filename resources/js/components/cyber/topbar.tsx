@@ -89,7 +89,7 @@ export default function CyberTopbar({ currentUrl, isSidebarOpen, user, guestPass
                         onClick={handleAuthClick}
                         className="bg-primary rounded-lg px-6 py-2 text-[10px] font-bold text-black uppercase transition-all hover:shadow-[0_0_15px_#ccff00]"
                     >
-                        {user ? 'Node_Profile' : guestPass ? 'Guest_Node' : 'Establish_Link'}
+                        {user ? 'Profil' : guestPass ? 'Vendég' : 'Bejelentkezés'}
                     </Link>
 
                     {(user || guestPass) && (

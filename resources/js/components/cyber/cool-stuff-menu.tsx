@@ -59,8 +59,8 @@ export default function CoolStuffMenu({ currentUrl, isOpen, onCollapsedOpen, onT
         <div className="space-y-1">
             <button
                 type="button"
-                aria-label="COOL_STUFF"
-                title="COOL_STUFF"
+                aria-label="Eszközök"
+                title="Eszközök"
                 onClick={() => {
                     if (full) {
                         onToggle();
@@ -76,7 +76,7 @@ export default function CoolStuffMenu({ currentUrl, isOpen, onCollapsedOpen, onT
                 <Sparkles size={18} />
                 {full && (
                     <>
-                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">COOL_STUFF</span>
+                        <span className="flex-1 text-left text-[11px] font-bold tracking-widest">Eszközök</span>
                         <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </>
                 )}
