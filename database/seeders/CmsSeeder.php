@@ -35,10 +35,10 @@ class CmsSeeder extends Seeder
     private function seedHero(): void
     {
         $this->upsertSingleton(HeroContent::class, [
-            'badge' => 'Deployment Protocol // Archive_01',
-            'title_line' => 'Architecting the',
-            'title_accent' => 'Digital Future',
-            'cta_label' => 'LAUNCH_CORE',
+            'badge' => 'Foray.hu · Fejlesztői portfólió',
+            'title_line' => 'Full-stack fejlesztő —',
+            'title_accent' => 'kód & projektek',
+            'cta_label' => 'Portfólió',
             'background_image' => '/assets/hero-cyber-archer.png',
         ]);
     }
@@ -46,18 +46,18 @@ class CmsSeeder extends Seeder
     private function seedHomeConsole(): void
     {
         $this->upsertSingleton(HomeConsoleContent::class, [
-            'section_label' => 'DEV_TOOLS_CONSOLE',
-            'input_sample' => '{ "node": "0x4a2b", "status": "sync" }',
-            'output_sample' => '{ "verified": true, "latency": "0.4ms" }',
+            'section_label' => 'Fejlesztői eszközök',
+            'input_sample' => '{ "név": "foray", "állapot": "kész" }',
+            'output_sample' => '{ "ellenőrizve": true, "eredmény": "rendben" }',
         ]);
     }
 
     private function seedSkillMetrics(): void
     {
         foreach ([
-            ['label' => 'REACT_ECOSYSTEM', 'progress' => 92, 'sort_order' => 1],
-            ['label' => 'LARAVEL_RUNTIME', 'progress' => 88, 'sort_order' => 2],
-            ['label' => 'NODE_PIPELINE', 'progress' => 75, 'sort_order' => 3],
+            ['label' => 'React', 'progress' => 92, 'sort_order' => 1],
+            ['label' => 'Laravel', 'progress' => 88, 'sort_order' => 2],
+            ['label' => 'Node.js', 'progress' => 75, 'sort_order' => 3],
         ] as $skill) {
             SkillMetric::query()->updateOrCreate(
                 ['label' => $skill['label']],
@@ -92,15 +92,15 @@ class CmsSeeder extends Seeder
     private function seedTickerMessages(): void
     {
         foreach ([
-            ['location' => 'topbar', 'text' => '// build: stable', 'is_highlighted' => false, 'sort_order' => 1],
-            ['location' => 'topbar', 'text' => 'npm_run_dev --watch', 'is_highlighted' => true, 'sort_order' => 2],
-            ['location' => 'topbar', 'text' => 'inertia.react.pipeline_online', 'is_highlighted' => false, 'sort_order' => 3],
-            ['location' => 'topbar', 'text' => 'latency: 0.4ms', 'is_highlighted' => true, 'sort_order' => 4],
-            ['location' => 'topbar', 'text' => 'deploy_queue: clear', 'is_highlighted' => false, 'sort_order' => 5],
-            ['location' => 'footer', 'text' => 'node_identity synced', 'is_highlighted' => false, 'sort_order' => 1],
-            ['location' => 'footer', 'text' => 'profile_channel online', 'is_highlighted' => true, 'sort_order' => 2],
-            ['location' => 'footer', 'text' => 'admin_gate armed', 'is_highlighted' => false, 'sort_order' => 3],
-            ['location' => 'footer', 'text' => 'register_core ready', 'is_highlighted' => true, 'sort_order' => 4],
+            ['location' => 'topbar', 'text' => 'Oldal: működik', 'is_highlighted' => false, 'sort_order' => 1],
+            ['location' => 'topbar', 'text' => 'Fejlesztői mód aktív', 'is_highlighted' => true, 'sort_order' => 2],
+            ['location' => 'topbar', 'text' => 'Tech stack betöltve', 'is_highlighted' => false, 'sort_order' => 3],
+            ['location' => 'topbar', 'text' => 'Válaszidő: gyors', 'is_highlighted' => true, 'sort_order' => 4],
+            ['location' => 'topbar', 'text' => 'Frissítések: naprakész', 'is_highlighted' => false, 'sort_order' => 5],
+            ['location' => 'footer', 'text' => 'Profil szinkronizálva', 'is_highlighted' => false, 'sort_order' => 1],
+            ['location' => 'footer', 'text' => 'Bejelentkezés aktív', 'is_highlighted' => true, 'sort_order' => 2],
+            ['location' => 'footer', 'text' => 'Admin felület elérhető', 'is_highlighted' => false, 'sort_order' => 3],
+            ['location' => 'footer', 'text' => 'Eszközök készen állnak', 'is_highlighted' => true, 'sort_order' => 4],
         ] as $ticker) {
             TickerMessage::query()->updateOrCreate(
                 ['location' => $ticker['location'], 'sort_order' => $ticker['sort_order']],
@@ -142,18 +142,18 @@ class CmsSeeder extends Seeder
     private function seedSiteSettings(): void
     {
         $settings = [
-            'footer_copyright' => '(c)2026 DEV_HUB_CORE.',
-            'welcome_page_title' => 'Neural Dev Dashboard',
-            'integrity_section_title' => 'Integrity_Check',
-            'stacks_section_title' => 'STACKS_PROTOCOL',
-            'stacks_heading_prefix' => 'Tech',
-            'stacks_heading_accent' => 'Stack',
-            'stacks_panel_hint' => 'live module registry // click a cell to open stack telemetry',
-            'topbar_terminal' => 'TERMINAL',
-            'topbar_dev_tools' => 'DEV_TOOLS',
-            'topbar_access_gate' => 'ACCESS_GATE',
-            'topbar_node_registration' => 'NODE_REGISTRATION',
-            'topbar_profile' => 'PROFILE',
+            'footer_copyright' => '(c) 2026 Foray.hu · Developer Portfolio',
+            'welcome_page_title' => 'Foray.hu · Portfólió',
+            'integrity_section_title' => 'Oldal áttekintés',
+            'stacks_section_title' => 'Technológiák',
+            'stacks_heading_prefix' => 'Használt',
+            'stacks_heading_accent' => 'technológiák',
+            'stacks_panel_hint' => 'Kattints egy technológiára a részletekért',
+            'topbar_terminal' => 'Portfólió',
+            'topbar_dev_tools' => 'Eszközök',
+            'topbar_access_gate' => 'Bejelentkezés',
+            'topbar_node_registration' => 'Regisztráció',
+            'topbar_profile' => 'Profil',
         ];
 
         foreach ($settings as $key => $value) {
@@ -194,18 +194,18 @@ class CmsSeeder extends Seeder
         foreach ([
             [
                 'slug' => 'projects',
-                'section_label' => 'PROJECTS_PROTOCOL',
-                'title' => 'Active',
-                'title_accent' => 'Deployments',
-                'body' => 'Pipeline snapshots and release nodes will surface here as the project archive grows.',
+                'section_label' => 'Projektek',
+                'title' => 'Aktív',
+                'title_accent' => 'munkák',
+                'body' => 'Kiemelt projektek, demók és side projectek — ahogy a portfólió bővül, itt jelennek meg.',
                 'sort_order' => 1,
             ],
             [
                 'slug' => 'logs',
-                'section_label' => 'SYSTEM_LOGS',
-                'title' => 'Neural',
-                'title_accent' => 'Telemetry',
-                'body' => 'Runtime traces, build events, and operator notes will stream into this channel.',
+                'section_label' => 'Naplók',
+                'title' => 'Rendszer',
+                'title_accent' => 'események',
+                'body' => 'Build üzenetek, frissítések és egyéb rendszeresemények itt fognak megjelenni.',
                 'sort_order' => 2,
             ],
         ] as $section) {
@@ -219,49 +219,48 @@ class CmsSeeder extends Seeder
     private function seedNavigation(): void
     {
         $topLevel = [
-            ['label' => 'TERMINAL', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'MACHINES', 'href' => '/machines', 'icon' => 'Cpu', 'sort_order' => 3, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'TECH_STACK', 'href' => '/tech-stack', 'icon' => 'Layers', 'sort_order' => 4, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'USEFUL_SITES', 'href' => '/useful-sites', 'icon' => 'Globe', 'sort_order' => 5, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'FREE_APIS', 'href' => '/free-apis', 'icon' => 'Database', 'sort_order' => 6, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'DYNAMIC_QR', 'href' => '/qr-links', 'icon' => 'QrCode', 'sort_order' => 7, 'requires_auth' => true, 'is_group' => false],
-            ['label' => 'PROJECTS', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 8, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'SYSTEM_LOGS', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 9, 'requires_auth' => false, 'is_group' => false],
-            ['label' => 'PROFILE', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 10, 'requires_auth' => true, 'is_group' => false],
+            ['label' => 'Portfólió', 'href' => '/', 'icon' => 'Terminal', 'sort_order' => 1, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Gépek', 'href' => '/machines', 'icon' => 'Cpu', 'sort_order' => 3, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Tech stack', 'href' => '/tech-stack', 'icon' => 'Layers', 'sort_order' => 4, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Hasznos oldalak', 'href' => '/useful-sites', 'icon' => 'Globe', 'sort_order' => 5, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Ingyenes API-k', 'href' => '/free-apis', 'icon' => 'Database', 'sort_order' => 6, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'QR linkek', 'href' => '/qr-links', 'icon' => 'QrCode', 'sort_order' => 7, 'requires_auth' => true, 'is_group' => false],
+            ['label' => 'Projektek', 'href' => '/#projects', 'icon' => 'Share2', 'sort_order' => 8, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Naplók', 'href' => '/#logs', 'icon' => 'FileText', 'sort_order' => 9, 'requires_auth' => false, 'is_group' => false],
+            ['label' => 'Profil', 'href' => '/profile', 'icon' => 'Command', 'sort_order' => 10, 'requires_auth' => true, 'is_group' => false],
         ];
 
         foreach ($topLevel as $item) {
             NavigationItem::query()->updateOrCreate(
-                ['label' => $item['label'], 'parent_id' => null],
+                ['href' => $item['href'], 'parent_id' => null],
                 $item + ['is_active' => true],
             );
         }
 
         $devTools = NavigationItem::query()->updateOrCreate(
-            ['label' => 'COOL_STUFF', 'parent_id' => null],
+            ['icon' => 'Sparkles', 'parent_id' => null, 'is_group' => true],
             [
+                'label' => 'Eszközök',
                 'href' => null,
-                'icon' => 'Sparkles',
                 'sort_order' => 2,
                 'is_active' => true,
-                'is_group' => true,
                 'requires_auth' => false,
             ],
         );
 
         foreach ([
-            ['label' => 'CONSOLE', 'href' => '/dev-tools/console', 'sort_order' => 1],
-            ['label' => 'RUNTIME', 'href' => '/dev-tools/runtime', 'sort_order' => 2],
-            ['label' => 'HASH_GENERATOR', 'href' => '/dev-tools/hash-generator', 'sort_order' => 3],
-            ['label' => 'QR_GENERATOR', 'href' => '/dev-tools/qr-generator', 'sort_order' => 4],
-            ['label' => 'CRON_GURU', 'href' => '/dev-tools/cron-guru', 'sort_order' => 5],
-            ['label' => 'IMAGE_COMPRESSOR', 'href' => '/dev-tools/image-compressor', 'sort_order' => 6],
-            ['label' => 'DEPLOYMENTS', 'href' => '/dev-tools/deployments', 'sort_order' => 7],
-            ['label' => 'PHP_SYNTAX', 'href' => '/dev-tools/php-syntax-checker', 'sort_order' => 8],
-            ['label' => 'HTML_SYNTAX', 'href' => '/dev-tools/html-syntax-checker', 'sort_order' => 9],
-            ['label' => 'COLOR_CONVERTER', 'href' => '/dev-tools/color-converter', 'sort_order' => 10],
-            ['label' => 'REGEX_LAB', 'href' => '/dev-tools/regex-lab', 'sort_order' => 11],
-            ['label' => 'SQL_BUILDER', 'href' => '/dev-tools/sql-builder', 'sort_order' => 12],
+            ['label' => 'JSON formázó', 'href' => '/dev-tools/console', 'sort_order' => 1],
+            ['label' => 'Base64 kodek', 'href' => '/dev-tools/runtime', 'sort_order' => 2],
+            ['label' => 'Hash generátor', 'href' => '/dev-tools/hash-generator', 'sort_order' => 3],
+            ['label' => 'QR generátor', 'href' => '/dev-tools/qr-generator', 'sort_order' => 4],
+            ['label' => 'Cron segéd', 'href' => '/dev-tools/cron-guru', 'sort_order' => 5],
+            ['label' => 'Kép tömörítő', 'href' => '/dev-tools/image-compressor', 'sort_order' => 6],
+            ['label' => 'Telepítések', 'href' => '/dev-tools/deployments', 'sort_order' => 7],
+            ['label' => 'PHP szintaxis', 'href' => '/dev-tools/php-syntax-checker', 'sort_order' => 8],
+            ['label' => 'HTML szintaxis', 'href' => '/dev-tools/html-syntax-checker', 'sort_order' => 9],
+            ['label' => 'Színkonverter', 'href' => '/dev-tools/color-converter', 'sort_order' => 10],
+            ['label' => 'Regex labor', 'href' => '/dev-tools/regex-lab', 'sort_order' => 11],
+            ['label' => 'SQL építő', 'href' => '/dev-tools/sql-builder', 'sort_order' => 12],
         ] as $link) {
             NavigationItem::query()->updateOrCreate(
                 ['href' => $link['href']],

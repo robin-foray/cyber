@@ -32,7 +32,7 @@ class WelcomePageTest extends TestCase
                 ->has('cms.hero')
                 ->has('cms.stacks')
                 ->has('cms.navigation')
-                ->where('cms.hero.titleAccent', 'Digital Future')
+                ->where('cms.hero.titleAccent', 'kód & projektek')
             );
     }
 

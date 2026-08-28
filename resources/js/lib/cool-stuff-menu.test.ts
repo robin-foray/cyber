@@ -4,8 +4,8 @@ import { coolStuffLinks, coolStuffMenu, findCoolStuffCategoryIdForHref, isCoolSt
 describe('cool-stuff-menu', () => {
     it('groups links into categories', () => {
         expect(coolStuffMenu.length).toBeGreaterThanOrEqual(4);
-        expect(coolStuffMenu.map((category) => category.label)).toContain('DEV_TOOLS');
-        expect(coolStuffMenu.map((category) => category.label)).toContain('UI');
+        expect(coolStuffMenu.map((category) => category.label)).toContain('Fejlesztői eszközök');
+        expect(coolStuffMenu.map((category) => category.label)).toContain('Megjelenés');
     });
 
     it('flattens all cool stuff links', () => {

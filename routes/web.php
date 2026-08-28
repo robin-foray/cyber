@@ -40,6 +40,12 @@ Route::get('q/{slug}', QrRedirectController::class)
 Route::post('guest-pass/logout', [GuestPassController::class, 'logout'])
     ->name('guest-pass.logout');
 
+if (app()->environment('local', 'testing') || config('foray.preview.welcome')) {
+    Route::get('teszt/kezdolap', [WelcomeController::class, 'index'])
+        ->middleware('throttle:60,1')
+        ->name('test.welcome-preview');
+}
+
 Route::get('media/guest-pass/{guestPass}', [GuestPassController::class, 'avatar'])
     ->name('guest-pass.avatar');
 
