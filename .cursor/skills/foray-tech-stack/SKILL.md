@@ -8,6 +8,7 @@ description: Foray tech stack registry. Use when editing tech categories/stacks,
 - Models: `TechCategory`, `TechStack`
 - Page: `resources/js/pages/tech-stack/index.tsx`
 - Terminal home: `resources/js/pages/welcome.tsx` ← kategorizált DB stackek + live `telemetry` / `integrity` (`WelcomeController`)
+- Lightbox: `components/cyber/stack-lightbox.tsx` — mobile fullscreen sheet; desktop centered dialog (same shell as MachineLightbox)
 - Route: `GET /tech-stack` (`tech-stack.index`), `GET /` (`home`)
 - Filter: `?category={slug}`
 - Filament: TechCategoryResource, TechStackResource (FileUpload → `public/stacks`)
@@ -20,7 +21,8 @@ description: Foray tech stack registry. Use when editing tech categories/stacks,
 
 `php artisan migrate --seed` (vagy `db:seed`) feltölti a 26 stacket. Filamentből utána szerkeszthető.
 
-Cards: mobile `grid-cols-2` full-width; `sm+` flexible `minmax(9.5rem,1fr)`; `lg+` fixed `9.5rem`. Detail panel scrolls into view on select (`detailRef`).
+Cards: mobile `grid-cols-2` full-width; `sm+` flexible `minmax(9.5rem,1fr)`; `lg+` fixed `9.5rem`.
+Card click opens `StackLightbox` (portal) — no inline detail aside / scrollIntoView.
 Shared icon helper: `resources/js/lib/stack-icon.tsx` (used by `/tech-stack` and Terminal welcome stacks).
 Frontend: SVG path → `<img>`, legacy Lucide key → Cpu fallback.
-Terminal `/` is served by `WelcomeController` and reuses the same card/detail UI as `/tech-stack`.
+Terminal `/` is served by `WelcomeController` and reuses the same card + lightbox pattern as `/tech-stack` (welcome maps `docs` → lightbox `docs_url`).

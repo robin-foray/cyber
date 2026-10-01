@@ -10,6 +10,7 @@ description: Build or modify cyber-themed UI components, pages, and styling. Use
 | Component | Path | Role |
 |-----------|------|------|
 | MachineLightbox | `components/cyber/machine-lightbox.tsx` | Machines photo viewer — fullscreen on mobile, dialog on md+ |
+| StackLightbox | `components/cyber/stack-lightbox.tsx` | Tech stack detail viewer — fullscreen on mobile, dialog on md+ |
 | CyberShell | `components/cyber-shell.tsx` | Root layout, sidebar state |
 | CyberShellGate | `components/cyber-shell-gate.tsx` | Persistent shell; **never** swaps page on optimistic nav |
 | CyberSidebar | `components/cyber/sidebar.tsx` | Nav, dev-tools menu, identity card |
